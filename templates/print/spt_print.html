@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Surat Perintah Tugas - {{ spj.nomor_spt }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-100 py-6">
+
+    <!-- Print Control Bar -->
+    <div class="no-print max-w-4xl mx-auto mb-4 flex items-center justify-between bg-white p-3 rounded-xl shadow border border-slate-200">
+        <div class="flex items-center gap-2 text-xs font-semibold text-slate-700">
+            <a href="{{ url_for('spj_detail', spj_id=spj.id) }}" class="text-blue-600 hover:underline flex items-center gap-1">
+                <i class="ph ph-arrow-left"></i> Kembali ke Detail SPJ
+            </a>
+            <span>•</span>
+            <span class="text-slate-500">Pratinjau Cetak: Surat Perintah Tugas (SPT {% if spj.jenis_spt == 'kadis' %}Kepala Dinas{% else %}Staf{% endif %})</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="window.print()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow flex items-center gap-1.5">
+                <i class="ph-bold ph-printer text-base"></i>
+                <span>Cetak / Simpan PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Printable Paper Sheet (A4) -->
+    <div class="printable-sheet naskah-dinas">
+        <!-- Kop Surat -->
+        <div class="kop-surat">
+            <div class="kop-instansi-induk">{{ s.instansi_nama_induk }}</div>
+            <div class="kop-instansi-nama">{{ s.instansi_nama }}</div>
+            <div class="kop-alamat">{{ s.instansi_alamat }}</div>
+            <div class="kop-kontak">{{ s.instansi_kontak }}</div>
+        </div>
+
+        <!-- Judul SPT -->
+        <div class="judul-dokumen">SURAT PERINTAH TUGAS</div>
+        <div class="nomor-dokumen">Nomor : {{ spj.nomor_spt }}</div>
+
+        <!-- Konsiderans / Dasar -->
+        <table class="w-full mb-4 text-xs" style="line-height: 1.6;">
+            <tr>
+                <td style="width: 80px; vertical-align: top; font-weight: bold;">Dasar</td>
+                <td style="width: 15px; vertical-align: top;">:</td>
+                <td style="vertical-align: top; text-align: justify;">
+                    {{ spj.dasar_hukum or (s.template_spt_kadis if spj.jenis_spt == 'kadis' else s.template_spt_staf) }}
+                </td>
+            </tr>
+        </table>
+
+        <!-- MEMERINTAHKAN -->
+        <div style="text-align: center; font-weight: bold; margin: 15px 0 10px 0; letter-spacing: 2px;">
+            MEMERINTAHKAN :
+        </div>
+
+        <!-- Kepada -->
+        <table class="w-full text-xs" style="line-height: 1.5; margin-bottom: 12px;">
+            <tr>
+                <td style="width: 80px; vertical-align: top; font-weight: bold;">Kepada</td>
+                <td style="width: 15px; vertical-align: top;">:</td>
+                <td style="vertical-align: top;">
+                    {% if spj.jenis_spt == 'kadis' %}
+                        <!-- Format SPT Kepala Dinas -->
+                        <table style="width: 100%; border-collapse: collapse; margin-top: -2px;">
+                            <tr>
+                                <td style="width: 130px; font-weight: 500;">Nama</td>
+                                <td style="width: 15px;">:</td>
+                                <td style="font-weight: bold;">{{ peserta[0].nama if peserta else s.pejabat_kadis_nama }}</td>
+                            </tr>
+                            <tr>
+                                <td>NIP</td>
+                                <td>:</td>
+                                <td>{{ peserta[0].nip if peserta else s.pejabat_kadis_nip }}</td>
+                            </tr>
+                            <tr>
+                                <td>Pangkat / Golongan</td>
+                                <td>:</td>
+                                <td>{{ peserta[0].pangkat_golongan if peserta else s.pejabat_kadis_pangkat }}</td>
+                            </tr>
+                            <tr>
+                                <td>Jabatan</td>
+                                <td>:</td>
+                                <td>{{ peserta[0].jabatan if peserta else s.pejabat_kadis_jabatan }}</td>
+                            </tr>
+                        </table>
+                    {% else %}
+                        <!-- Format SPT Staf (Tabel Pelaksana) -->
+                        <table class="tabel-dinas" style="margin-top: 2px;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30px;">No</th>
+                                    <th>Nama Lengkap & NIP</th>
+                                    <th style="width: 140px;">Pangkat / Gol.</th>
+                                    <th style="width: 160px;">Jabatan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in peserta %}
+                                <tr>
+                                    <td style="text-align: center;">{{ loop.index }}</td>
+                                    <td>
+                                        <div style="font-weight: bold;">{{ p.nama }}</div>
+                                        <div style="font-size: 9pt; color: #333;">NIP. {{ p.nip or '-' }}</div>
+                                    </td>
+                                    <td>{{ p.pangkat_golongan or '-' }}</td>
+                                    <td>{{ p.jabatan or '-' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+
+        <!-- Untuk -->
+        <table class="w-full text-xs" style="line-height: 1.6; margin-top: 8px;">
+            <tr>
+                <td style="width: 80px; vertical-align: top; font-weight: bold;">Untuk</td>
+                <td style="width: 15px; vertical-align: top;">:</td>
+                <td style="vertical-align: top; text-align: justify;">
+                    <ol style="margin: 0; padding-left: 18px; list-style-type: decimal;">
+                        <li style="margin-bottom: 5px;">
+                            Melaksanakan perjalanan dinas dalam rangka: <strong>{{ spj.maksud }}</strong> yang bertempat di <strong>{{ spj.tujuan }}</strong>{% if spj.instansi_tujuan %} ({{ spj.instansi_tujuan }}){% endif %}.
+                        </li>
+                        <li style="margin-bottom: 5px;">
+                            Perjalanan dinas dilaksanakan selama <strong>{{ spj.lama_hari }} ({{ spj.lama_hari }}) hari</strong>, terhitung mulai tanggal <strong>{{ format_tanggal(spj.tanggal_berangkat) }}</strong> sampai dengan tanggal <strong>{{ format_tanggal(spj.tanggal_pulang) }}</strong>, dengan menggunakan alat angkutan <strong>{{ spj.angkutan }}</strong>.
+                        </li>
+                        <li style="margin-bottom: 5px;">
+                            Segala biaya yang timbul akibat diterbitkannya Surat Perintah Tugas ini dibebankan pada Anggaran {{ s.instansi_nama }} Tahun Anggaran 2026 melalui Kode Rekening: <strong>{{ spj.mata_anggaran }}</strong>.
+                        </li>
+                        <li>
+                            Melaporkan hasil pelaksanaan tugas kedinasan tersebut kepada pemberi perintah setelah selesai menjalankan tugas.
+                        </li>
+                    </ol>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Penutup & Tanda Tangan -->
+        <div class="ttd-box">
+            <div class="ttd-kanan">
+                <div>Ditetapkan di : {{ s.instansi_kota }}</div>
+                <div>Pada tanggal : {{ format_tanggal(spj.tanggal_berangkat) }}</div>
+                <div style="margin-top: 6px; font-weight: bold;">
+                    {% if spj.jenis_spt == 'kadis' %}
+                        KEPALA DINAS KOMUNIKASI DAN INFORMATIKA,
+                    {% else %}
+                        KEPALA DINAS KOMUNIKASI DAN INFORMATIKA,
+                    {% endif %}
+                </div>
+                <div class="ttd-space"></div>
+                <div class="ttd-nama">{{ s.pejabat_kadis_nama }}</div>
+                <div class="ttd-nip">{{ s.pejabat_kadis_pangkat }}</div>
+                <div class="ttd-nip">NIP. {{ s.pejabat_kadis_nip }}</div>
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+    </div>
+
+</body>
+</html>

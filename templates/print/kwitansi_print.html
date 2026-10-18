@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Kwitansi Pembayaran SPJ - {{ spj.nomor_sppd }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-100 py-6">
+
+    <!-- Control Bar -->
+    <div class="no-print max-w-4xl mx-auto mb-4 flex items-center justify-between bg-white p-3 rounded-xl shadow border border-slate-200">
+        <div class="flex items-center gap-2 text-xs font-semibold text-slate-700">
+            <a href="{{ url_for('spj_detail', spj_id=spj.id) }}" class="text-blue-600 hover:underline flex items-center gap-1">
+                <i class="ph ph-arrow-left"></i> Kembali ke Detail SPJ
+            </a>
+            <span>•</span>
+            <span class="text-slate-500">Pratinjau Cetak: Kwitansi Pembayaran</span>
+        </div>
+        <div>
+            <button onclick="window.print()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow flex items-center gap-1.5">
+                <i class="ph-bold ph-printer text-base"></i>
+                <span>Cetak / Simpan PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Paper Sheet -->
+    <div class="printable-sheet naskah-dinas">
+        <!-- Kop Surat -->
+        <div class="kop-surat">
+            <div class="kop-instansi-induk">{{ s.instansi_nama_induk }}</div>
+            <div class="kop-instansi-nama">{{ s.instansi_nama }}</div>
+            <div class="kop-alamat">{{ s.instansi_alamat }}</div>
+            <div class="kop-kontak">{{ s.instansi_kontak }}</div>
+        </div>
+
+        <div class="judul-dokumen">KWITANSI / BUKTI PEMBAYARAN</div>
+        <div class="nomor-dokumen">Nomor Bukti : KW/{{ spj.nomor_sppd }}</div>
+
+        <!-- Kwitansi Frame -->
+        <div class="kwitansi-border text-xs">
+            <div class="kwitansi-row">
+                <div class="kwitansi-label">Tahun Anggaran</div>
+                <div class="kwitansi-separator">:</div>
+                <div class="kwitansi-value font-bold">2026</div>
+            </div>
+
+            <div class="kwitansi-row">
+                <div class="kwitansi-label">Mata Anggaran / Kode Rekening</div>
+                <div class="kwitansi-separator">:</div>
+                <div class="kwitansi-value font-mono font-bold">{{ spj.mata_anggaran }}</div>
+            </div>
+
+            <div class="kwitansi-row mt-3">
+                <div class="kwitansi-label">Sudah Terima Dari</div>
+                <div class="kwitansi-separator">:</div>
+                <div class="kwitansi-value font-bold">Bendahara Pengeluaran {{ s.instansi_nama }}</div>
+            </div>
+
+            <div class="kwitansi-row">
+                <div class="kwitansi-label">Banyaknya Uang</div>
+                <div class="kwitansi-separator">:</div>
+                <div class="kwitansi-value font-bold italic" style="text-transform: capitalize; background-color: #f7f7f7; padding: 4px 8px; border: 1px dashed #ccc;">
+                    {{ terbilang(total_biaya) }}
+                </div>
+            </div>
+
+            <div class="kwitansi-row mt-3">
+                <div class="kwitansi-label">Yaitu Untuk Pembayaran</div>
+                <div class="kwitansi-separator">:</div>
+                <div class="kwitansi-value text-justify leading-relaxed">
+                    {{ s.template_kwitansi }} Biaya pelaksanaan perjalanan dinas dalam rangka <strong>{{ spj.maksud }}</strong> ke <strong>{{ spj.tujuan }}</strong> selama {{ spj.lama_hari }} hari mulai tanggal {{ format_tanggal(spj.tanggal_berangkat) }} s.d. {{ format_tanggal(spj.tanggal_pulang) }} berdasarkan Surat Perintah Tugas (SPT) Nomor: <strong>{{ spj.nomor_spt }}</strong> dan SPPD Nomor: <strong>{{ spj.nomor_sppd }}</strong>.
+                </div>
+            </div>
+
+            <!-- Jumlah Kotak Besar -->
+            <div class="mt-4 pt-3 border-t border-slate-300 flex items-center justify-between">
+                <div class="text-sm font-bold">
+                    Terbilang :
+                </div>
+                <div style="font-size: 15pt; font-weight: 800; border: 2px solid #000; padding: 6px 20px; letter-spacing: 1px; background-color: #fafafa;">
+                    {{ format_rupiah(total_biaya) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Tanda Tangan Tiga Pihak -->
+        <div class="ttd-box">
+            <div class="ttd-tiga-kolom text-xs">
+                <!-- 1. Menyetujui PPK -->
+                <div class="ttd-item">
+                    <div>Setuju Dibayar :</div>
+                    <div style="font-weight: bold;">Pejabat Pembuat Komitmen</div>
+                    <div class="ttd-space"></div>
+                    <div class="ttd-nama">{{ s.pejabat_ppk_nama }}</div>
+                    <div class="ttd-nip">{{ s.pejabat_ppk_pangkat }}</div>
+                    <div class="ttd-nip">NIP. {{ s.pejabat_ppk_nip }}</div>
+                </div>
+
+                <!-- 2. Lunas Dibayar Bendahara -->
+                <div class="ttd-item">
+                    <div>Lunas Dibayar, {{ format_tanggal(spj.tanggal_pulang) }}</div>
+                    <div style="font-weight: bold;">Bendahara Pengeluaran</div>
+                    <div class="ttd-space"></div>
+                    <div class="ttd-nama">{{ s.pejabat_bendahara_nama }}</div>
+                    <div class="ttd-nip">{{ s.pejabat_bendahara_pangkat }}</div>
+                    <div class="ttd-nip">NIP. {{ s.pejabat_bendahara_nip }}</div>
+                </div>
+
+                <!-- 3. Yang Menerima -->
+                <div class="ttd-item">
+                    <div>{{ s.instansi_kota }}, {{ format_tanggal(spj.tanggal_pulang) }}</div>
+                    <div style="font-weight: bold;">Yang Menerima,</div>
+                    <div class="ttd-space"></div>
+                    <div class="ttd-nama">{{ peserta[0].nama if peserta else s.pejabat_kadis_nama }}</div>
+                    <div class="ttd-nip">{{ peserta[0].pangkat_golongan if peserta else s.pejabat_kadis_pangkat }}</div>
+                    <div class="ttd-nip">NIP. {{ peserta[0].nip if peserta else s.pejabat_kadis_nip }}</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

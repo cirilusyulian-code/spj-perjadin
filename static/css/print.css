@@ -1,0 +1,227 @@
+@import url('https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+/* Paper & typography styling for government official documents */
+.naskah-dinas {
+    font-family: 'Times New Roman', 'Tinos', serif;
+    color: #000;
+    line-height: 1.4;
+    background: #fff;
+    font-size: 11pt;
+}
+
+.kop-surat {
+    text-align: center;
+    position: relative;
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+    border-bottom: 3px double #000;
+}
+
+.kop-instansi-induk {
+    font-size: 13pt;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.kop-instansi-nama {
+    font-size: 15pt;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 2px 0;
+}
+
+.kop-alamat {
+    font-size: 9.5pt;
+    font-weight: 400;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.kop-kontak {
+    font-size: 9pt;
+    font-style: italic;
+    margin: 0;
+}
+
+.judul-dokumen {
+    text-align: center;
+    font-weight: 700;
+    font-size: 12.5pt;
+    text-transform: uppercase;
+    text-decoration: underline;
+    margin-top: 10px;
+    margin-bottom: 2px;
+}
+
+.nomor-dokumen {
+    text-align: center;
+    font-size: 11pt;
+    margin-bottom: 20px;
+}
+
+/* Tabel Bergaris Resmi */
+.tabel-dinas {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+}
+
+.tabel-dinas th, .tabel-dinas td {
+    border: 1px solid #000;
+    padding: 6px 8px;
+    font-size: 10pt;
+    vertical-align: top;
+}
+
+.tabel-dinas th {
+    background-color: #f2f2f2 !important;
+    font-weight: bold;
+    text-align: center;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+/* Tanda Tangan */
+.ttd-box {
+    margin-top: 30px;
+    width: 100%;
+    page-break-inside: avoid;
+}
+
+.ttd-kanan {
+    float: right;
+    width: 45%;
+    text-align: left;
+}
+
+.ttd-dua-kolom {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+.ttd-item {
+    width: 45%;
+    text-align: left;
+}
+
+.ttd-tiga-kolom {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+.ttd-tiga-kolom .ttd-item {
+    width: 30%;
+    text-align: center;
+}
+
+.ttd-space {
+    height: 70px;
+}
+
+.ttd-nama {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.ttd-nip {
+    font-size: 10pt;
+}
+
+/* Watermark Materai / Tempat Materai */
+.materai-box {
+    border: 1px dashed #777;
+    width: 80px;
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+    font-size: 8pt;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+/* Kwitansi Box */
+.kwitansi-border {
+    border: 2px solid #000;
+    padding: 16px;
+    margin: 10px 0;
+}
+
+.kwitansi-row {
+    display: flex;
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.kwitansi-label {
+    width: 190px;
+    flex-shrink: 0;
+    font-weight: 500;
+}
+
+.kwitansi-separator {
+    width: 15px;
+    flex-shrink: 0;
+}
+
+.kwitansi-value {
+    flex-grow: 1;
+}
+
+.terbilang-box {
+    background-color: #f7f7f7;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    font-style: italic;
+    font-weight: 600;
+    margin: 10px 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+/* Print Handling */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 1.5cm 1.5cm 1.5cm 1.5cm;
+    }
+
+    body {
+        background: #fff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .no-print {
+        display: none !important;
+    }
+
+    .printable-sheet {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .page-break {
+        page-break-after: always;
+        break-after: page;
+    }
+}
+
+/* Screen Simulation Preview */
+.printable-sheet {
+    background: #fff;
+    width: 210mm;
+    min-height: 297mm;
+    padding: 20mm;
+    margin: 20px auto;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    box-sizing: border-box;
+}

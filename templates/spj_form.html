@@ -1,0 +1,655 @@
+{% extends "base.html" %}
+
+{% block title %}{% if spj %}Edit SPJ - {{ spj.nomor_spt }}{% else %}Buat SPJ Perjalanan Dinas Baru{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+
+    <!-- Header -->
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <div class="flex items-center gap-2 text-xs text-blue-600 font-semibold uppercase tracking-wider mb-1">
+                <a href="{{ url_for('spj_list') }}" class="hover:underline flex items-center gap-1">
+                    <i class="ph ph-arrow-left"></i> Kembali ke Daftar
+                </a>
+            </div>
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">
+                {% if spj %}Edit Dokumen SPJ Perjalanan Dinas{% else %}Formulir Pembuatan SPJ Perjalanan Dinas{% endif %}
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">Lengkapi informasi dasar, pelaksana, dan rincian biaya penugasan.</p>
+        </div>
+    </div>
+
+    <form method="POST" id="spjForm" class="space-y-8">
+        <!-- 1. Tipe SPT & Administrasi -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">1</span>
+                Tipe Surat Perintah Tugas (SPT) & Nomor Surat
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Radio Tipe SPT -->
+                <div class="col-span-1 md:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-700 mb-2">Pilih Tipe Template SPT:</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="relative flex items-center p-3.5 rounded-xl border border-slate-300 cursor-pointer hover:bg-slate-50 transition has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50/50 has-[:checked]:ring-1 has-[:checked]:ring-blue-600">
+                            <input type="radio" name="jenis_spt" value="kadis" {% if (spj and spj.jenis_spt == 'kadis') or (not spj and request.args.get('jenis') == 'kadis') %}checked{% endif %} class="text-blue-600 focus:ring-blue-500">
+                            <div class="ml-3">
+                                <div class="text-xs font-bold text-slate-900">SPT Kepala Dinas</div>
+                                <div class="text-[11px] text-slate-500">Penugasan mandiri / disposisi pimpinan daerah untuk Kepala Dinas</div>
+                            </div>
+                        </label>
+                        <label class="relative flex items-center p-3.5 rounded-xl border border-slate-300 cursor-pointer hover:bg-slate-50 transition has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50/50 has-[:checked]:ring-1 has-[:checked]:ring-blue-600">
+                            <input type="radio" name="jenis_spt" value="staf" {% if (spj and spj.jenis_spt == 'staf') or (not spj and request.args.get('jenis') != 'kadis') %}checked{% endif %} class="text-blue-600 focus:ring-blue-500">
+                            <div class="ml-3">
+                                <div class="text-xs font-bold text-slate-900">SPT Staf / Pejabat di Bawah Kadis</div>
+                                <div class="text-[11px] text-slate-500">Surat tugas ditandatangani oleh Kepala Dinas untuk staf/tim pelaksana</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Nomor SPT -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Surat Perintah Tugas (SPT) *</label>
+                    <input type="text" name="nomor_spt" required value="{{ spj.nomor_spt if spj else default_nomor_spt }}"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Contoh: 090/112/SPT/DISKOMINFO/2026">
+                </div>
+
+                <!-- Nomor SPPD -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Surat Perintah Perjalanan Dinas (SPPD) *</label>
+                    <input type="text" name="nomor_sppd" required value="{{ spj.nomor_sppd if spj else default_nomor_sppd }}"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Contoh: 094/112/SPPD/DISKOMINFO/2026">
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Tujuan & Maksud Perjalanan Dinas -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">2</span>
+                Tujuan & Maksud Perjalanan Dinas
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Tujuan -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Kota / Daerah Tujuan *</label>
+                    <input type="text" name="tujuan" required value="{{ spj.tujuan if spj else '' }}"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Contoh: Jakarta Pusat / Surabaya / Bandung">
+                </div>
+
+                <!-- Instansi Tujuan -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Instansi / Lokasi yang Dituju</label>
+                    <input type="text" name="instansi_tujuan" value="{{ spj.instansi_tujuan if spj else '' }}"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Contoh: Kementerian Dalam Negeri RI / Hotel Mercure">
+                </div>
+
+                <!-- Maksud Perjalanan Dinas -->
+                <div class="col-span-1 md:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Maksud Perjalanan Dinas (Keperluan Penugasan) *</label>
+                    <textarea name="maksud" rows="2" required
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Uraikan maksud perjalanan dinas secara lengkap...">{{ spj.maksud if spj else '' }}</textarea>
+                </div>
+
+                <!-- Dasar Hukum / Undangan -->
+                <div class="col-span-1 md:col-span-2">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Dasar Hukum / Surat Undangan Penugasan</label>
+                    <textarea name="dasar_hukum" rows="2"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Contoh: Surat Undangan Sekjen Kemendagri No: 005/123/SJ tanggal 10 Oktober 2026...">{{ spj.dasar_hukum if spj else default_dasar_hukum }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Jadwal Waktu & Transportasi -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">3</span>
+                Waktu Pelaksanaan & Moda Transportasi
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Tanggal Berangkat -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Berangkat *</label>
+                    <input type="date" id="tgl_berangkat" name="tanggal_berangkat" required value="{{ spj.tanggal_berangkat if spj else today_date }}"
+                        onchange="recalculateDuration()"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+
+                <!-- Tanggal Pulang -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Pulang *</label>
+                    <input type="date" id="tgl_pulang" name="tanggal_pulang" required value="{{ spj.tanggal_pulang if spj else today_date }}"
+                        onchange="recalculateDuration()"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+
+                <!-- Lama Hari -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Lama Perjalanan (Hari)</label>
+                    <div class="relative">
+                        <input type="number" id="lama_hari" name="lama_hari" min="1" required value="{{ spj.lama_hari if spj else 1 }}"
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-slate-50 font-bold text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <span class="absolute right-3 top-2 text-xs text-slate-400">Hari</span>
+                    </div>
+                </div>
+
+                <!-- Alat Angkut -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Alat Angkutan</label>
+                    <select name="angkutan" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                        <option value="Pesawat Udara" {% if spj and spj.angkutan == 'Pesawat Udara' %}selected{% endif %}>Pesawat Udara</option>
+                        <option value="Kapal Laut" {% if spj and spj.angkutan == 'Kapal Laut' %}selected{% endif %}>Kapal Laut</option>
+                        <option value="Kendaraan Dinas / Mobil" {% if spj and spj.angkutan == 'Kendaraan Dinas / Mobil' %}selected{% endif %}>Kendaraan Dinas / Mobil</option>
+                        <option value="Kereta Api / Bus" {% if spj and spj.angkutan == 'Kereta Api / Bus' %}selected{% endif %}>Kereta Api / Bus</option>
+                        <option value="Transportasi Darat Lainnya" {% if spj and spj.angkutan == 'Transportasi Darat Lainnya' %}selected{% endif %}>Transportasi Darat Lainnya</option>
+                    </select>
+                </div>
+
+                <!-- Mata Anggaran Rekening -->
+                <div class="col-span-1 sm:grid-cols-2 md:col-span-4">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Mata Anggaran / Kode Rekening Belanja</label>
+                    <input type="text" name="mata_anggaran" value="{{ spj.mata_anggaran if spj else '5.1.02.04.01.0001 - Belanja Perjalanan Dinas Biasa' }}"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder="Contoh: 5.1.02.04.01.0001 - Belanja Perjalanan Dinas Biasa">
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Daftar Nama-Nama yang Melakukan Perjalanan Dinas -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">4</span>
+                    Nama-Nama yang Melakukan Perjalanan Dinas
+                </h2>
+                <button type="button" onclick="tambahPeserta()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs font-bold transition">
+                    <i class="ph-bold ph-user-plus"></i>
+                    <span>Tambah Pelaksana</span>
+                </button>
+            </div>
+
+            <div id="pesertaContainer" class="space-y-3">
+                {% if peserta_list %}
+                    {% for p in peserta_list %}
+                    <div class="peserta-row grid grid-cols-1 sm:grid-cols-12 gap-2 p-3 bg-slate-50/70 border border-slate-200 rounded-xl items-center">
+                        <div class="sm:col-span-4">
+                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Nama Lengkap & Gelar *</label>
+                            <input type="text" name="peserta_nama[]" required value="{{ p.nama }}" placeholder="Nama Pegawai" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NIP</label>
+                            <input type="text" name="peserta_nip[]" value="{{ p.nip or '' }}" placeholder="19XXXXXXXX XXXXXX X XXX" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Pangkat / Gol.</label>
+                            <input type="text" name="peserta_pangkat[]" value="{{ p.pangkat_golongan or '' }}" placeholder="Pembina (IV/a)" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Jabatan</label>
+                            <input type="text" name="peserta_jabatan[]" value="{{ p.jabatan or '' }}" placeholder="Jabatan" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
+                        </div>
+                        <div class="sm:col-span-1 flex justify-center pt-3 sm:pt-0">
+                            <button type="button" onclick="hapusRow(this)" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition" title="Hapus">
+                                <i class="ph-bold ph-trash text-base"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <!-- Default first row -->
+                    <div class="peserta-row grid grid-cols-1 sm:grid-cols-12 gap-2 p-3 bg-slate-50/70 border border-slate-200 rounded-xl items-center">
+                        <div class="sm:col-span-4">
+                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Nama Lengkap & Gelar *</label>
+                            <input type="text" name="peserta_nama[]" required value="{{ default_pelaksana_nama }}" placeholder="Nama Pegawai" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
+                        </div>
+                        <div class="sm:col-span-3">
+                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NIP</label>
+                            <input type="text" name="peserta_nip[]" value="{{ default_pelaksana_nip }}" placeholder="19XXXXXXXX XXXXXX X XXX" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Pangkat / Gol.</label>
+                            <input type="text" name="peserta_pangkat[]" value="{{ default_pelaksana_pangkat }}" placeholder="Pembina (IV/a)" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Jabatan</label>
+                            <input type="text" name="peserta_jabatan[]" value="{{ default_pelaksana_jabatan }}" placeholder="Jabatan" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
+                        </div>
+                        <div class="sm:col-span-1 flex justify-center pt-3 sm:pt-0">
+                            <button type="button" onclick="hapusRow(this)" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition" title="Hapus">
+                                <i class="ph-bold ph-trash text-base"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 5. Rincian Biaya (Uang Harian & Additional: Taxi, Hotel, Pesawat/Kapal) -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">5</span>
+                        Rincian Biaya Perjalanan Dinas
+                    </h2>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Uang harian, penginapan hotel, tiket pesawat/kapal, taksi, dan transportasi lokal</p>
+                </div>
+                <button type="button" onclick="tambahBiaya()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-bold transition">
+                    <i class="ph-bold ph-plus-circle"></i>
+                    <span>Tambah Baris Biaya</span>
+                </button>
+            </div>
+
+            <!-- Table of Costs -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs" id="biayaTable">
+                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px]">
+                        <tr>
+                            <th class="p-2 w-36">Kategori Biaya</th>
+                            <th class="p-2">Uraian / Keterangan</th>
+                            <th class="p-2 w-20">Volume</th>
+                            <th class="p-2 w-20">Satuan</th>
+                            <th class="p-2 w-32">Tarif Satuan (Rp)</th>
+                            <th class="p-2 w-32 text-right">Subtotal (Rp)</th>
+                            <th class="p-2 w-28 text-center" title="Centang jika biaya ini masuk ke Surat Pernyataan Pengeluaran Riil (non-tiket resmi/kwitansi pihak ke-3)">Pengeluaran Riil?</th>
+                            <th class="p-2 w-10 text-center"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="biayaContainer" class="divide-y divide-slate-100">
+                        {% if biaya_list %}
+                            {% for b in biaya_list %}
+                            <tr class="biaya-row hover:bg-slate-50/50">
+                                <td class="p-2">
+                                    <select name="biaya_jenis[]" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg bg-white">
+                                        <option value="uang_harian" {% if b.jenis_biaya == 'uang_harian' %}selected{% endif %}>Uang Harian</option>
+                                        <option value="tiket_pesawat" {% if b.jenis_biaya == 'tiket_pesawat' %}selected{% endif %}>Tiket Pesawat</option>
+                                        <option value="tiket_kapal" {% if b.jenis_biaya == 'tiket_kapal' %}selected{% endif %}>Tiket Kapal</option>
+                                        <option value="hotel" {% if b.jenis_biaya == 'hotel' %}selected{% endif %}>Hotel / Penginapan</option>
+                                        <option value="taxi" {% if b.jenis_biaya == 'taxi' %}selected{% endif %}>Taksi Bandara/Stasiun</option>
+                                        <option value="transportasi" {% if b.jenis_biaya == 'transportasi' %}selected{% endif %}>Transportasi Lokal</option>
+                                        <option value="lainnya" {% if b.jenis_biaya == 'lainnya' %}selected{% endif %}>Lain-Lain</option>
+                                    </select>
+                                </td>
+                                <td class="p-2">
+                                    <input type="text" name="biaya_keterangan[]" required value="{{ b.keterangan }}" placeholder="Misal: Uang Harian 3 Hari" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg">
+                                </td>
+                                <td class="p-2">
+                                    <input type="number" step="any" name="biaya_kuantitas[]" required value="{{ b.kuantitas }}" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-qty text-center">
+                                </td>
+                                <td class="p-2">
+                                    <input type="text" name="biaya_satuan[]" required value="{{ b.satuan }}" placeholder="Hari / PP" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg text-center">
+                                </td>
+                                <td class="p-2">
+                                    <input type="number" step="any" name="biaya_tarif[]" required value="{{ b.tarif }}" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-tarif text-right">
+                                </td>
+                                <td class="p-2 text-right font-bold text-slate-800 biaya-subtotal">
+                                    {{ format_rupiah(b.total) }}
+                                </td>
+                                <td class="p-2 text-center">
+                                    <input type="checkbox" name="biaya_riil_{{ loop.index0 }}" value="1" {% if b.termasuk_riil %}checked{% endif %} class="w-4 h-4 text-blue-600 rounded">
+                                </td>
+                                <td class="p-2 text-center">
+                                    <button type="button" onclick="hapusBiayaRow(this)" class="text-rose-500 hover:text-rose-700">
+                                        <i class="ph-bold ph-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <!-- Default Pre-populated Rows -->
+                            <!-- Row 1: Uang Harian -->
+                            <tr class="biaya-row hover:bg-slate-50/50">
+                                <td class="p-2">
+                                    <select name="biaya_jenis[]" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg bg-white">
+                                        <option value="uang_harian" selected>Uang Harian</option>
+                                        <option value="tiket_pesawat">Tiket Pesawat</option>
+                                        <option value="tiket_kapal">Tiket Kapal</option>
+                                        <option value="hotel">Hotel / Penginapan</option>
+                                        <option value="taxi">Taksi Bandara/Stasiun</option>
+                                        <option value="transportasi">Transportasi Lokal</option>
+                                        <option value="lainnya">Lain-Lain</option>
+                                    </select>
+                                </td>
+                                <td class="p-2">
+                                    <input type="text" name="biaya_keterangan[]" required value="Uang Harian Perjalanan Dinas" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg">
+                                </td>
+                                <td class="p-2">
+                                    <input type="number" step="any" name="biaya_kuantitas[]" required value="1" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-qty text-center">
+                                </td>
+                                <td class="p-2">
+                                    <input type="text" name="biaya_satuan[]" required value="Hari" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg text-center">
+                                </td>
+                                <td class="p-2">
+                                    <input type="number" step="any" name="biaya_tarif[]" required value="530000" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-tarif text-right">
+                                </td>
+                                <td class="p-2 text-right font-bold text-slate-800 biaya-subtotal">
+                                    Rp 530.000
+                                </td>
+                                <td class="p-2 text-center">
+                                    <input type="checkbox" name="biaya_riil_0" value="1" class="w-4 h-4 text-blue-600 rounded">
+                                </td>
+                                <td class="p-2 text-center">
+                                    <button type="button" onclick="hapusBiayaRow(this)" class="text-rose-500 hover:text-rose-700">
+                                        <i class="ph-bold ph-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 2: Tiket Pesawat / Kapal -->
+                            <tr class="biaya-row hover:bg-slate-50/50">
+                                <td class="p-2">
+                                    <select name="biaya_jenis[]" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg bg-white">
+                                        <option value="uang_harian">Uang Harian</option>
+                                        <option value="tiket_pesawat" selected>Tiket Pesawat</option>
+                                        <option value="tiket_kapal">Tiket Kapal</option>
+                                        <option value="hotel">Hotel / Penginapan</option>
+                                        <option value="taxi">Taksi Bandara/Stasiun</option>
+                                        <option value="transportasi">Transportasi Lokal</option>
+                                        <option value="lainnya">Lain-Lain</option>
+                                    </select>
+                                </td>
+                                <td class="p-2">
+                                    <input type="text" name="biaya_keterangan[]" required value="Tiket Pesawat Udara PP" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg">
+                                </td>
+                                <td class="p-2">
+                                    <input type="number" step="any" name="biaya_kuantitas[]" required value="1" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-qty text-center">
+                                </td>
+                                <td class="p-2">
+                                    <input type="text" name="biaya_satuan[]" required value="PP" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg text-center">
+                                </td>
+                                <td class="p-2">
+                                    <input type="number" step="any" name="biaya_tarif[]" required value="2800000" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-tarif text-right">
+                                </td>
+                                <td class="p-2 text-right font-bold text-slate-800 biaya-subtotal">
+                                    Rp 2.800.000
+                                </td>
+                                <td class="p-2 text-center">
+                                    <input type="checkbox" name="biaya_riil_1" value="1" class="w-4 h-4 text-blue-600 rounded">
+                                </td>
+                                <td class="p-2 text-center">
+                                    <button type="button" onclick="hapusBiayaRow(this)" class="text-rose-500 hover:text-rose-700">
+                                        <i class="ph-bold ph-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 3: Hotel -->
+                            <tr class="biaya-row hover:bg-slate-50/50">
+                                <td class="p-2">
+                                    <select name="biaya_jenis[]" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg bg-white">
+                                        <option value="uang_harian">Uang Harian</option>
+                                        <option value="tiket_pesawat">Tiket Pesawat</option>
+                                        <option value="tiket_kapal">Tiket Kapal</option>
+                                        <option value="hotel" selected>Hotel / Penginapan</option>
+                                        <option value="taxi">Taksi Bandara/Stasiun</option>
+                                        <option value="transportasi">Transportasi Lokal</option>
+                                        <option value="lainnya">Lain-Lain</option>
+                                    </select>
+                                </td>
+                                <td class="p-2">
+                                    <input type="text" name="biaya_keterangan[]" required value="Biaya Penginapan / Hotel" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg">
+                                </td>
+                                <td class="p-2">
+                                    <input type="number" step="any" name="biaya_kuantitas[]" required value="1" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-qty text-center">
+                                </td>
+                                <td class="p-2">
+                                    <input type="text" name="biaya_satuan[]" required value="Malam" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg text-center">
+                                </td>
+                                <td class="p-2">
+                                    <input type="number" step="any" name="biaya_tarif[]" required value="750000" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-tarif text-right">
+                                </td>
+                                <td class="p-2 text-right font-bold text-slate-800 biaya-subtotal">
+                                    Rp 750.000
+                                </td>
+                                <td class="p-2 text-center">
+                                    <input type="checkbox" name="biaya_riil_2" value="1" class="w-4 h-4 text-blue-600 rounded">
+                                </td>
+                                <td class="p-2 text-center">
+                                    <button type="button" onclick="hapusBiayaRow(this)" class="text-rose-500 hover:text-rose-700">
+                                        <i class="ph-bold ph-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Row 4: Taksi (Pengeluaran Riil) -->
+                            <tr class="biaya-row hover:bg-slate-50/50">
+                                <td class="p-2">
+                                    <select name="biaya_jenis[]" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg bg-white">
+                                        <option value="uang_harian">Uang Harian</option>
+                                        <option value="tiket_pesawat">Tiket Pesawat</option>
+                                        <option value="tiket_kapal">Tiket Kapal</option>
+                                        <option value="hotel">Hotel / Penginapan</option>
+                                        <option value="taxi" selected>Taksi Bandara/Stasiun</option>
+                                        <option value="transportasi">Transportasi Lokal</option>
+                                        <option value="lainnya">Lain-Lain</option>
+                                    </select>
+                                </td>
+                                <td class="p-2">
+                                    <input type="text" name="biaya_keterangan[]" required value="Biaya Taksi Bandara PP" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg">
+                                </td>
+                                <td class="p-2">
+                                    <input type="number" step="any" name="biaya_kuantitas[]" required value="2" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-qty text-center">
+                                </td>
+                                <td class="p-2">
+                                    <input type="text" name="biaya_satuan[]" required value="Kali" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg text-center">
+                                </td>
+                                <td class="p-2">
+                                    <input type="number" step="any" name="biaya_tarif[]" required value="200000" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-tarif text-right">
+                                </td>
+                                <td class="p-2 text-right font-bold text-slate-800 biaya-subtotal">
+                                    Rp 400.000
+                                </td>
+                                <td class="p-2 text-center">
+                                    <input type="checkbox" name="biaya_riil_3" value="1" checked class="w-4 h-4 text-blue-600 rounded">
+                                </td>
+                                <td class="p-2 text-center">
+                                    <button type="button" onclick="hapusBiayaRow(this)" class="text-rose-500 hover:text-rose-700">
+                                        <i class="ph-bold ph-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Grand Total Summary Box -->
+            <div class="mt-4 p-4 rounded-xl bg-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <div class="text-[11px] uppercase tracking-wider text-slate-400">Total Perkiraan Biaya SPJ</div>
+                    <div id="grandTotalDisplay" class="text-2xl font-black text-emerald-400">Rp 0</div>
+                </div>
+                <div class="text-right sm:max-w-md">
+                    <div class="text-[11px] uppercase tracking-wider text-slate-400">Terbilang</div>
+                    <div id="terbilangDisplay" class="text-xs font-semibold text-slate-200 italic">Nol Rupiah</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Status & Submit Action -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <label class="text-xs font-semibold text-slate-700">Status Dokumen:</label>
+                <select name="status" class="px-3 py-1.5 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                    <option value="Draft" {% if spj and spj.status == 'Draft' %}selected{% endif %}>Draft</option>
+                    <option value="Disetujui" {% if spj and spj.status == 'Disetujui' %}selected{% endif %}>Disetujui</option>
+                    <option value="Selesai" {% if spj and spj.status == 'Selesai' %}selected{% endif %}>Selesai</option>
+                </select>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <a href="{{ url_for('spj_list') }}" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition">
+                    Batal
+                </a>
+                <button type="submit" class="px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 active:bg-blue-800 shadow-md shadow-blue-500/20 transition flex items-center gap-2">
+                    <i class="ph-bold ph-floppy-disk text-base"></i>
+                    <span>Simpan & Buat Dokumen SPJ</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+// Recalculate Duration
+function recalculateDuration() {
+    const tgl1 = document.getElementById('tgl_berangkat').value;
+    const tgl2 = document.getElementById('tgl_pulang').value;
+    if (tgl1 && tgl2) {
+        const d1 = new Date(tgl1);
+        const d2 = new Date(tgl2);
+        const diffTime = d2.getTime() - d1.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        document.getElementById('lama_hari').value = diffDays > 0 ? diffDays : 1;
+    }
+}
+
+// Dynamic Peserta Rows
+function tambahPeserta() {
+    const container = document.getElementById('pesertaContainer');
+    const div = document.createElement('div');
+    div.className = 'peserta-row grid grid-cols-1 sm:grid-cols-12 gap-2 p-3 bg-slate-50/70 border border-slate-200 rounded-xl items-center';
+    div.innerHTML = `
+        <div class="sm:col-span-4">
+            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Nama Lengkap & Gelar *</label>
+            <input type="text" name="peserta_nama[]" required placeholder="Nama Pegawai" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
+        </div>
+        <div class="sm:col-span-3">
+            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NIP</label>
+            <input type="text" name="peserta_nip[]" placeholder="19XXXXXXXX XXXXXX X XXX" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
+        </div>
+        <div class="sm:col-span-2">
+            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Pangkat / Gol.</label>
+            <input type="text" name="peserta_pangkat[]" placeholder="Penata (III/c)" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
+        </div>
+        <div class="sm:col-span-2">
+            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Jabatan</label>
+            <input type="text" name="peserta_jabatan[]" placeholder="Staf Pelaksana" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
+        </div>
+        <div class="sm:col-span-1 flex justify-center pt-3 sm:pt-0">
+            <button type="button" onclick="hapusRow(this)" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition" title="Hapus">
+                <i class="ph-bold ph-trash text-base"></i>
+            </button>
+        </div>
+    `;
+    container.appendChild(div);
+}
+
+function hapusRow(btn) {
+    const rows = document.querySelectorAll('.peserta-row');
+    if (rows.length > 1) {
+        btn.closest('.peserta-row').remove();
+    } else {
+        alert('Minimal harus ada 1 nama pelaksana perjalanan dinas.');
+    }
+}
+
+// Dynamic Biaya Rows
+function tambahBiaya() {
+    const container = document.getElementById('biayaContainer');
+    const rowCount = container.querySelectorAll('.biaya-row').length;
+    const tr = document.createElement('tr');
+    tr.className = 'biaya-row hover:bg-slate-50/50';
+    tr.innerHTML = `
+        <td class="p-2">
+            <select name="biaya_jenis[]" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg bg-white">
+                <option value="uang_harian">Uang Harian</option>
+                <option value="tiket_pesawat">Tiket Pesawat</option>
+                <option value="tiket_kapal">Tiket Kapal</option>
+                <option value="hotel">Hotel / Penginapan</option>
+                <option value="taxi">Taksi Bandara/Stasiun</option>
+                <option value="transportasi" selected>Transportasi Lokal</option>
+                <option value="lainnya">Lain-Lain</option>
+            </select>
+        </td>
+        <td class="p-2">
+            <input type="text" name="biaya_keterangan[]" required placeholder="Uraian biaya..." class="w-full p-1.5 text-xs border border-slate-300 rounded-lg">
+        </td>
+        <td class="p-2">
+            <input type="number" step="any" name="biaya_kuantitas[]" required value="1" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-qty text-center">
+        </td>
+        <td class="p-2">
+            <input type="text" name="biaya_satuan[]" required value="Hari" placeholder="Satuan" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg text-center">
+        </td>
+        <td class="p-2">
+            <input type="number" step="any" name="biaya_tarif[]" required value="0" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-tarif text-right">
+        </td>
+        <td class="p-2 text-right font-bold text-slate-800 biaya-subtotal">
+            Rp 0
+        </td>
+        <td class="p-2 text-center">
+            <input type="checkbox" name="biaya_riil_${rowCount}" value="1" class="w-4 h-4 text-blue-600 rounded">
+        </td>
+        <td class="p-2 text-center">
+            <button type="button" onclick="hapusBiayaRow(this)" class="text-rose-500 hover:text-rose-700">
+                <i class="ph-bold ph-trash"></i>
+            </button>
+        </td>
+    `;
+    container.appendChild(tr);
+    recalculateAllBiaya();
+}
+
+function hapusBiayaRow(btn) {
+    const rows = document.querySelectorAll('.biaya-row');
+    if (rows.length > 1) {
+        btn.closest('.biaya-row').remove();
+        recalculateAllBiaya();
+    } else {
+        alert('Minimal harus ada 1 rincian biaya.');
+    }
+}
+
+function hitungSubtotal(input) {
+    const tr = input.closest('.biaya-row');
+    const qty = parseFloat(tr.querySelector('.biaya-qty').value) || 0;
+    const tarif = parseFloat(tr.querySelector('.biaya-tarif').value) || 0;
+    const subtotal = qty * tarif;
+    tr.querySelector('.biaya-subtotal').innerText = 'Rp ' + subtotal.toLocaleString('id-ID');
+    recalculateAllBiaya();
+}
+
+function recalculateAllBiaya() {
+    let grandTotal = 0;
+    document.querySelectorAll('.biaya-row').forEach(tr => {
+        const qty = parseFloat(tr.querySelector('.biaya-qty').value) || 0;
+        const tarif = parseFloat(tr.querySelector('.biaya-tarif').value) || 0;
+        grandTotal += (qty * tarif);
+    });
+    document.getElementById('grandTotalDisplay').innerText = 'Rp ' + grandTotal.toLocaleString('id-ID');
+    document.getElementById('terbilangDisplay').innerText = angkaKeTerbilang(grandTotal) + ' Rupiah';
+}
+
+// Simple client-side Indonesian number to words
+function angkaKeTerbilang(nilai) {
+    nilai = Math.floor(Math.abs(nilai));
+    const satuan = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+    if (nilai < 12) return satuan[nilai];
+    if (nilai < 20) return angkaKeTerbilang(nilai - 10) + " Belas";
+    if (nilai < 100) return angkaKeTerbilang(Math.floor(nilai / 10)) + " Puluh " + angkaKeTerbilang(nilai % 10);
+    if (nilai < 200) return "Seratus " + angkaKeTerbilang(nilai - 100);
+    if (nilai < 1000) return angkaKeTerbilang(Math.floor(nilai / 100)) + " Ratus " + angkaKeTerbilang(nilai % 100);
+    if (nilai < 2000) return "Seribu " + angkaKeTerbilang(nilai - 1000);
+    if (nilai < 1000000) return angkaKeTerbilang(Math.floor(nilai / 1000)) + " Ribu " + angkaKeTerbilang(nilai % 1000);
+    if (nilai < 1000000000) return angkaKeTerbilang(Math.floor(nilai / 1000000)) + " Juta " + angkaKeTerbilang(nilai % 1000000);
+    if (nilai < 1000000000000) return angkaKeTerbilang(Math.floor(nilai / 1000000000)) + " Miliar " + angkaKeTerbilang(nilai % 1000000000);
+    return "";
+}
+
+// Run on load
+document.addEventListener('DOMContentLoaded', () => {
+    recalculateAllBiaya();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Rincian Biaya Perjalanan Dinas - {{ spj.nomor_sppd }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-100 py-6">
+
+    <!-- Control Bar -->
+    <div class="no-print max-w-4xl mx-auto mb-4 flex items-center justify-between bg-white p-3 rounded-xl shadow border border-slate-200">
+        <div class="flex items-center gap-2 text-xs font-semibold text-slate-700">
+            <a href="{{ url_for('spj_detail', spj_id=spj.id) }}" class="text-blue-600 hover:underline flex items-center gap-1">
+                <i class="ph ph-arrow-left"></i> Kembali ke Detail SPJ
+            </a>
+            <span>•</span>
+            <span class="text-slate-500">Pratinjau Cetak: Rincian Biaya Perjalanan Dinas</span>
+        </div>
+        <div>
+            <button onclick="window.print()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow flex items-center gap-1.5">
+                <i class="ph-bold ph-printer text-base"></i>
+                <span>Cetak / Simpan PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Paper Sheet -->
+    <div class="printable-sheet naskah-dinas">
+        <!-- Kop Surat -->
+        <div class="kop-surat">
+            <div class="kop-instansi-induk">{{ s.instansi_nama_induk }}</div>
+            <div class="kop-instansi-nama">{{ s.instansi_nama }}</div>
+            <div class="kop-alamat">{{ s.instansi_alamat }}</div>
+            <div class="kop-kontak">{{ s.instansi_kontak }}</div>
+        </div>
+
+        <div class="judul-dokumen">RINCIAN BIAYA PERJALANAN DINAS</div>
+        <div class="nomor-dokumen">Lampiran SPPD Nomor : {{ spj.nomor_sppd }}</div>
+
+        <!-- Info Singkat -->
+        <table class="w-full text-xs mb-3" style="line-height: 1.5;">
+            <tr>
+                <td style="width: 140px;">Tujuan Tugas</td>
+                <td style="width: 15px;">:</td>
+                <td style="font-weight: bold;">{{ spj.tujuan }} {% if spj.instansi_tujuan %}({{ spj.instansi_tujuan }}){% endif %}</td>
+            </tr>
+            <tr>
+                <td>Lama Perjalanan</td>
+                <td>:</td>
+                <td>{{ spj.lama_hari }} Hari ({{ format_tanggal(spj.tanggal_berangkat) }} s.d. {{ format_tanggal(spj.tanggal_pulang) }})</td>
+            </tr>
+            <tr>
+                <td>Nama Pelaksana</td>
+                <td>:</td>
+                <td>
+                    {% for p in peserta %}
+                        {{ loop.index }}. {{ p.nama }} ({{ p.jabatan or '-' }}){% if not loop.last %}<br>{% endif %}
+                    {% endfor %}
+                </td>
+            </tr>
+        </table>
+
+        <!-- Tabel Rincian Biaya -->
+        <table class="tabel-dinas">
+            <thead>
+                <tr>
+                    <th style="width: 35px;">No.</th>
+                    <th>Perincian Biaya</th>
+                    <th style="width: 70px;">Vol</th>
+                    <th style="width: 80px;">Satuan</th>
+                    <th style="width: 110px;">Tarif (Rp)</th>
+                    <th style="width: 130px;">Jumlah (Rp)</th>
+                    <th style="width: 120px;">Keterangan</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set ns = namespace(total=0) %}
+                {% for b in biaya %}
+                    {% set ns.total = ns.total + b.total %}
+                    <tr>
+                        <td style="text-align: center;">{{ loop.index }}</td>
+                        <td>
+                            <div style="font-weight: 500;">{{ b.keterangan }}</div>
+                            <div style="font-size: 8.5pt; color: #555; text-transform: capitalize;">Kategori: {{ b.jenis_biaya|replace('_', ' ') }}</div>
+                        </td>
+                        <td style="text-align: center;">{{ b.kuantitas|int if b.kuantitas == b.kuantitas|int else b.kuantitas }}</td>
+                        <td style="text-align: center;">{{ b.satuan }}</td>
+                        <td style="text-align: right;">{{ format_rupiah(b.tarif) }}</td>
+                        <td style="text-align: right; font-weight: bold;">{{ format_rupiah(b.total) }}</td>
+                        <td style="font-size: 8.5pt;">
+                            {% if b.termasuk_riil %}
+                                <em>Daftar Pengeluaran Riil</em>
+                            {% else %}
+                                <em>Kuitansi / Bukti Resmi</em>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr style="font-weight: bold; background-color: #f2f2f2;">
+                    <td colspan="5" style="text-align: center; text-transform: uppercase;">Total Jumlah Perhitungan Biaya</td>
+                    <td style="text-align: right; font-size: 11pt;">{{ format_rupiah(ns.total) }}</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- Terbilang Box -->
+        <div class="terbilang-box text-xs">
+            <strong>Terbilang :</strong> <em>{{ terbilang(ns.total) }}</em>
+        </div>
+
+        <div class="text-xs text-slate-600 mt-2 italic">
+            {{ s.template_rincian_biaya }}
+        </div>
+
+        <!-- Tanda Tangan Pembayaran -->
+        <div class="ttd-box">
+            <div class="ttd-dua-kolom text-xs">
+                <!-- Kiri: Bendahara Pengeluaran -->
+                <div class="ttd-item">
+                    <div>Telah dibayar sejumlah :</div>
+                    <div style="font-weight: bold; margin-bottom: 4px;">{{ format_rupiah(ns.total) }}</div>
+                    <div>Bendahara Pengeluaran,</div>
+                    <div class="ttd-space"></div>
+                    <div class="ttd-nama">{{ s.pejabat_bendahara_nama }}</div>
+                    <div class="ttd-nip">{{ s.pejabat_bendahara_pangkat }}</div>
+                    <div class="ttd-nip">NIP. {{ s.pejabat_bendahara_nip }}</div>
+                </div>
+
+                <!-- Kanan: Yang Menerima -->
+                <div class="ttd-item">
+                    <div>{{ s.instansi_kota }}, {{ format_tanggal(spj.tanggal_pulang) }}</div>
+                    <div>Telah menerima jumlah uang sebesar :</div>
+                    <div style="font-weight: bold; margin-bottom: 4px;">{{ format_rupiah(ns.total) }}</div>
+                    <div>Yang Menerima,</div>
+                    <div class="ttd-space"></div>
+                    <div class="ttd-nama">{{ peserta[0].nama if peserta else s.pejabat_kadis_nama }}</div>
+                    <div class="ttd-nip">{{ peserta[0].pangkat_golongan if peserta else s.pejabat_kadis_pangkat }}</div>
+                    <div class="ttd-nip">NIP. {{ peserta[0].nip if peserta else s.pejabat_kadis_nip }}</div>
+                </div>
+            </div>
+
+            <!-- Bawah Tengah / Kanan: Mengetahui PPK -->
+            <div style="margin-top: 30px; text-align: center; width: 60%; margin-left: auto; margin-right: auto;" class="text-xs">
+                <div>Mengetahui / Menyetujui :</div>
+                <div style="font-weight: bold;">Pejabat Pembuat Komitmen (PPK)</div>
+                <div class="ttd-space"></div>
+                <div class="ttd-nama">{{ s.pejabat_ppk_nama }}</div>
+                <div class="ttd-nip">{{ s.pejabat_ppk_pangkat }}</div>
+                <div class="ttd-nip">NIP. {{ s.pejabat_ppk_nip }}</div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}Pengaturan Template & Dokumen SPJ - e-SPJ Dinas{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+
+    <!-- Header -->
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Pengaturan Template SPJ</h1>
+            <p class="text-xs text-slate-500 mt-1">Sesuaikan kop dinas, pejabat penandatangan, format 2 tipe SPT, dan 4 dokumen pendukung</p>
+        </div>
+        <div>
+            <button type="submit" form="settingsForm" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 active:bg-blue-800 transition shadow-md shadow-blue-500/20">
+                <i class="ph-bold ph-floppy-disk text-base"></i>
+                <span>Simpan Perubahan Pengaturan</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex border-b border-slate-200 mb-6 overflow-x-auto space-x-2 text-xs font-semibold" id="tabsHeader">
+        <button type="button" onclick="switchTab('kop')" id="tab-btn-kop" class="tab-btn px-4 py-3 border-b-2 border-blue-600 text-blue-600 flex items-center gap-2 whitespace-nowrap">
+            <i class="ph-bold ph-buildings text-base"></i>
+            <span>Instansi & Kop Surat</span>
+        </button>
+        <button type="button" onclick="switchTab('pejabat')" id="tab-btn-pejabat" class="tab-btn px-4 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap">
+            <i class="ph-bold ph-identification-card text-base"></i>
+            <span>Pejabat Penandatangan</span>
+        </button>
+        <button type="button" onclick="switchTab('spt')" id="tab-btn-spt" class="tab-btn px-4 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap">
+            <i class="ph-bold ph-file-text text-base"></i>
+            <span>Template SPT (Kadis & Staf)</span>
+        </button>
+        <button type="button" onclick="switchTab('lainnya')" id="tab-btn-lainnya" class="tab-btn px-4 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap">
+            <i class="ph-bold ph-stamp text-base"></i>
+            <span>Template Riil, Kwitansi, Rincian, Laporan</span>
+        </button>
+    </div>
+
+    <form method="POST" id="settingsForm" class="space-y-6">
+
+        <!-- TAB 1: KOP SURAT & INSTANSI -->
+        <div id="tab-content-kop" class="tab-pane space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                <h2 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                    <i class="ph-bold ph-buildings text-blue-600"></i>
+                    Format Kop Surat Instansi
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Pemerintah / Instansi Induk (Baris 1)</label>
+                        <input type="text" name="instansi_nama_induk" value="{{ s.instansi_nama_induk }}" required
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <span class="text-[10px] text-slate-400">Contoh: PEMERINTAH PROVINSI DAERAH KHUSUS JAKARTA</span>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Satuan Kerja / Dinas (Baris 2 Utama)</label>
+                        <input type="text" name="instansi_nama" value="{{ s.instansi_nama }}" required
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold">
+                        <span class="text-[10px] text-slate-400">Contoh: DINAS KOMUNIKASI, INFORMATIKA DAN STATISTIK</span>
+                    </div>
+
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Kantor Lengkap</label>
+                        <input type="text" name="instansi_alamat" value="{{ s.instansi_alamat }}" required
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kontak, Email, Web & Kode Pos</label>
+                        <input type="text" name="instansi_kontak" value="{{ s.instansi_kontak }}"
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kota / Tempat Kedudukan Kantor</label>
+                        <input type="text" name="instansi_kota" value="{{ s.instansi_kota }}" required
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Preview Kop -->
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Simulasi Tampilan Kop Surat:</div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center font-serif">
+                        <div class="text-sm font-bold tracking-wider uppercase text-slate-800">{{ s.instansi_nama_induk }}</div>
+                        <div class="text-base font-extrabold tracking-wider uppercase text-slate-900">{{ s.instansi_nama }}</div>
+                        <div class="text-xs text-slate-600">{{ s.instansi_alamat }}</div>
+                        <div class="text-[11px] text-slate-500 italic">{{ s.instansi_kontak }}</div>
+                        <div class="w-full border-b-2 border-t border-slate-900 h-1 mt-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: PEJABAT PENANDATANGAN -->
+        <div id="tab-content-pejabat" class="tab-pane hidden space-y-6">
+            <!-- 1. Kepala Dinas -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                <h2 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                    1. Pejabat Kepala Dinas (Penandatangan SPT Staf / Pelaksana SPT Kadis)
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap & Gelar *</label>
+                        <input type="text" name="pejabat_kadis_nama" value="{{ s.pejabat_kadis_nama }}" required
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">NIP</label>
+                        <input type="text" name="pejabat_kadis_nip" value="{{ s.pejabat_kadis_nip }}"
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Pangkat / Golongan</label>
+                        <input type="text" name="pejabat_kadis_pangkat" value="{{ s.pejabat_kadis_pangkat }}"
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Jabatan Resmi</label>
+                        <input type="text" name="pejabat_kadis_jabatan" value="{{ s.pejabat_kadis_jabatan }}"
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. PPK -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                <h2 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                    2. Pejabat Pembuat Komitmen (PPK) (Penandatangan SPPD, Kwitansi & Rincian)
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap & Gelar *</label>
+                        <input type="text" name="pejabat_ppk_nama" value="{{ s.pejabat_ppk_nama }}" required
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">NIP</label>
+                        <input type="text" name="pejabat_ppk_nip" value="{{ s.pejabat_ppk_nip }}"
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Pangkat / Golongan</label>
+                        <input type="text" name="pejabat_ppk_pangkat" value="{{ s.pejabat_ppk_pangkat }}"
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Jabatan Resmi</label>
+                        <input type="text" name="pejabat_ppk_jabatan" value="{{ s.pejabat_ppk_jabatan }}"
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Bendahara Pengeluaran -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                <h2 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-600"></span>
+                    3. Bendahara Pengeluaran (Penandatangan Kwitansi & Rincian Pembayaran)
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap & Gelar *</label>
+                        <input type="text" name="pejabat_bendahara_nama" value="{{ s.pejabat_bendahara_nama }}" required
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">NIP</label>
+                        <input type="text" name="pejabat_bendahara_nip" value="{{ s.pejabat_bendahara_nip }}"
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Pangkat / Golongan</label>
+                        <input type="text" name="pejabat_bendahara_pangkat" value="{{ s.pejabat_bendahara_pangkat }}"
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Jabatan Resmi</label>
+                        <input type="text" name="pejabat_bendahara_jabatan" value="{{ s.pejabat_bendahara_jabatan }}"
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: TEMPLATE SPT (2 TIPE) -->
+        <div id="tab-content-spt" class="tab-pane hidden space-y-6">
+            <!-- Tipe 1: SPT Kepala Dinas -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div>
+                        <h2 class="text-sm font-bold text-indigo-900 flex items-center gap-2">
+                            <i class="ph-bold ph-crown text-indigo-600 text-lg"></i>
+                            Template SPT Tipe 1: Surat Perintah Tugas untuk Kepala Dinas
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Digunakan ketika Kepala Dinas yang melaksanakan perjalanan dinas (berdasarkan disposisi Bupati/Walikota/Sekda)</p>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Tipe Kadis</span>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Standar Dasar Penugasan / Konsiderans SPT Kepala Dinas</label>
+                    <textarea name="template_spt_kadis" rows="3"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-slate-800">{{ s.template_spt_kadis }}</textarea>
+                    <span class="text-[11px] text-slate-400">Teks ini akan menjadi klausul dasar pertimbangan ("Dasar : ...") pada cetakan SPT Kepala Dinas.</span>
+                </div>
+            </div>
+
+            <!-- Tipe 2: SPT Staf -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div>
+                        <h2 class="text-sm font-bold text-amber-900 flex items-center gap-2">
+                            <i class="ph-bold ph-users text-amber-600 text-lg"></i>
+                            Template SPT Tipe 2: Surat Perintah Tugas untuk Staf / Pejabat di Bawah Kadis
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Digunakan untuk penugasan sekretaris, kepala bidang, pejabat fungsional, dan staf yang ditandatangani oleh Kadis</p>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">Tipe Staf</span>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Standar Dasar Penugasan / Konsiderans SPT Staf</label>
+                    <textarea name="template_spt_staf" rows="3"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-slate-800">{{ s.template_spt_staf }}</textarea>
+                    <span class="text-[11px] text-slate-400">Teks ini akan menjadi klausul dasar pertimbangan ("Dasar : ...") pada cetakan SPT Staf.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: TEMPLATE DOKUMEN LAINNYA -->
+        <div id="tab-content-lainnya" class="tab-pane hidden space-y-6">
+
+            <!-- 1. Pengeluaran Riil -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                <h2 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center justify-center">1</span>
+                    Setting Template: Daftar Pengeluaran Riil
+                </h2>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Teks Pernyataan Tanggung Jawab Mutlak (SPTJM Riil)</label>
+                    <textarea name="template_pengeluaran_riil" rows="4"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-slate-800">{{ s.template_pengeluaran_riil }}</textarea>
+                    <span class="text-[11px] text-slate-400">Klausul ini menjamin legalitas pengeluaran taksi, transportasi darat non-tiket resmi yang tidak memiliki kwitansi pihak ketiga.</span>
+                </div>
+            </div>
+
+            <!-- 2. Kwitansi -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                <h2 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-blue-100 text-blue-800 text-xs font-bold flex items-center justify-center">2</span>
+                    Setting Template: Kwitansi Pembayaran
+                </h2>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Uraian / Redaksi Standar Untuk Pembayaran Pada Kwitansi</label>
+                    <textarea name="template_kwitansi" rows="3"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-slate-800">{{ s.template_kwitansi }}</textarea>
+                </div>
+            </div>
+
+            <!-- 3. Rincian Biaya -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                <h2 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-purple-100 text-purple-800 text-xs font-bold flex items-center justify-center">3</span>
+                    Setting Template: Rincian Biaya Perjalanan Dinas
+                </h2>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan Tambahan & Dasar Perhitungan Standar Biaya Masukan (SBM)</label>
+                    <textarea name="template_rincian_biaya" rows="3"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono text-slate-800">{{ s.template_rincian_biaya }}</textarea>
+                </div>
+            </div>
+
+            <!-- 4. Laporan Perjalanan Dinas -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                <h2 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-amber-100 text-amber-800 text-xs font-bold flex items-center justify-center">4</span>
+                    Setting Template: Laporan Perjalanan Dinas (Sistematika Bab Standar)
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Bab I. Pendahuluan (Default)</label>
+                        <textarea name="laporan_pendahuluan" rows="3" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl">{{ laporan_defaults.pendahuluan }}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Bab II. Kegiatan yang Dilaksanakan (Default)</label>
+                        <textarea name="laporan_kegiatan" rows="3" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl">{{ laporan_defaults.kegiatan }}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Bab III. Hasil yang Dicapai (Default)</label>
+                        <textarea name="laporan_hasil" rows="3" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl">{{ laporan_defaults.hasil }}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Bab IV. Kesimpulan dan Rekomendasi (Default)</label>
+                        <textarea name="laporan_kesimpulan" rows="3" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl">{{ laporan_defaults.kesimpulan }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Sticky Footer Save -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+            <div class="text-xs text-slate-500">
+                Semua perubahan template akan langsung berlaku pada pembuatan dan pencetakan dokumen SPJ.
+            </div>
+            <button type="submit" class="px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 active:bg-blue-800 transition shadow-md shadow-blue-500/20 flex items-center gap-2">
+                <i class="ph-bold ph-floppy-disk text-base"></i>
+                <span>Simpan Pengaturan</span>
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+function switchTab(tabId) {
+    // Hide all contents
+    document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+    // Reset all tab button styles
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('border-blue-600', 'text-blue-600');
+        btn.classList.add('border-transparent', 'text-slate-500');
+    });
+
+    // Show active
+    document.getElementById('tab-content-' + tabId).classList.remove('hidden');
+    const activeBtn = document.getElementById('tab-btn-' + tabId);
+    activeBtn.classList.remove('border-transparent', 'text-slate-500');
+    activeBtn.classList.add('border-blue-600', 'text-blue-600');
+}
+</script>
+{% endblock %}

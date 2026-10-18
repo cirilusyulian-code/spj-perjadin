@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Daftar SPJ Perjalanan Dinas - e-SPJ Dinas{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Daftar Dokumen SPJ</h1>
+            <p class="text-xs text-slate-500 mt-1">Seluruh data Surat Perintah Tugas dan Surat Perintah Perjalanan Dinas</p>
+        </div>
+        <div>
+            <a href="{{ url_for('spj_create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 active:bg-blue-800 transition shadow-md shadow-blue-500/20">
+                <i class="ph-bold ph-plus text-base"></i>
+                <span>Buat SPJ Baru</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters & Search Bar -->
+    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm mb-6">
+        <form method="GET" action="{{ url_for('spj_list') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="relative">
+                <input type="text" name="q" value="{{ query_q }}" placeholder="Cari nomor, tujuan, maksud..." 
+                    class="w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <i class="ph ph-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-sm"></i>
+            </div>
+
+            <div>
+                <select name="jenis" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                    <option value="">Semua Tipe SPT</option>
+                    <option value="kadis" {% if query_jenis == 'kadis' %}selected{% endif %}>SPT Kepala Dinas</option>
+                    <option value="staf" {% if query_jenis == 'staf' %}selected{% endif %}>SPT Staf / Pejabat</option>
+                </select>
+            </div>
+
+            <div>
+                <select name="status" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                    <option value="">Semua Status</option>
+                    <option value="Draft" {% if query_status == 'Draft' %}selected{% endif %}>Draft</option>
+                    <option value="Disetujui" {% if query_status == 'Disetujui' %}selected{% endif %}>Disetujui</option>
+                    <option value="Selesai" {% if query_status == 'Selesai' %}selected{% endif %}>Selesai</option>
+                </select>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button type="submit" class="flex-1 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-slate-800 transition">
+                    Filter
+                </button>
+                {% if query_q or query_jenis or query_status %}
+                <a href="{{ url_for('spj_list') }}" class="px-3 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-medium hover:bg-slate-200 transition">
+                    Reset
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Data Table -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-slate-50 border-b border-slate-100 text-[11px] uppercase font-bold text-slate-500 tracking-wider">
+                    <tr>
+                        <th class="py-3 px-4">No. SPT / SPPD</th>
+                        <th class="py-3 px-4">Tipe Penugasan</th>
+                        <th class="py-3 px-4">Tujuan & Maksud Perjalanan</th>
+                        <th class="py-3 px-4">Pelaksana</th>
+                        <th class="py-3 px-4">Jadwal Perjadin</th>
+                        <th class="py-3 px-4 text-right">Total Anggaran</th>
+                        <th class="py-3 px-4 text-center">Status</th>
+                        <th class="py-3 px-4 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for item in spj_items %}
+                    <tr class="hover:bg-blue-50/30 transition">
+                        <td class="py-4 px-4 whitespace-nowrap">
+                            <div class="font-bold text-slate-900 text-xs">{{ item.nomor_spt }}</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">{{ item.nomor_sppd }}</div>
+                        </td>
+                        <td class="py-4 px-4 whitespace-nowrap">
+                            {% if item.jenis_spt == 'kadis' %}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                    <i class="ph-bold ph-crown text-[11px]"></i> Kepala Dinas
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                    <i class="ph-bold ph-users text-[11px]"></i> Staf
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="py-4 px-4 max-w-sm">
+                            <div class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                                <i class="ph-fill ph-map-pin text-rose-500"></i>
+                                <span>{{ item.tujuan }}</span>
+                            </div>
+                            <div class="text-xs text-slate-500 mt-1 line-clamp-2">{{ item.maksud }}</div>
+                        </td>
+                        <td class="py-4 px-4 whitespace-nowrap">
+                            <div class="text-xs font-semibold text-slate-700">{{ item.nama_peserta_pertama or '-' }}</div>
+                            {% if item.jumlah_peserta > 1 %}
+                            <div class="text-[11px] text-slate-400 mt-0.5">+ {{ item.jumlah_peserta - 1 }} orang lainnya</div>
+                            {% endif %}
+                        </td>
+                        <td class="py-4 px-4 whitespace-nowrap">
+                            <div class="text-xs text-slate-800 font-medium">{{ format_tanggal(item.tanggal_berangkat) }}</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">Durasi {{ item.lama_hari }} Hari (sd {{ format_tanggal(item.tanggal_pulang) }})</div>
+                        </td>
+                        <td class="py-4 px-4 text-right whitespace-nowrap">
+                            <div class="font-extrabold text-xs text-slate-900">{{ format_rupiah(item.total_biaya) }}</div>
+                        </td>
+                        <td class="py-4 px-4 text-center whitespace-nowrap">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold 
+                                {% if item.status == 'Disetujui' %}bg-emerald-50 text-emerald-700 border border-emerald-200
+                                {% elif item.status == 'Selesai' %}bg-blue-50 text-blue-700 border border-blue-200
+                                {% else %}bg-slate-100 text-slate-600 border border-slate-200{% endif %}">
+                                {{ item.status }}
+                            </span>
+                        </td>
+                        <td class="py-4 px-4 text-center whitespace-nowrap">
+                            <div class="flex items-center justify-center gap-1.5">
+                                <a href="{{ url_for('spj_detail', spj_id=item.id) }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-xs font-medium shadow-sm transition" title="Lihat & Cetak 5 Dokumen">
+                                    <i class="ph-bold ph-printer"></i>
+                                    <span>Dokumen</span>
+                                </a>
+                                <a href="{{ url_for('spj_edit', spj_id=item.id) }}" class="p-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition" title="Edit">
+                                    <i class="ph-bold ph-pencil-simple text-sm"></i>
+                                </a>
+                                <form action="{{ url_for('spj_delete', spj_id=item.id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data SPJ ini?');" class="inline">
+                                    <button type="submit" class="p-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 transition" title="Hapus">
+                                        <i class="ph-bold ph-trash text-sm"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="py-12 text-center text-slate-400">
+                            <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-xl mb-2">
+                                <i class="ph ph-folder-open"></i>
+                            </div>
+                            <div class="text-sm font-medium text-slate-600">Tidak ada data SPJ ditemukan</div>
+                            <div class="text-xs text-slate-400 mt-1">Coba sesuaikan kata kunci pencarian atau buat data baru.</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

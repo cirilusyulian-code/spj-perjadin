@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Aplikasi SPJ Perjalanan Dinas{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f5ff',
+                            100: '#e0ecff',
+                            600: '#1e40af',
+                            700: '#1d4ed8',
+                            800: '#1e3a8a',
+                            900: '#0f172a',
+                        },
+                        gold: {
+                            500: '#eab308',
+                            600: '#ca8a04',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}">
+    <!-- Phosphor Icons for crisp modern UI icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col font-sans">
+
+    {% if session.get('user_id') %}
+    <!-- Navbar for Logged In User -->
+    <header class="no-print bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand / Logo -->
+                <div class="flex items-center gap-3">
+                    <a href="{{ url_for('dashboard') }}" class="flex items-center gap-3 group">
+                        <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-inner group-hover:bg-blue-500 transition">
+                            <i class="ph-bold ph-airplane-tilt"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-base tracking-wide flex items-center gap-2">
+                                <span>e-SPJ Dinas</span>
+                                <span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded font-mono border border-blue-500/30">v2.0</span>
+                            </div>
+                            <div class="text-xs text-slate-400">Sistem Dokumen Pertanggungjawaban Perjadin</div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="hidden md:flex items-center space-x-1">
+                    <a href="{{ url_for('dashboard') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 {% if request.endpoint == 'dashboard' %}bg-blue-600 text-white{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
+                        <i class="ph ph-squares-four text-base"></i>
+                        Dashboard
+                    </a>
+                    <a href="{{ url_for('spj_list') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 {% if request.endpoint in ['spj_list', 'spj_detail', 'spj_edit'] %}bg-blue-600 text-white{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
+                        <i class="ph ph-files text-base"></i>
+                        Data SPJ
+                    </a>
+                    <a href="{{ url_for('spj_create') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 {% if request.endpoint == 'spj_create' %}bg-blue-600 text-white{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
+                        <i class="ph ph-plus-circle text-base"></i>
+                        Buat SPJ Baru
+                    </a>
+                    <a href="{{ url_for('settings_view') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 {% if request.endpoint == 'settings_view' %}bg-blue-600 text-white{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
+                        <i class="ph ph-gear text-base"></i>
+                        Pengaturan Template
+                    </a>
+                </nav>
+
+                <!-- User profile & Logout -->
+                <div class="flex items-center gap-3">
+                    <div class="text-right hidden sm:block">
+                        <div class="text-xs font-semibold text-slate-200">{{ session.get('full_name', 'Admin') }}</div>
+                        <div class="text-[11px] text-blue-400 capitalize">{{ session.get('role', 'Operator') }}</div>
+                    </div>
+                    <a href="{{ url_for('logout') }}" title="Keluar dari Aplikasi" class="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition">
+                        <i class="ph-bold ph-sign-out text-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    {% endif %}
+
+    <!-- Flash Messages Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 no-print w-full">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="mb-4 p-4 rounded-xl flex items-center justify-between text-sm shadow-sm border 
+                    {% if category == 'success' %}bg-emerald-50 text-emerald-800 border-emerald-200
+                    {% elif category == 'danger' or category == 'error' %}bg-rose-50 text-rose-800 border-rose-200
+                    {% elif category == 'warning' %}bg-amber-50 text-amber-800 border-amber-200
+                    {% else %}bg-blue-50 text-blue-800 border-blue-200{% endif %}">
+                    <div class="flex items-center gap-2">
+                        {% if category == 'success' %}
+                            <i class="ph-fill ph-check-circle text-lg text-emerald-600"></i>
+                        {% elif category == 'danger' or category == 'error' %}
+                            <i class="ph-fill ph-warning-circle text-lg text-rose-600"></i>
+                        {% else %}
+                            <i class="ph-fill ph-info text-lg text-blue-600"></i>
+                        {% endif %}
+                        <span>{{ message }}</span>
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-600 text-lg">
+                        <i class="ph ph-x"></i>
+                    </button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1 w-full pb-16">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="no-print bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div>
+                &copy; 2026 Aplikasi Pembuatan SPJ Perjalanan Dinas Daerah. Template Standar PMK & Permendagri.
+            </div>
+            <div class="flex items-center gap-3 text-slate-400">
+                <span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Server Aktif</span>
+                <span>•</span>
+                <span>Ubuntu VPS Ready</span>
+            </div>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

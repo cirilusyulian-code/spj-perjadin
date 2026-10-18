@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Detail & Cetak Dokumen SPJ - {{ spj.nomor_spt }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+
+    <!-- Back & Header -->
+    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-2 text-xs text-blue-600 font-semibold uppercase tracking-wider mb-1">
+                <a href="{{ url_for('spj_list') }}" class="hover:underline flex items-center gap-1">
+                    <i class="ph ph-arrow-left"></i> Kembali ke Daftar SPJ
+                </a>
+            </div>
+            <div class="flex items-center gap-3">
+                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">{{ spj.nomor_spt }}</h1>
+                {% if spj.jenis_spt == 'kadis' %}
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                        <i class="ph-bold ph-crown text-xs"></i> SPT Kepala Dinas
+                    </span>
+                {% else %}
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                        <i class="ph-bold ph-users text-xs"></i> SPT Staf
+                    </span>
+                {% endif %}
+            </div>
+            <p class="text-xs text-slate-500 mt-1">SPPD: <strong>{{ spj.nomor_sppd }}</strong> • Tujuan: <strong>{{ spj.tujuan }}</strong></p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+            <a href="{{ url_for('spj_edit', spj_id=spj.id) }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-bold transition shadow-sm">
+                <i class="ph-bold ph-pencil-simple text-sm"></i>
+                <span>Edit SPJ</span>
+            </a>
+            <a href="{{ url_for('cetak_semua', spj_id=spj.id) }}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 text-xs font-bold shadow-md shadow-blue-500/20 transition">
+                <i class="ph-bold ph-printer text-base"></i>
+                <span>Cetak 1 Bundel Lengkap</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Info Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-[10px] font-bold uppercase text-slate-400">Total Biaya SPJ</div>
+            <div class="text-lg font-black text-emerald-600 mt-0.5">{{ format_rupiah(total_biaya) }}</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">{{ biaya|length }} Item Pengeluaran</div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-[10px] font-bold uppercase text-slate-400">Jadwal Perjadin</div>
+            <div class="text-sm font-bold text-slate-800 mt-0.5">{{ spj.lama_hari }} Hari ({{ format_tanggal(spj.tanggal_berangkat) }})</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">s.d. {{ format_tanggal(spj.tanggal_pulang) }}</div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-[10px] font-bold uppercase text-slate-400">Jumlah Pelaksana</div>
+            <div class="text-sm font-bold text-slate-800 mt-0.5">{{ peserta|length }} Orang Pegawai</div>
+            <div class="text-[11px] text-slate-400 mt-0.5 truncate">{{ peserta[0].nama if peserta else '-' }}</div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-[10px] font-bold uppercase text-slate-400">Transportasi</div>
+            <div class="text-sm font-bold text-slate-800 mt-0.5">{{ spj.angkutan }}</div>
+            <div class="text-[11px] text-slate-400 mt-0.5 truncate">{{ spj.mata_anggaran }}</div>
+        </div>
+    </div>
+
+    <!-- 5 Documents Navigation Bar -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
+        <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <i class="ph-bold ph-files text-blue-600 text-base"></i>
+                    Pilih Dokumen untuk Dilihat & Dicetak
+                </h3>
+                <p class="text-[11px] text-slate-500">Klik salah satu dokumen di bawah untuk memuat tampilan cetak</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="printCurrentTab()" class="px-3.5 py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold shadow flex items-center gap-1.5 transition">
+                    <i class="ph-bold ph-printer"></i>
+                    <span>Cetak Dokumen Terpilih</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Document Tab Buttons -->
+        <div class="p-3 bg-white border-b border-slate-100 flex flex-wrap gap-2">
+            <button onclick="loadDoc('{{ url_for('cetak_spt', spj_id=spj.id) }}', this)" class="doc-tab-btn active px-3 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white flex items-center gap-1.5 transition shadow-sm">
+                <i class="ph-bold ph-file-text"></i>
+                <span>1. SPT ({% if spj.jenis_spt == 'kadis' %}Kadis{% else %}Staf{% endif %})</span>
+            </button>
+            <button onclick="loadDoc('{{ url_for('cetak_pengeluaran_riil', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition">
+                <i class="ph-bold ph-receipt"></i>
+                <span>2. Pengeluaran Riil</span>
+            </button>
+            <button onclick="loadDoc('{{ url_for('cetak_kwitansi', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition">
+                <i class="ph-bold ph-money"></i>
+                <span>3. Kwitansi</span>
+            </button>
+            <button onclick="loadDoc('{{ url_for('cetak_rincian_biaya', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition">
+                <i class="ph-bold ph-table"></i>
+                <span>4. Rincian Biaya</span>
+            </button>
+            <button onclick="loadDoc('{{ url_for('cetak_laporan', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition">
+                <i class="ph-bold ph-newspaper-clipping"></i>
+                <span>5. Laporan Perjadin</span>
+            </button>
+        </div>
+
+        <!-- Embedded Interactive Preview Iframe -->
+        <div class="p-4 bg-slate-100 flex justify-center">
+            <iframe id="docFrame" src="{{ url_for('cetak_spt', spj_id=spj.id) }}" class="w-full h-[850px] bg-white rounded-xl shadow-inner border border-slate-300"></iframe>
+        </div>
+    </div>
+
+    <!-- Edit Laporan Form -->
+    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 mb-8">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <i class="ph-bold ph-note-pencil text-amber-600 text-base"></i>
+                    Kustomisasi Narasi Laporan Perjalanan Dinas Ini
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Ubah bab kegiatan, hasil, dan kesimpulan khusus untuk kegiatan penugasan ini</p>
+            </div>
+            <button type="submit" form="laporanForm" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+                <i class="ph-bold ph-floppy-disk"></i>
+                <span>Simpan Narasi Laporan</span>
+            </button>
+        </div>
+
+        <form method="POST" action="{{ url_for('update_laporan', spj_id=spj.id) }}" id="laporanForm" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1">Bab IV. Kegiatan yang Dilaksanakan</label>
+                <textarea name="kegiatan_dilaksanakan" rows="4" class="w-full p-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">{{ laporan.kegiatan_dilaksanakan if laporan and laporan.kegiatan_dilaksanakan else laporan_defaults.kegiatan }}</textarea>
+            </div>
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1">Bab V. Hasil yang Dicapai</label>
+                <textarea name="hasil_kegiatan" rows="4" class="w-full p-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">{{ laporan.hasil_kegiatan if laporan and laporan.hasil_kegiatan else laporan_defaults.hasil }}</textarea>
+            </div>
+            <div class="md:col-span-2">
+                <label class="block font-semibold text-slate-700 mb-1">Bab VI. Kesimpulan dan Saran / Rekomendasi</label>
+                <textarea name="kesimpulan_saran" rows="3" class="w-full p-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">{{ laporan.kesimpulan_saran if laporan and laporan.kesimpulan_saran else laporan_defaults.kesimpulan }}</textarea>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<script>
+function loadDoc(url, btn) {
+    document.getElementById('docFrame').src = url;
+    document.querySelectorAll('.doc-tab-btn').forEach(b => {
+        b.classList.remove('bg-blue-600', 'text-white');
+        b.classList.add('bg-slate-100', 'text-slate-700');
+    });
+    btn.classList.remove('bg-slate-100', 'text-slate-700');
+    btn.classList.add('bg-blue-600', 'text-white');
+}
+
+function printCurrentTab() {
+    const frame = document.getElementById('docFrame');
+    frame.contentWindow.focus();
+    frame.contentWindow.print();
+}
+</script>
+{% endblock %}

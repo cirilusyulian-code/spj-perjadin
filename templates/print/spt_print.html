@@ -29,12 +29,7 @@
     <!-- Printable Paper Sheet (A4) -->
     <div class="printable-sheet naskah-dinas">
         <!-- Kop Surat -->
-        <div class="kop-surat">
-            <div class="kop-instansi-induk">{{ s.instansi_nama_induk }}</div>
-            <div class="kop-instansi-nama">{{ s.instansi_nama }}</div>
-            <div class="kop-alamat">{{ s.instansi_alamat }}</div>
-            <div class="kop-kontak">{{ s.instansi_kontak }}</div>
-        </div>
+        {% include 'print/_kop_surat.html' %}
 
         <!-- Judul SPT -->
         <div class="judul-dokumen">SURAT PERINTAH TUGAS</div>

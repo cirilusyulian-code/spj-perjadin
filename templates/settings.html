@@ -12,7 +12,7 @@
             <p class="text-xs text-slate-500 mt-1">Sesuaikan kop dinas, pejabat penandatangan, format 2 tipe SPT, dan 4 dokumen pendukung</p>
         </div>
         <div>
-            <button type="submit" form="settingsForm" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 active:bg-blue-800 transition shadow-md shadow-blue-500/20">
+            <button type="submit" form="settingsForm" id="topSaveBtn" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 active:bg-blue-800 transition shadow-md shadow-blue-500/20">
                 <i class="ph-bold ph-floppy-disk text-base"></i>
                 <span>Simpan Perubahan Pengaturan</span>
             </button>
@@ -37,64 +37,318 @@
             <i class="ph-bold ph-stamp text-base"></i>
             <span>Template Riil, Kwitansi, Rincian, Laporan</span>
         </button>
+        <button type="button" onclick="switchTab('pegawai')" id="tab-btn-pegawai" class="tab-btn px-4 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap">
+            <i class="ph-bold ph-users text-base"></i>
+            <span>Master Pegawai</span>
+            <span class="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700" id="badgeTotalPegawai">{{ pegawai_list|length }}</span>
+        </button>
     </div>
 
-    <form method="POST" id="settingsForm" class="space-y-6">
+    <form method="POST" id="settingsForm" enctype="multipart/form-data" class="space-y-6">
 
-        <!-- TAB 1: KOP SURAT & INSTANSI -->
+        <!-- TAB 1: KOP SURAT & INSTANSI (DUA JENIS KOP: KADIS & STAF) -->
         <div id="tab-content-kop" class="tab-pane space-y-6">
-            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                <h2 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-                    <i class="ph-bold ph-buildings text-blue-600"></i>
-                    Format Kop Surat Instansi
-                </h2>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Sub-tab Switcher: Kop Kadis vs Kop Staf -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200/80 shadow-xs">
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="switchKopType('kadis')" id="kop-type-btn-kadis"
+                        class="kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-blue-600 text-white shadow-sm shadow-blue-500/20">
+                        <i class="ph-bold ph-crown text-amber-300 text-sm"></i>
+                        <span>Kop Surat Kepala Dinas</span>
+                    </button>
+                    <button type="button" onclick="switchKopType('staf')" id="kop-type-btn-staf"
+                        class="kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-600">
+                        <i class="ph-bold ph-users text-blue-600 text-sm"></i>
+                        <span>Kop Surat Staf & Pelaksana</span>
+                    </button>
+                </div>
+                <div class="text-[11px] text-slate-500 flex items-center gap-1.5 px-2">
+                    <i class="ph-bold ph-info text-blue-500 text-xs"></i>
+                    <span>Kop surat otomatis disesuaikan berdasarkan jenis SPT/SPJ saat cetak dokumen.</span>
+                </div>
+            </div>
+
+            <!-- SECTION A: KOP SURAT KEPALA DINAS -->
+            <div id="kop-section-kadis" class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-2">
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                            <i class="ph-bold ph-crown text-amber-500 text-base"></i>
+                            <span>Format Kop Surat Pejabat Kepala Dinas</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Digunakan pada cetak SPT, SPD, dan berkas dinas khusus perjalanan dinas Kepala Dinas.</p>
+                    </div>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                        Khusus Kepala Dinas
+                    </span>
+                </div>
+
+                <!-- Input Gambar Logo Kop Kadis -->
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-semibold text-slate-700">Gambar Logo Kop Surat Kepala Dinas (Lambang Garuda / Pemda)</label>
+                    <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center gap-4">
+                        <!-- Preview Thumbnail Box -->
+                        <div class="relative flex-shrink-0 w-24 h-24 bg-white rounded-xl border border-slate-300 shadow-xs flex items-center justify-center p-2 overflow-hidden">
+                            <img id="img_preview_box_kadis" src="{{ s.kop_kadis_logo }}" alt="Logo Kadis"
+                                class="max-w-full max-h-full object-contain {% if not s.kop_kadis_logo %}hidden{% endif %}">
+                            <div id="img_placeholder_box_kadis" class="text-center text-slate-300 {% if s.kop_kadis_logo %}hidden{% endif %}">
+                                <i class="ph-bold ph-image text-3xl"></i>
+                                <span class="block text-[9px] text-slate-400 font-medium mt-1">Belum ada logo</span>
+                            </div>
+                        </div>
+
+                        <!-- Upload Actions & Instructions -->
+                        <div class="flex-1 w-full space-y-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <label class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 hover:border-blue-500 hover:text-blue-600 rounded-xl text-xs font-semibold text-slate-700 shadow-2xs transition">
+                                    <i class="ph-bold ph-upload-simple text-blue-600 text-sm"></i>
+                                    <span>Pilih Gambar Logo Kadis</span>
+                                    <input type="file" name="kop_kadis_logo" id="input_file_kadis" accept="image/png, image/jpeg, image/jpg" class="hidden" onchange="previewKopLogo('kadis', this)">
+                                </label>
+
+                                <button type="button" onclick="removeKopLogo('kadis')" id="btn_remove_kadis" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-semibold transition {% if not s.kop_kadis_logo %}hidden{% endif %}">
+                                    <i class="ph-bold ph-trash text-sm"></i>
+                                    <span>Hapus Gambar</span>
+                                </button>
+                                <input type="hidden" name="hapus_kop_kadis_logo" id="hapus_kop_kadis_logo" value="0">
+                            </div>
+                            <p class="text-[11px] text-slate-500 leading-relaxed">
+                                Format yang didukung: <span class="font-semibold text-slate-700">PNG</span>, <span class="font-semibold text-slate-700">JPG</span>, atau <span class="font-semibold text-slate-700">JPEG</span>. Gambar akan ditempatkan di <strong class="text-slate-800">sebelah kiri tulisan</strong> dan <strong class="text-slate-800">di atas garis</strong> secara proporsional. Disarankan gambar berlatar transparan.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulir Teks Kop Kadis -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Pemerintah / Instansi Induk (Baris 1)</label>
-                        <input type="text" name="instansi_nama_induk" value="{{ s.instansi_nama_induk }}" required
-                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                        <span class="text-[10px] text-slate-400">Contoh: PEMERINTAH PROVINSI DAERAH KHUSUS JAKARTA</span>
+                        <input type="text" name="kop_kadis_instansi_induk" id="input_kadis_induk" value="{{ s.kop_kadis_instansi_induk or s.instansi_nama_induk }}" required
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            oninput="updateKopSimulasi('kadis')">
+                        <span class="text-[10px] text-slate-400">Contoh: PEMERINTAH DAERAH PROVINSI / KABUPATEN</span>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Satuan Kerja / Dinas (Baris 2 Utama)</label>
-                        <input type="text" name="instansi_nama" value="{{ s.instansi_nama }}" required
-                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold">
-                        <span class="text-[10px] text-slate-400">Contoh: DINAS KOMUNIKASI, INFORMATIKA DAN STATISTIK</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Satuan Kerja / Jabatan (Baris 2 Utama)</label>
+                        <input type="text" name="kop_kadis_instansi_nama" id="input_kadis_nama" value="{{ s.kop_kadis_instansi_nama or s.instansi_nama }}" required
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold"
+                            oninput="updateKopSimulasi('kadis')">
+                        <span class="text-[10px] text-slate-400">Contoh: DINAS KOMUNIKASI DAN INFORMATIKA</span>
                     </div>
 
                     <div class="col-span-1 md:col-span-2">
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Kantor Lengkap</label>
-                        <input type="text" name="instansi_alamat" value="{{ s.instansi_alamat }}" required
-                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <input type="text" name="kop_kadis_alamat" id="input_kadis_alamat" value="{{ s.kop_kadis_alamat or s.instansi_alamat }}" required
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            oninput="updateKopSimulasi('kadis')">
                     </div>
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Kontak, Email, Web & Kode Pos</label>
-                        <input type="text" name="instansi_kontak" value="{{ s.instansi_kontak }}"
-                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <input type="text" name="kop_kadis_kontak" id="input_kadis_kontak" value="{{ s.kop_kadis_kontak or s.instansi_kontak }}"
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            oninput="updateKopSimulasi('kadis')">
                     </div>
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Kota / Tempat Kedudukan Kantor</label>
-                        <input type="text" name="instansi_kota" value="{{ s.instansi_kota }}" required
+                        <input type="text" name="kop_kadis_kota" id="input_kadis_kota" value="{{ s.kop_kadis_kota or s.instansi_kota }}" required
                             class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
                     </div>
                 </div>
 
-                <!-- Preview Kop -->
+                <!-- Preview Kop Kadis Real-Time -->
                 <div class="mt-4 pt-4 border-t border-slate-100">
-                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">Simulasi Tampilan Kop Surat:</div>
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-center font-serif">
-                        <div class="text-sm font-bold tracking-wider uppercase text-slate-800">{{ s.instansi_nama_induk }}</div>
-                        <div class="text-base font-extrabold tracking-wider uppercase text-slate-900">{{ s.instansi_nama }}</div>
-                        <div class="text-xs text-slate-600">{{ s.instansi_alamat }}</div>
-                        <div class="text-[11px] text-slate-500 italic">{{ s.instansi_kontak }}</div>
-                        <div class="w-full border-b-2 border-t border-slate-900 h-1 mt-2"></div>
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                            <i class="ph-bold ph-eye text-blue-600 text-sm"></i>
+                            <span>Simulasi Tampilan Kop Surat Kepala Dinas:</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-md font-medium">Standar Tata Naskah Dinas</span>
+                    </div>
+
+                    <div class="p-5 bg-white rounded-xl border border-slate-300 shadow-xs font-serif text-slate-900 transition-all">
+                        <table class="w-full border-collapse" style="border: none;">
+                            <tr>
+                                <!-- Kolom Gambar Logo (Kiri, Proporsional) -->
+                                <td id="preview_cell_logo_kadis" style="width: 85px; vertical-align: middle; text-align: center; padding-right: 12px; {% if not s.kop_kadis_logo %}display: none;{% endif %}">
+                                    <img id="preview_simulasi_logo_kadis" src="{{ s.kop_kadis_logo }}" alt="Logo Kadis"
+                                        class="max-h-[75px] max-w-[75px] w-auto h-auto object-contain mx-auto block {% if not s.kop_kadis_logo %}hidden{% endif %}">
+                                </td>
+
+                                <!-- Kolom Teks Kop (Tengah) -->
+                                <td style="text-align: center; vertical-align: middle; padding: 0 4px;">
+                                    <div id="simulasi_kadis_induk" class="text-xs sm:text-sm font-bold tracking-wider uppercase text-slate-900 leading-tight">
+                                        {{ s.kop_kadis_instansi_induk or s.instansi_nama_induk }}
+                                    </div>
+                                    <div id="simulasi_kadis_nama" class="text-sm sm:text-base font-extrabold tracking-wide uppercase text-slate-950 mt-0.5 leading-tight">
+                                        {{ s.kop_kadis_instansi_nama or s.instansi_nama }}
+                                    </div>
+                                    <div id="simulasi_kadis_alamat" class="text-[11px] text-slate-700 mt-1 leading-snug">
+                                        {{ s.kop_kadis_alamat or s.instansi_alamat }}
+                                    </div>
+                                    <div id="simulasi_kadis_kontak" class="text-[10px] text-slate-600 italic mt-0.5 leading-snug">
+                                        {{ s.kop_kadis_kontak or s.instansi_kontak }}
+                                    </div>
+                                </td>
+
+                                <!-- Kolom Penyeimbang Kanan (Agar teks tetap di tengah kertas) -->
+                                <td id="preview_cell_spacer_kadis" style="width: 85px; {% if not s.kop_kadis_logo %}display: none;{% endif %}"></td>
+                            </tr>
+                        </table>
+
+                        <!-- Garis Pembatas Kop Surat Pemerintahan (Double Line) -->
+                        <div class="w-full border-b-[3px] border-double border-slate-950 mt-3"></div>
                     </div>
                 </div>
             </div>
+
+            <!-- SECTION B: KOP SURAT STAF & PELAKSANA -->
+            <div id="kop-section-staf" class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-5 hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-2">
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                            <i class="ph-bold ph-users text-blue-600 text-base"></i>
+                            <span>Format Kop Surat Staf & Pelaksana</span>
+                        </h2>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Digunakan pada SPT Staf, SPPD, Kwitansi, Daftar Pengeluaran Riil, Rincian Biaya, dan Laporan Hasil.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="copyKadisToStaf()" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 transition border border-blue-200">
+                            <i class="ph-bold ph-copy text-sm"></i>
+                            <span>Salin dari Kop Kadis</span>
+                        </button>
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                            Staf / Satker
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Input Gambar Logo Kop Staf -->
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-semibold text-slate-700">Gambar Logo Kop Surat Staf (Lambang Pemda / Logo Dinas)</label>
+                    <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-center gap-4">
+                        <!-- Preview Thumbnail Box -->
+                        <div class="relative flex-shrink-0 w-24 h-24 bg-white rounded-xl border border-slate-300 shadow-xs flex items-center justify-center p-2 overflow-hidden">
+                            <img id="img_preview_box_staf" src="{{ s.kop_staf_logo }}" alt="Logo Staf"
+                                class="max-w-full max-h-full object-contain {% if not s.kop_staf_logo %}hidden{% endif %}">
+                            <div id="img_placeholder_box_staf" class="text-center text-slate-300 {% if s.kop_staf_logo %}hidden{% endif %}">
+                                <i class="ph-bold ph-image text-3xl"></i>
+                                <span class="block text-[9px] text-slate-400 font-medium mt-1">Belum ada logo</span>
+                            </div>
+                        </div>
+
+                        <!-- Upload Actions & Instructions -->
+                        <div class="flex-1 w-full space-y-2">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <label class="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 hover:border-blue-500 hover:text-blue-600 rounded-xl text-xs font-semibold text-slate-700 shadow-2xs transition">
+                                    <i class="ph-bold ph-upload-simple text-blue-600 text-sm"></i>
+                                    <span>Pilih Gambar Logo Staf</span>
+                                    <input type="file" name="kop_staf_logo" id="input_file_staf" accept="image/png, image/jpeg, image/jpg" class="hidden" onchange="previewKopLogo('staf', this)">
+                                </label>
+
+                                <button type="button" onclick="removeKopLogo('staf')" id="btn_remove_staf" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-xs font-semibold transition {% if not s.kop_staf_logo %}hidden{% endif %}">
+                                    <i class="ph-bold ph-trash text-sm"></i>
+                                    <span>Hapus Gambar</span>
+                                </button>
+                                <input type="hidden" name="hapus_kop_staf_logo" id="hapus_kop_staf_logo" value="0">
+                            </div>
+                            <p class="text-[11px] text-slate-500 leading-relaxed">
+                                Format yang didukung: <span class="font-semibold text-slate-700">PNG</span>, <span class="font-semibold text-slate-700">JPG</span>, atau <span class="font-semibold text-slate-700">JPEG</span>. Gambar akan ditempatkan di <strong class="text-slate-800">sebelah kiri tulisan</strong> dan <strong class="text-slate-800">di atas garis</strong> secara proporsional. Disarankan gambar berlatar transparan.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Formulir Teks Kop Staf -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Pemerintah / Instansi Induk (Baris 1)</label>
+                        <input type="text" name="kop_staf_instansi_induk" id="input_staf_induk" value="{{ s.kop_staf_instansi_induk or s.instansi_nama_induk }}" required
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            oninput="updateKopSimulasi('staf')">
+                        <span class="text-[10px] text-slate-400">Contoh: PEMERINTAH DAERAH PROVINSI / KABUPATEN</span>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Satuan Kerja / Dinas (Baris 2 Utama)</label>
+                        <input type="text" name="kop_staf_instansi_nama" id="input_staf_nama" value="{{ s.kop_staf_instansi_nama or s.instansi_nama }}" required
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold"
+                            oninput="updateKopSimulasi('staf')">
+                        <span class="text-[10px] text-slate-400">Contoh: DINAS KOMUNIKASI DAN INFORMATIKA</span>
+                    </div>
+
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Kantor Lengkap</label>
+                        <input type="text" name="kop_staf_alamat" id="input_staf_alamat" value="{{ s.kop_staf_alamat or s.instansi_alamat }}" required
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            oninput="updateKopSimulasi('staf')">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kontak, Email, Web & Kode Pos</label>
+                        <input type="text" name="kop_staf_kontak" id="input_staf_kontak" value="{{ s.kop_staf_kontak or s.instansi_kontak }}"
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            oninput="updateKopSimulasi('staf')">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kota / Tempat Kedudukan Kantor</label>
+                        <input type="text" name="kop_staf_kota" id="input_staf_kota" value="{{ s.kop_staf_kota or s.instansi_kota }}" required
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Preview Kop Staf Real-Time -->
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
+                            <i class="ph-bold ph-eye text-blue-600 text-sm"></i>
+                            <span>Simulasi Tampilan Kop Surat Staf & Pelaksana:</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-md font-medium">Standar Tata Naskah Dinas</span>
+                    </div>
+
+                    <div class="p-5 bg-white rounded-xl border border-slate-300 shadow-xs font-serif text-slate-900 transition-all">
+                        <table class="w-full border-collapse" style="border: none;">
+                            <tr>
+                                <!-- Kolom Gambar Logo (Kiri, Proporsional) -->
+                                <td id="preview_cell_logo_staf" style="width: 85px; vertical-align: middle; text-align: center; padding-right: 12px; {% if not s.kop_staf_logo %}display: none;{% endif %}">
+                                    <img id="preview_simulasi_logo_staf" src="{{ s.kop_staf_logo }}" alt="Logo Staf"
+                                        class="max-h-[75px] max-w-[75px] w-auto h-auto object-contain mx-auto block {% if not s.kop_staf_logo %}hidden{% endif %}">
+                                </td>
+
+                                <!-- Kolom Teks Kop (Tengah) -->
+                                <td style="text-align: center; vertical-align: middle; padding: 0 4px;">
+                                    <div id="simulasi_staf_induk" class="text-xs sm:text-sm font-bold tracking-wider uppercase text-slate-900 leading-tight">
+                                        {{ s.kop_staf_instansi_induk or s.instansi_nama_induk }}
+                                    </div>
+                                    <div id="simulasi_staf_nama" class="text-sm sm:text-base font-extrabold tracking-wide uppercase text-slate-950 mt-0.5 leading-tight">
+                                        {{ s.kop_staf_instansi_nama or s.instansi_nama }}
+                                    </div>
+                                    <div id="simulasi_staf_alamat" class="text-[11px] text-slate-700 mt-1 leading-snug">
+                                        {{ s.kop_staf_alamat or s.instansi_alamat }}
+                                    </div>
+                                    <div id="simulasi_staf_kontak" class="text-[10px] text-slate-600 italic mt-0.5 leading-snug">
+                                        {{ s.kop_staf_kontak or s.instansi_kontak }}
+                                    </div>
+                                </td>
+
+                                <!-- Kolom Penyeimbang Kanan (Agar teks tetap di tengah kertas) -->
+                                <td id="preview_cell_spacer_staf" style="width: 85px; {% if not s.kop_staf_logo %}display: none;{% endif %}"></td>
+                            </tr>
+                        </table>
+
+                        <!-- Garis Pembatas Kop Surat Pemerintahan (Double Line) -->
+                        <div class="w-full border-b-[3px] border-double border-slate-950 mt-3"></div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- TAB 2: PEJABAT PENANDATANGAN -->
@@ -129,31 +383,34 @@
                 </div>
             </div>
 
-            <!-- 2. PPK -->
+            <!-- 2. PPTK -->
             <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-                <h2 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
-                    2. Pejabat Pembuat Komitmen (PPK) (Penandatangan SPPD, Kwitansi & Rincian)
+                <h2 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                        <span>2. Pejabat Pelaksana Teknis Kegiatan (PPTK) (Penandatangan SPPD, Kwitansi & Rincian)</span>
+                    </div>
+                    <span class="text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">PPTK</span>
                 </h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap & Gelar *</label>
-                        <input type="text" name="pejabat_ppk_nama" value="{{ s.pejabat_ppk_nama }}" required
+                        <input type="text" name="pejabat_pptk_nama" value="{{ s.pejabat_pptk_nama or s.pejabat_ppk_nama }}" required
                             class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">NIP</label>
-                        <input type="text" name="pejabat_ppk_nip" value="{{ s.pejabat_ppk_nip }}"
+                        <input type="text" name="pejabat_pptk_nip" value="{{ s.pejabat_pptk_nip or s.pejabat_ppk_nip }}"
                             class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Pangkat / Golongan</label>
-                        <input type="text" name="pejabat_ppk_pangkat" value="{{ s.pejabat_ppk_pangkat }}"
+                        <input type="text" name="pejabat_pptk_pangkat" value="{{ s.pejabat_pptk_pangkat or s.pejabat_ppk_pangkat }}"
                             class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Jabatan Resmi</label>
-                        <input type="text" name="pejabat_ppk_jabatan" value="{{ s.pejabat_ppk_jabatan }}"
+                        <input type="text" name="pejabat_pptk_jabatan" value="{{ s.pejabat_pptk_jabatan or s.pejabat_ppk_jabatan or 'Pejabat Pelaksana Teknis Kegiatan (PPTK)' }}"
                             class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
@@ -317,7 +574,252 @@
             </button>
         </div>
     </form>
+
+    <!-- TAB 5: KELOLA MASTER DATA PEGAWAI (TAMBAH, EDIT, HAPUS) -->
+    <div id="tab-content-pegawai" class="tab-pane hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-4">
+                <div>
+                    <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                        <i class="ph-bold ph-users text-blue-600 text-base"></i>
+                        <span>Master Data Pegawai ASN</span>
+                    </h2>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Kelola daftar pegawai ASN untuk pilihan pelaksana perjalanan dinas pada formulir SPJ.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="relative">
+                        <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="pegawaiSearchInput" onkeyup="filterPegawaiTable()" placeholder="Cari nama, NIP, jabatan..."
+                            class="pl-8 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none w-56 sm:w-64 bg-slate-50/50">
+                    </div>
+                    <button type="button" onclick="openTambahPegawaiModal()"
+                        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-sm shadow-blue-500/20 cursor-pointer">
+                        <i class="ph-bold ph-user-plus text-sm"></i>
+                        <span>Tambah Pegawai</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table of Pegawai -->
+            <div class="overflow-x-auto rounded-xl border border-slate-200">
+                <table class="w-full text-left text-xs" id="tableMasterPegawai">
+                    <thead class="bg-slate-50/80 text-slate-600 font-bold border-b border-slate-200 uppercase tracking-wider text-[10px]">
+                        <tr>
+                            <th class="py-3 px-3.5 text-center w-12">No</th>
+                            <th class="py-3 px-4">Nama Lengkap & Gelar</th>
+                            <th class="py-3 px-4">NIP / NIK</th>
+                            <th class="py-3 px-4">Pangkat / Golongan</th>
+                            <th class="py-3 px-4">Jabatan</th>
+                            <th class="py-3 px-4 text-center w-28">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100" id="pegawaiTableBody">
+                        {% for peg in pegawai_list %}
+                        <tr class="pegawai-row hover:bg-slate-50/80 transition" data-search="{{ (peg.nama ~ ' ' ~ (peg.nip or '') ~ ' ' ~ (peg.nik or '') ~ ' ' ~ (peg.pangkat or '') ~ ' ' ~ (peg.jabatan or ''))|lower }}">
+                            <td class="py-3 px-3.5 text-center text-slate-400 font-bold row-index">
+                                {{ loop.index }}
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-7 h-7 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-bold text-[10px] flex items-center justify-center flex-shrink-0">
+                                        {{ peg.nama[:2]|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-slate-800">{{ peg.nama }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4 text-slate-600">
+                                <div class="font-medium text-slate-700">{{ peg.nip or '-' }}</div>
+                                {% if peg.nik %}
+                                <div class="text-[10px] text-slate-400">NIK: {{ peg.nik }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 text-slate-600">
+                                {% if peg.pangkat %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                                    {{ peg.pangkat }}
+                                </span>
+                                {% else %}
+                                <span class="text-slate-400">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 text-slate-700 font-medium">
+                                {{ peg.jabatan or '-' }}
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <div class="inline-flex items-center gap-1">
+                                    <button type="button"
+                                        data-id="{{ peg.id }}"
+                                        data-nama="{{ peg.nama }}"
+                                        data-nip="{{ peg.nip or '' }}"
+                                        data-nik="{{ peg.nik or '' }}"
+                                        data-pangkat="{{ peg.pangkat or '' }}"
+                                        data-jabatan="{{ peg.jabatan or '' }}"
+                                        onclick="btnEditPegawaiClick(this)"
+                                        class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition" title="Edit Data Pegawai">
+                                        <i class="ph-bold ph-pencil-simple text-sm"></i>
+                                    </button>
+                                    <button type="button"
+                                        data-id="{{ peg.id }}"
+                                        data-nama="{{ peg.nama }}"
+                                        onclick="btnDeletePegawaiClick(this)"
+                                        class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 transition" title="Hapus Pegawai">
+                                        <i class="ph-bold ph-trash text-sm"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="emptyPegawaiSearch" class="hidden text-center py-8 text-slate-400 text-xs">
+                <i class="ph-bold ph-magnifying-glass text-2xl text-slate-300 block mb-1"></i>
+                Tidak ada pegawai yang cocok dengan kata kunci pencarian.
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- MODAL TAMBAH PEGAWAI -->
+<div id="modalTambahPegawai" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-lg w-full overflow-hidden animate-scale-up">
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <i class="ph-bold ph-user-plus text-blue-600"></i>
+                <span>Tambah Pegawai Baru</span>
+            </h3>
+            <button type="button" onclick="closeTambahPegawaiModal()" class="text-slate-400 hover:text-slate-600">
+                <i class="ph-bold ph-x text-base"></i>
+            </button>
+        </div>
+        <form method="POST" action="/pegawai/add" class="p-6 space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap & Gelar <span class="text-rose-500">*</span></label>
+                <input type="text" name="nama" required placeholder="Contoh: Budi Santoso, S.Kom." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">NIP (Nomor Induk Pegawai)</label>
+                    <input type="text" name="nip" placeholder="19XXXXXXXX XXXXXX X XXX" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">NIK (KTP)</label>
+                    <input type="text" name="nik" placeholder="16 digit NIK" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Pangkat / Golongan</label>
+                    <input type="text" name="pangkat" list="pangkatSuggestions" placeholder="Penata Tk. I (III/d)" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Jabatan</label>
+                    <input type="text" name="jabatan" placeholder="Kepala Bidang / Analis / Staf" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+            </div>
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button type="button" onclick="closeTambahPegawaiModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold transition">
+                    Batal
+                </button>
+                <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-sm shadow-blue-500/20">
+                    Simpan Pegawai
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL EDIT PEGAWAI -->
+<div id="modalEditPegawai" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-lg w-full overflow-hidden animate-scale-up">
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <i class="ph-bold ph-pencil-simple text-blue-600"></i>
+                <span>Edit Data Pegawai</span>
+            </h3>
+            <button type="button" onclick="closeEditPegawaiModal()" class="text-slate-400 hover:text-slate-600">
+                <i class="ph-bold ph-x text-base"></i>
+            </button>
+        </div>
+        <form method="POST" id="formEditPegawai" action="" class="p-6 space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap & Gelar <span class="text-rose-500">*</span></label>
+                <input type="text" name="nama" id="edit_pegawai_nama" required placeholder="Nama Pegawai" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">NIP (Nomor Induk Pegawai)</label>
+                    <input type="text" name="nip" id="edit_pegawai_nip" placeholder="19XXXXXXXX XXXXXX X XXX" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">NIK (KTP)</label>
+                    <input type="text" name="nik" id="edit_pegawai_nik" placeholder="16 digit NIK" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Pangkat / Golongan</label>
+                    <input type="text" name="pangkat" id="edit_pegawai_pangkat" list="pangkatSuggestions" placeholder="Penata Tk. I (III/d)" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Jabatan</label>
+                    <input type="text" name="jabatan" id="edit_pegawai_jabatan" placeholder="Jabatan" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+            </div>
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button type="button" onclick="closeEditPegawaiModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold transition">
+                    Batal
+                </button>
+                <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-sm shadow-blue-500/20">
+                    Perbarui Data Pegawai
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL HAPUS PEGAWAI -->
+<div id="modalDeletePegawai" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-sm w-full overflow-hidden animate-scale-up">
+        <div class="p-6 text-center space-y-3">
+            <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl">
+                <i class="ph-bold ph-trash"></i>
+            </div>
+            <h3 class="text-sm font-bold text-slate-900">Hapus Pegawai</h3>
+            <p class="text-xs text-slate-500">
+                Apakah Anda yakin ingin menghapus data pegawai <strong id="deleteNamaPegawai" class="text-slate-800"></strong> dari master data?
+            </p>
+        </div>
+        <form method="POST" id="formDeletePegawai" action="" class="px-6 pb-6 pt-2 flex items-center justify-center gap-2">
+            <button type="button" onclick="closeDeletePegawaiModal()" class="w-full py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold transition">
+                Batal
+            </button>
+            <button type="submit" class="w-full py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-sm shadow-rose-500/20">
+                Ya, Hapus
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Datalist Suggestions for Pangkat -->
+<datalist id="pangkatSuggestions">
+    <option value="Pembina Utama (IV/e)">
+    <option value="Pembina Utama Madya (IV/d)">
+    <option value="Pembina Utama Muda (IV/c)">
+    <option value="Pembina Tk.I  (IV/b)">
+    <option value="Pembina (IV/a)">
+    <option value="Penata Tk. I (III/d)">
+    <option value="Penata (III/c)">
+    <option value="Penata Muda Tk. I  (III/b)">
+    <option value="Penata Muda (III/a)">
+    <option value="Pengatur Tk. I  (II/d)">
+    <option value="Pengatur  (II/c)">
+    <option value="Pengatur Muda Tk. I (II/b)">
+    <option value="Pengatur Muda (II/a)">
+</datalist>
 
 <script>
 function switchTab(tabId) {
@@ -330,10 +832,221 @@ function switchTab(tabId) {
     });
 
     // Show active
-    document.getElementById('tab-content-' + tabId).classList.remove('hidden');
+    const targetContent = document.getElementById('tab-content-' + tabId);
+    if (targetContent) targetContent.classList.remove('hidden');
     const activeBtn = document.getElementById('tab-btn-' + tabId);
-    activeBtn.classList.remove('border-transparent', 'text-slate-500');
-    activeBtn.classList.add('border-blue-600', 'text-blue-600');
+    if (activeBtn) {
+        activeBtn.classList.remove('border-transparent', 'text-slate-500');
+        activeBtn.classList.add('border-blue-600', 'text-blue-600');
+    }
+
+    // Toggle top save button visibility (hide on pegawai tab since it has its own CRUD)
+    const topSaveBtn = document.getElementById('topSaveBtn');
+    if (topSaveBtn) {
+        if (tabId === 'pegawai') {
+            topSaveBtn.classList.add('hidden');
+        } else {
+            topSaveBtn.classList.remove('hidden');
+        }
+    }
+
+    // Update URL query param without reload
+    try {
+        const url = new URL(window.location);
+        url.searchParams.set('tab', tabId);
+        window.history.replaceState({}, '', url);
+    } catch(e) {}
 }
+
+// Switch between Kop Kadis and Kop Staf subtabs in Tab 1
+function switchKopType(type) {
+    const sectionKadis = document.getElementById('kop-section-kadis');
+    const sectionStaf = document.getElementById('kop-section-staf');
+    const btnKadis = document.getElementById('kop-type-btn-kadis');
+    const btnStaf = document.getElementById('kop-type-btn-staf');
+
+    if (type === 'kadis') {
+        sectionKadis.classList.remove('hidden');
+        sectionStaf.classList.add('hidden');
+        btnKadis.className = 'kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-blue-600 text-white shadow-sm shadow-blue-500/20';
+        btnStaf.className = 'kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-600';
+    } else {
+        sectionKadis.classList.add('hidden');
+        sectionStaf.classList.remove('hidden');
+        btnStaf.className = 'kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-blue-600 text-white shadow-sm shadow-blue-500/20';
+        btnKadis.className = 'kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-600';
+    }
+}
+
+// Live Image Preview handler
+function previewKopLogo(type, input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        // Validate type
+        const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+        if (!validTypes.includes(file.type)) {
+            alert('Format berkas tidak valid. Harap pilih gambar dengan format PNG, JPG, atau JPEG.');
+            input.value = '';
+            return;
+        }
+
+        const objectUrl = URL.createObjectURL(file);
+
+        // Update preview box in upload area
+        const boxImg = document.getElementById('img_preview_box_' + type);
+        const placeholder = document.getElementById('img_placeholder_box_' + type);
+        const btnRemove = document.getElementById('btn_remove_' + type);
+        const hapusInput = document.getElementById('hapus_kop_' + type + '_logo');
+
+        boxImg.src = objectUrl;
+        boxImg.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+        btnRemove.classList.remove('hidden');
+        hapusInput.value = '0';
+
+        // Update letterhead simulation preview
+        const simLogo = document.getElementById('preview_simulasi_logo_' + type);
+        const cellLogo = document.getElementById('preview_cell_logo_' + type);
+        const cellSpacer = document.getElementById('preview_cell_spacer_' + type);
+
+        simLogo.src = objectUrl;
+        simLogo.classList.remove('hidden');
+        cellLogo.style.display = 'table-cell';
+        cellSpacer.style.display = 'table-cell';
+    }
+}
+
+// Remove Logo handler
+function removeKopLogo(type) {
+    if (confirm('Hapus gambar logo kop surat ' + (type === 'kadis' ? 'Kepala Dinas' : 'Staf') + '?')) {
+        document.getElementById('hapus_kop_' + type + '_logo').value = '1';
+        document.getElementById('input_file_' + type).value = '';
+
+        // Hide upload preview
+        const boxImg = document.getElementById('img_preview_box_' + type);
+        const placeholder = document.getElementById('img_placeholder_box_' + type);
+        const btnRemove = document.getElementById('btn_remove_' + type);
+
+        boxImg.src = '';
+        boxImg.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+        btnRemove.classList.add('hidden');
+
+        // Hide letterhead simulation logo
+        const simLogo = document.getElementById('preview_simulasi_logo_' + type);
+        const cellLogo = document.getElementById('preview_cell_logo_' + type);
+        const cellSpacer = document.getElementById('preview_cell_spacer_' + type);
+
+        simLogo.src = '';
+        simLogo.classList.add('hidden');
+        cellLogo.style.display = 'none';
+        cellSpacer.style.display = 'none';
+    }
+}
+
+// Real-time Text Live Preview updater
+function updateKopSimulasi(type) {
+    const induk = document.getElementById('input_' + type + '_induk').value.trim() || 'PEMERINTAH DAERAH';
+    const nama = document.getElementById('input_' + type + '_nama').value.trim() || 'DINAS KOMUNIKASI DAN INFORMATIKA';
+    const alamat = document.getElementById('input_' + type + '_alamat').value.trim() || 'Jl. Kantor Lengkap';
+    const kontak = document.getElementById('input_' + type + '_kontak').value.trim() || 'Kontak & Email';
+
+    document.getElementById('simulasi_' + type + '_induk').innerText = induk;
+    document.getElementById('simulasi_' + type + '_nama').innerText = nama;
+    document.getElementById('simulasi_' + type + '_alamat').innerText = alamat;
+    document.getElementById('simulasi_' + type + '_kontak').innerText = kontak;
+}
+
+// Copy values from Kadis to Staf
+function copyKadisToStaf() {
+    document.getElementById('input_staf_induk').value = document.getElementById('input_kadis_induk').value;
+    document.getElementById('input_staf_nama').value = document.getElementById('input_kadis_nama').value;
+    document.getElementById('input_staf_alamat').value = document.getElementById('input_kadis_alamat').value;
+    document.getElementById('input_staf_kontak').value = document.getElementById('input_kadis_kontak').value;
+    document.getElementById('input_staf_kota').value = document.getElementById('input_kadis_kota').value;
+    updateKopSimulasi('staf');
+}
+
+// Master Pegawai Client Actions
+function filterPegawaiTable() {
+    const input = document.getElementById('pegawaiSearchInput').value.toLowerCase().trim();
+    const rows = document.querySelectorAll('.pegawai-row');
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+        const searchData = row.getAttribute('data-search') || '';
+        if (searchData.includes(input)) {
+            row.style.display = '';
+            visibleCount++;
+            const idxCell = row.querySelector('.row-index');
+            if (idxCell) idxCell.innerText = visibleCount;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    const emptyMsg = document.getElementById('emptyPegawaiSearch');
+    if (emptyMsg) {
+        if (visibleCount === 0 && rows.length > 0) {
+            emptyMsg.classList.remove('hidden');
+        } else {
+            emptyMsg.classList.add('hidden');
+        }
+    }
+}
+
+function openTambahPegawaiModal() {
+    document.getElementById('modalTambahPegawai').classList.remove('hidden');
+}
+function closeTambahPegawaiModal() {
+    document.getElementById('modalTambahPegawai').classList.add('hidden');
+}
+
+function btnEditPegawaiClick(btn) {
+    const id = btn.getAttribute('data-id');
+    const nama = btn.getAttribute('data-nama');
+    const nip = btn.getAttribute('data-nip');
+    const nik = btn.getAttribute('data-nik');
+    const pangkat = btn.getAttribute('data-pangkat');
+    const jabatan = btn.getAttribute('data-jabatan');
+    openEditPegawaiModal(id, nama, nip, nik, pangkat, jabatan);
+}
+
+function openEditPegawaiModal(id, nama, nip, nik, pangkat, jabatan) {
+    document.getElementById('formEditPegawai').action = '/pegawai/' + id + '/edit';
+    document.getElementById('edit_pegawai_nama').value = nama;
+    document.getElementById('edit_pegawai_nip').value = nip;
+    document.getElementById('edit_pegawai_nik').value = nik;
+    document.getElementById('edit_pegawai_pangkat').value = pangkat;
+    document.getElementById('edit_pegawai_jabatan').value = jabatan;
+    document.getElementById('modalEditPegawai').classList.remove('hidden');
+}
+function closeEditPegawaiModal() {
+    document.getElementById('modalEditPegawai').classList.add('hidden');
+}
+
+function btnDeletePegawaiClick(btn) {
+    const id = btn.getAttribute('data-id');
+    const nama = btn.getAttribute('data-nama');
+    openDeletePegawaiModal(id, nama);
+}
+
+function openDeletePegawaiModal(id, nama) {
+    document.getElementById('formDeletePegawai').action = '/pegawai/' + id + '/delete';
+    document.getElementById('deleteNamaPegawai').innerText = nama;
+    document.getElementById('modalDeletePegawai').classList.remove('hidden');
+}
+function closeDeletePegawaiModal() {
+    document.getElementById('modalDeletePegawai').classList.add('hidden');
+}
+
+// Auto open tab on page load (support ?tab=pegawai or server active_tab)
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab') || '{{ active_tab or "kop" }}';
+    if (tabParam && document.getElementById('tab-btn-' + tabParam)) {
+        switchTab(tabParam);
+    }
+});
 </script>
 {% endblock %}

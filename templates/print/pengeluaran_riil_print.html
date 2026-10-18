@@ -29,12 +29,7 @@
     <!-- Paper Sheet -->
     <div class="printable-sheet naskah-dinas">
         <!-- Kop Surat -->
-        <div class="kop-surat">
-            <div class="kop-instansi-induk">{{ s.instansi_nama_induk }}</div>
-            <div class="kop-instansi-nama">{{ s.instansi_nama }}</div>
-            <div class="kop-alamat">{{ s.instansi_alamat }}</div>
-            <div class="kop-kontak">{{ s.instansi_kontak }}</div>
-        </div>
+        {% include 'print/_kop_surat.html' %}
 
         <div class="judul-dokumen">DAFTAR PENGELUARAN RIIL</div>
         <div class="nomor-dokumen">Lampiran SPPD Nomor : {{ spj.nomor_sppd }}</div>
@@ -120,14 +115,14 @@
         <!-- Tanda Tangan 2 Kolom -->
         <div class="ttd-box">
             <div class="ttd-dua-kolom">
-                <!-- Kiri: Mengetahui PPK -->
+                <!-- Kiri: Mengetahui PPTK -->
                 <div class="ttd-item">
                     <div>Mengetahui / Menyetujui :</div>
-                    <div style="font-weight: bold;">Pejabat Pembuat Komitmen (PPK)</div>
+                    <div style="font-weight: bold;">{{ s.pejabat_pptk_jabatan or s.pejabat_ppk_jabatan or 'Pejabat Pelaksana Teknis Kegiatan (PPTK)' }}</div>
                     <div class="ttd-space"></div>
-                    <div class="ttd-nama">{{ s.pejabat_ppk_nama }}</div>
-                    <div class="ttd-nip">{{ s.pejabat_ppk_pangkat }}</div>
-                    <div class="ttd-nip">NIP. {{ s.pejabat_ppk_nip }}</div>
+                    <div class="ttd-nama">{{ s.pejabat_pptk_nama or s.pejabat_ppk_nama }}</div>
+                    <div class="ttd-nip">{{ s.pejabat_pptk_pangkat or s.pejabat_ppk_pangkat }}</div>
+                    <div class="ttd-nip">NIP. {{ s.pejabat_pptk_nip or s.pejabat_ppk_nip }}</div>
                 </div>
 
                 <!-- Kanan: Pelaksana Yang Menyatakan -->

@@ -1,0 +1,21 @@
+{% set kop = get_kop(s, spj.jenis_spt if spj else 'staf') %}
+<div class="kop-surat">
+    <table class="kop-table">
+        <tr>
+            {% if kop.logo %}
+            <td class="kop-logo-cell">
+                <img src="{{ kop.logo }}" alt="Logo Instansi" class="kop-logo-img">
+            </td>
+            {% endif %}
+            <td class="kop-text-cell">
+                <div class="kop-instansi-induk">{{ kop.instansi_induk }}</div>
+                <div class="kop-instansi-nama">{{ kop.instansi_nama }}</div>
+                <div class="kop-alamat">{{ kop.alamat }}</div>
+                <div class="kop-kontak">{{ kop.kontak }}</div>
+            </td>
+            {% if kop.logo %}
+            <td class="kop-spacer-cell"></td>
+            {% endif %}
+        </tr>
+    </table>
+</div>

@@ -17,6 +17,46 @@
     border-bottom: 3px double #000;
 }
 
+.kop-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+.kop-table td {
+    border: none;
+    padding: 0;
+}
+
+.kop-logo-cell {
+    width: 80px;
+    vertical-align: middle;
+    text-align: center;
+    padding-right: 12px;
+}
+
+.kop-logo-img {
+    max-height: 75px;
+    max-width: 75px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+}
+
+.kop-text-cell {
+    text-align: center;
+    vertical-align: middle;
+    padding: 0 4px;
+}
+
+.kop-spacer-cell {
+    width: 80px;
+}
+
 .kop-instansi-induk {
     font-size: 13pt;
     font-weight: 700;

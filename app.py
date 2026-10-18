@@ -1,16 +1,48 @@
 import os
 import json
+import time
 import datetime
 from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, session, flash, abort, jsonify
+from werkzeug.utils import secure_filename
 
-from database import init_db, get_db, get_settings, update_settings, verify_user, create_sample_data
+from database import (init_db, get_db, get_settings, update_settings, verify_user, create_sample_data, 
+                      get_pegawai_list, get_pegawai_by_id, add_pegawai, update_pegawai, delete_pegawai)
 from helpers import format_rupiah, terbilang, format_tanggal, hitung_hari, angka_murni
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'spj-secret-key-super-secure-2026-vps')
 
-# Register custom Jinja filters
+# Configuration for image uploads
+UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# Kop Surat Helper (Kepala Dinas vs Staf)
+def get_kop(s, jenis_spt='staf'):
+    if jenis_spt == 'kadis':
+        return {
+            'logo': s.get('kop_kadis_logo', ''),
+            'instansi_induk': s.get('kop_kadis_instansi_induk') or s.get('instansi_nama_induk', 'PEMERINTAH DAERAH'),
+            'instansi_nama': s.get('kop_kadis_instansi_nama') or s.get('instansi_nama', 'DINAS KOMUNIKASI DAN INFORMATIKA'),
+            'alamat': s.get('kop_kadis_alamat') or s.get('instansi_alamat', ''),
+            'kontak': s.get('kop_kadis_kontak') or s.get('instansi_kontak', ''),
+            'kota': s.get('kop_kadis_kota') or s.get('instansi_kota', '')
+        }
+    else:
+        return {
+            'logo': s.get('kop_staf_logo', ''),
+            'instansi_induk': s.get('kop_staf_instansi_induk') or s.get('instansi_nama_induk', 'PEMERINTAH DAERAH'),
+            'instansi_nama': s.get('kop_staf_instansi_nama') or s.get('instansi_nama', 'DINAS KOMUNIKASI DAN INFORMATIKA'),
+            'alamat': s.get('kop_staf_alamat') or s.get('instansi_alamat', ''),
+            'kontak': s.get('kop_staf_kontak') or s.get('instansi_kontak', ''),
+            'kota': s.get('kop_staf_kota') or s.get('instansi_kota', '')
+        }
+
+# Register custom Jinja filters & globals
 app.jinja_env.filters['format_rupiah'] = format_rupiah
 app.jinja_env.filters['terbilang'] = terbilang
 app.jinja_env.filters['format_tanggal'] = format_tanggal
@@ -18,8 +50,13 @@ app.jinja_env.globals.update(
     format_rupiah=format_rupiah,
     terbilang=terbilang,
     format_tanggal=format_tanggal,
-    angka_murni=angka_murni
+    angka_murni=angka_murni,
+    get_kop=get_kop
 )
+
+@app.context_processor
+def inject_pegawai_list():
+    return dict(pegawai_list=get_pegawai_list())
 
 # Login requirement decorator
 def login_required(f):
@@ -488,14 +525,60 @@ def settings_view():
         # Update text settings
         keys = [
             'instansi_nama_induk', 'instansi_nama', 'instansi_alamat', 'instansi_kontak', 'instansi_kota',
+            'kop_kadis_instansi_induk', 'kop_kadis_instansi_nama', 'kop_kadis_alamat', 'kop_kadis_kontak', 'kop_kadis_kota',
+            'kop_staf_instansi_induk', 'kop_staf_instansi_nama', 'kop_staf_alamat', 'kop_staf_kontak', 'kop_staf_kota',
             'pejabat_kadis_nama', 'pejabat_kadis_nip', 'pejabat_kadis_pangkat', 'pejabat_kadis_jabatan',
             'pejabat_ppk_nama', 'pejabat_ppk_nip', 'pejabat_ppk_pangkat', 'pejabat_ppk_jabatan',
+            'pejabat_pptk_nama', 'pejabat_pptk_nip', 'pejabat_pptk_pangkat', 'pejabat_pptk_jabatan',
             'pejabat_bendahara_nama', 'pejabat_bendahara_nip', 'pejabat_bendahara_pangkat', 'pejabat_bendahara_jabatan',
             'template_spt_kadis', 'template_spt_staf', 'template_pengeluaran_riil', 'template_kwitansi', 'template_rincian_biaya'
         ]
         data = {}
         for k in keys:
-            data[k] = request.form.get(k, '').strip()
+            if k in request.form:
+                data[k] = request.form.get(k, '').strip()
+
+        # Synchronize PPTK and PPK keys
+        if 'pejabat_pptk_nama' in data:
+            data['pejabat_ppk_nama'] = data['pejabat_pptk_nama']
+            data['pejabat_ppk_nip'] = data.get('pejabat_pptk_nip', '')
+            data['pejabat_ppk_pangkat'] = data.get('pejabat_pptk_pangkat', '')
+            data['pejabat_ppk_jabatan'] = data.get('pejabat_pptk_jabatan', 'Pejabat Pelaksana Teknis Kegiatan (PPTK)')
+        elif 'pejabat_ppk_nama' in data:
+            data['pejabat_pptk_nama'] = data['pejabat_ppk_nama']
+            data['pejabat_pptk_nip'] = data.get('pejabat_ppk_nip', '')
+            data['pejabat_pptk_pangkat'] = data.get('pejabat_ppk_pangkat', '')
+            data['pejabat_pptk_jabatan'] = data.get('pejabat_ppk_jabatan', 'Pejabat Pelaksana Teknis Kegiatan (PPTK)')
+
+        # Synchronize backward compatibility fallback
+        if 'kop_staf_instansi_nama' in data and data['kop_staf_instansi_nama']:
+            data['instansi_nama'] = data['kop_staf_instansi_nama']
+            data['instansi_nama_induk'] = data.get('kop_staf_instansi_induk', '')
+            data['instansi_alamat'] = data.get('kop_staf_alamat', '')
+            data['instansi_kontak'] = data.get('kop_staf_kontak', '')
+            data['instansi_kota'] = data.get('kop_staf_kota', '')
+
+        # Handle Logo Kop Kadis
+        if request.form.get('hapus_kop_kadis_logo') == '1':
+            data['kop_kadis_logo'] = ''
+        elif 'kop_kadis_logo' in request.files:
+            file_kadis = request.files['kop_kadis_logo']
+            if file_kadis and file_kadis.filename and allowed_file(file_kadis.filename):
+                ext = file_kadis.filename.rsplit('.', 1)[1].lower()
+                safe_name = f"logo_kadis_{int(time.time())}.{ext}"
+                file_kadis.save(os.path.join(UPLOAD_FOLDER, safe_name))
+                data['kop_kadis_logo'] = f"/static/uploads/{safe_name}"
+
+        # Handle Logo Kop Staf
+        if request.form.get('hapus_kop_staf_logo') == '1':
+            data['kop_staf_logo'] = ''
+        elif 'kop_staf_logo' in request.files:
+            file_staf = request.files['kop_staf_logo']
+            if file_staf and file_staf.filename and allowed_file(file_staf.filename):
+                ext = file_staf.filename.rsplit('.', 1)[1].lower()
+                safe_name = f"logo_staf_{int(time.time())}.{ext}"
+                file_staf.save(os.path.join(UPLOAD_FOLDER, safe_name))
+                data['kop_staf_logo'] = f"/static/uploads/{safe_name}"
 
         # Update JSON template for laporan
         laporan_json = {
@@ -512,8 +595,53 @@ def settings_view():
 
     s = get_settings()
     laporan_defaults = json.loads(s.get('template_laporan', '{}'))
+    active_tab = request.args.get('tab', 'kop')
+    pegawai_list = get_pegawai_list()
 
-    return render_template('settings.html', s=s, laporan_defaults=laporan_defaults)
+    return render_template('settings.html', s=s, laporan_defaults=laporan_defaults, active_tab=active_tab, pegawai_list=pegawai_list)
+
+@app.route('/pegawai/add', methods=['POST'])
+@login_required
+def pegawai_add():
+    nama = request.form.get('nama', '').strip()
+    nip = request.form.get('nip', '').strip()
+    nik = request.form.get('nik', '').strip()
+    pangkat = request.form.get('pangkat', '').strip()
+    jabatan = request.form.get('jabatan', '').strip()
+
+    if not nama:
+        flash('Nama pegawai wajib diisi!', 'danger')
+        return redirect(url_for('settings_view', tab='pegawai'))
+
+    add_pegawai(nama, nip, nik, pangkat, jabatan)
+    flash(f'Pegawai "{nama}" berhasil ditambahkan ke daftar master!', 'success')
+    return redirect(url_for('settings_view', tab='pegawai'))
+
+@app.route('/pegawai/<int:pegawai_id>/edit', methods=['POST'])
+@login_required
+def pegawai_edit(pegawai_id):
+    nama = request.form.get('nama', '').strip()
+    nip = request.form.get('nip', '').strip()
+    nik = request.form.get('nik', '').strip()
+    pangkat = request.form.get('pangkat', '').strip()
+    jabatan = request.form.get('jabatan', '').strip()
+
+    if not nama:
+        flash('Nama pegawai wajib diisi!', 'danger')
+        return redirect(url_for('settings_view', tab='pegawai'))
+
+    update_pegawai(pegawai_id, nama, nip, nik, pangkat, jabatan)
+    flash(f'Data pegawai "{nama}" berhasil diperbarui!', 'success')
+    return redirect(url_for('settings_view', tab='pegawai'))
+
+@app.route('/pegawai/<int:pegawai_id>/delete', methods=['POST'])
+@login_required
+def pegawai_delete(pegawai_id):
+    peg = get_pegawai_by_id(pegawai_id)
+    nama = peg['nama'] if peg else 'Pegawai'
+    delete_pegawai(pegawai_id)
+    flash(f'Pegawai "{nama}" berhasil dihapus dari daftar.', 'info')
+    return redirect(url_for('settings_view', tab='pegawai'))
 
 # ----------------- INIT & RUN -----------------
 init_db()

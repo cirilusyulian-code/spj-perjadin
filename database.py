@@ -101,6 +101,18 @@ def init_db():
     )
     ''')
 
+    # Pegawai Master Table
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS pegawai (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nama TEXT NOT NULL,
+        nip TEXT,
+        nik TEXT,
+        pangkat TEXT,
+        jabatan TEXT
+    )
+    ''')
+
     conn.commit()
 
     # Seed Default User if not exists
@@ -111,6 +123,36 @@ def init_db():
         VALUES (?, ?, ?, ?)
         ''', ('admin', generate_password_hash('admin123'), 'Administrator SPJ', 'admin'))
 
+    # Seed Pegawai Master Data from Spreadsheet if not exists
+    cursor.execute('SELECT COUNT(*) as cnt FROM pegawai')
+    if cursor.fetchone()['cnt'] == 0:
+        pegawai_data = [
+            ("Ardiansyah, SH., MH.", "197209202005021001", "1708012009720001", "Pembina Tk.I  (IV/b)", "Kepala Dinas"),
+            ("Erwanda.S.Sos", "197101201997031004", "1708042001710003", "Penata Tk. I (III/d)", "Sekretaris Dinas"),
+            ("Rieka Dwita Efrilian TH, S.E.", "197304012005022004", "1708044104730003", "Pembina (IV/a)", "Kabid Pelayanan Pencatatan Sipil"),
+            ("Oly Stupeu, S.H.", "197208262006041002", "3174042608720005", "Penata Tk. I (III/d)", "Kabid Pelayanan Pendaftaran Penduduk"),
+            ("Boby Anova Utama, S.IP., M.M.", "198411292009041001", "1708042911840004", "Penata Tk. I (III/d)", "Kabid PIAK & Pemanfaatan Data"),
+            ("Edi Johan, S.E.", "197505201996031002", "1708042005750002", "Penata Tk. I (III/d)", "Analis Kebijakan Ahli Muda"),
+            ("Eka Susanti, S.H.", "197407172006042027", "1708045707740005", "Penata Tk. I (III/d)", "Analis Kebijakan Ahli Muda"),
+            ("Maryani, S.E.", "198003192002122001", "1708045903800002", "Penata Tk. I (III/d)", "Analis Kebijakan Ahli Muda"),
+            ("Irian Peri, S.Sos.", "197609022006041016", "1708040209760002", "Penata Tk. I (III/d)", "Analis Kebijakan Ahli Muda"),
+            ("Mulyati, S.Sos.", "198203252009042001", "1708046503830002", "Penata Tk. I (III/d)", "Analis Kebijakan Ahli Muda"),
+            ("Evan Adi, S.T.", "198112132009041001", "1702091312810004", "Penata Tk. I (III/d)", "Kasubbag Perencanaan & Keuangan"),
+            ("Dewi Sativa Agustina, S.Si.", "198408242009042001", "1708046408840002", "Penata Tk. I (III/d)", "Analis Kebijakan Ahli Muda"),
+            ("Dian Puspita, S.IP.", "198612192006042002", "1708085912860001", "Penata Tk. I (III/d)", "Analis Kebijakan Ahli Muda"),
+            ("Eka Gustiani, S.IP.", "198208102002122003", "1708015008820001", "Penata (III/c)", "Kasubag Umum dan Kepegawaian"),
+            ("Rubianti, S. IP.", "197904062007012022", "1708034604790003", "Penata (III/c)", "Staf"),
+            ("Giayustari, S.IP.", "198609222014102001", "1708066209860001", "Penata Muda Tk. I  (III/b)", "Staf"),
+            ("Cirilus Yulian Gati Kurniawan, S.T.", "199607132022031010", "1703091307960004", "Penata Muda Tk. I  (III/b)", "Administrator Database Kependudukan"),
+            ("Parni Handayani", "197411102010012002", "1708045011740003", "Pengatur Tk. I  (II/d)", "Staf"),
+            ("Arriadhy, A.Md.", "199212222022031010", "1673072212920002", "Pengatur  (II/c)", "Staf")
+        ]
+        cursor.executemany('''
+            INSERT INTO pegawai (nama, nip, nik, pangkat, jabatan)
+            VALUES (?, ?, ?, ?, ?)
+        ''', pegawai_data)
+        conn.commit()
+
     # Seed Default Settings if not exists
     default_settings = {
         'instansi_nama_induk': 'PEMERINTAH DAERAH',
@@ -118,6 +160,18 @@ def init_db():
         'instansi_alamat': 'Jl. Protokol No. 12, Kompleks Perkantoran Terpadu',
         'instansi_kontak': 'Telp. (021) 7890123 | Email: diskominfo@pemda.go.id | Kode Pos 10110',
         'instansi_kota': 'Jakarta',
+        'kop_kadis_instansi_induk': 'PEMERINTAH DAERAH',
+        'kop_kadis_instansi_nama': 'DINAS KOMUNIKASI DAN INFORMATIKA',
+        'kop_kadis_alamat': 'Jl. Protokol No. 12, Kompleks Perkantoran Terpadu',
+        'kop_kadis_kontak': 'Telp. (021) 7890123 | Email: kadis@diskominfo.pemda.go.id | Kode Pos 10110',
+        'kop_kadis_kota': 'Jakarta',
+        'kop_kadis_logo': '/static/img/logo_garuda_default.png',
+        'kop_staf_instansi_induk': 'PEMERINTAH DAERAH',
+        'kop_staf_instansi_nama': 'DINAS KOMUNIKASI DAN INFORMATIKA',
+        'kop_staf_alamat': 'Jl. Protokol No. 12, Kompleks Perkantoran Terpadu',
+        'kop_staf_kontak': 'Telp. (021) 7890123 | Email: diskominfo@pemda.go.id | Kode Pos 10110',
+        'kop_staf_kota': 'Jakarta',
+        'kop_staf_logo': '/static/img/logo_pemda_default.png',
         'pejabat_kadis_nama': 'Dr. H. Bambang Setiawan, M.Si.',
         'pejabat_kadis_nip': '19740615 199903 1 005',
         'pejabat_kadis_pangkat': 'Pembina Utama Muda (IV/c)',
@@ -125,7 +179,11 @@ def init_db():
         'pejabat_ppk_nama': 'Hendro Wibowo, S.T., M.M.',
         'pejabat_ppk_nip': '19820412 200604 1 012',
         'pejabat_ppk_pangkat': 'Pembina (IV/a)',
-        'pejabat_ppk_jabatan': 'Pejabat Pembuat Komitmen (PPK)',
+        'pejabat_ppk_jabatan': 'Pejabat Pelaksana Teknis Kegiatan (PPTK)',
+        'pejabat_pptk_nama': 'Hendro Wibowo, S.T., M.M.',
+        'pejabat_pptk_nip': '19820412 200604 1 012',
+        'pejabat_pptk_pangkat': 'Pembina (IV/a)',
+        'pejabat_pptk_jabatan': 'Pejabat Pelaksana Teknis Kegiatan (PPTK)',
         'pejabat_bendahara_nama': 'Dewi Anggraini, S.E.',
         'pejabat_bendahara_nip': '19880918 201101 2 007',
         'pejabat_bendahara_pangkat': 'Penata Tk. I (III/d)',
@@ -148,6 +206,47 @@ def init_db():
 
     conn.commit()
     conn.close()
+
+def get_pegawai_list():
+    conn = get_db()
+    rows = conn.execute('SELECT * FROM pegawai ORDER BY id ASC').fetchall()
+    conn.close()
+    return rows
+
+def get_pegawai_by_id(pegawai_id):
+    conn = get_db()
+    row = conn.execute('SELECT * FROM pegawai WHERE id = ?', (pegawai_id,)).fetchone()
+    conn.close()
+    return row
+
+def add_pegawai(nama, nip='', nik='', pangkat='', jabatan=''):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+    INSERT INTO pegawai (nama, nip, nik, pangkat, jabatan)
+    VALUES (?, ?, ?, ?, ?)
+    ''', (nama.strip(), (nip or '').strip(), (nik or '').strip(), (pangkat or '').strip(), (jabatan or '').strip()))
+    new_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+    return new_id
+
+def update_pegawai(pegawai_id, nama, nip='', nik='', pangkat='', jabatan=''):
+    conn = get_db()
+    conn.execute('''
+    UPDATE pegawai
+    SET nama = ?, nip = ?, nik = ?, pangkat = ?, jabatan = ?
+    WHERE id = ?
+    ''', (nama.strip(), (nip or '').strip(), (nik or '').strip(), (pangkat or '').strip(), (jabatan or '').strip(), pegawai_id))
+    conn.commit()
+    conn.close()
+
+def delete_pegawai(pegawai_id):
+    conn = get_db()
+    conn.execute('DELETE FROM pegawai WHERE id = ?', (pegawai_id,))
+    conn.commit()
+    conn.close()
+
 
 def get_settings():
     conn = get_db()

@@ -29,12 +29,7 @@
     <!-- Paper Sheet -->
     <div class="printable-sheet naskah-dinas">
         <!-- Kop Surat -->
-        <div class="kop-surat">
-            <div class="kop-instansi-induk">{{ s.instansi_nama_induk }}</div>
-            <div class="kop-instansi-nama">{{ s.instansi_nama }}</div>
-            <div class="kop-alamat">{{ s.instansi_alamat }}</div>
-            <div class="kop-kontak">{{ s.instansi_kontak }}</div>
-        </div>
+        {% include 'print/_kop_surat.html' %}
 
         <div class="judul-dokumen">LAPORAN HASIL PERJALANAN DINAS</div>
         <div class="nomor-dokumen">Lampiran SPT Nomor : {{ spj.nomor_spt }}</div>

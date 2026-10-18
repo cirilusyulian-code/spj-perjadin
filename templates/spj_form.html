@@ -168,67 +168,121 @@
 
         <!-- 4. Daftar Nama-Nama yang Melakukan Perjalanan Dinas -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">4</span>
-                    Nama-Nama yang Melakukan Perjalanan Dinas
-                </h2>
-                <button type="button" onclick="tambahPeserta()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 text-xs font-bold transition">
-                    <i class="ph-bold ph-user-plus"></i>
-                    <span>Tambah Pelaksana</span>
-                </button>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-3">
+                <div>
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">4</span>
+                        <span>Nama-Nama yang Melakukan Perjalanan Dinas</span>
+                    </h2>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Pilih dari database 19 ASN Pegawai atau ketik manual</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- Dropdown Tambah Pelaksana dari Spreadsheet -->
+                    <div class="relative">
+                        <select id="quickSelectPegawai" onchange="tambahPesertaDariDropdown(this)"
+                            class="px-3.5 py-1.5 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition cursor-pointer focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-xs">
+                            <option value="">+ Tambah Pelaksana dari Daftar Pegawai (19 ASN)</option>
+                            {% for peg in pegawai_list %}
+                            <option value="{{ peg.id }}" data-nama="{{ peg.nama }}" data-nip="{{ peg.nip }}" data-pangkat="{{ peg.pangkat }}" data-jabatan="{{ peg.jabatan }}">
+                                {{ loop.index }}. {{ peg.nama }} ({{ peg.jabatan }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="button" onclick="tambahPeserta()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+                        <i class="ph-bold ph-plus text-sm"></i>
+                        <span>Baris Kosong</span>
+                    </button>
+                </div>
             </div>
 
             <div id="pesertaContainer" class="space-y-3">
                 {% if peserta_list %}
                     {% for p in peserta_list %}
-                    <div class="peserta-row grid grid-cols-1 sm:grid-cols-12 gap-2 p-3 bg-slate-50/70 border border-slate-200 rounded-xl items-center">
-                        <div class="sm:col-span-4">
-                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Nama Lengkap & Gelar *</label>
-                            <input type="text" name="peserta_nama[]" required value="{{ p.nama }}" placeholder="Nama Pegawai" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
-                        </div>
-                        <div class="sm:col-span-3">
-                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NIP</label>
-                            <input type="text" name="peserta_nip[]" value="{{ p.nip or '' }}" placeholder="19XXXXXXXX XXXXXX X XXX" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Pangkat / Gol.</label>
-                            <input type="text" name="peserta_pangkat[]" value="{{ p.pangkat_golongan or '' }}" placeholder="Pembina (IV/a)" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Jabatan</label>
-                            <input type="text" name="peserta_jabatan[]" value="{{ p.jabatan or '' }}" placeholder="Jabatan" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
-                        </div>
-                        <div class="sm:col-span-1 flex justify-center pt-3 sm:pt-0">
-                            <button type="button" onclick="hapusRow(this)" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition" title="Hapus">
-                                <i class="ph-bold ph-trash text-base"></i>
+                    <div class="peserta-row p-3.5 bg-slate-50/80 border border-slate-200 rounded-xl space-y-2.5 transition">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold row-number">
+                                    {{ loop.index }}
+                                </span>
+                                <div class="flex-1 max-w-md">
+                                    <select onchange="pilihPegawaiRow(this)" class="row-select-pegawai w-full px-2.5 py-1 text-xs border border-blue-200 rounded-lg bg-white text-slate-700 font-medium focus:ring-2 focus:ring-blue-500">
+                                        <option value="">-- Pilih dari Daftar Pegawai (Otomatis Isi NIP, Pangkat, Jabatan) --</option>
+                                        {% for peg in pegawai_list %}
+                                        <option value="{{ peg.id }}" data-nama="{{ peg.nama }}" data-nip="{{ peg.nip }}" data-pangkat="{{ peg.pangkat }}" data-jabatan="{{ peg.jabatan }}" {% if p.nama == peg.nama %}selected{% endif %}>
+                                            {{ loop.index }}. {{ peg.nama }} - {{ peg.jabatan }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="button" onclick="hapusRow(this)" class="inline-flex items-center gap-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 text-xs font-semibold px-2 py-1 rounded-lg transition" title="Hapus Pelaksana">
+                                <i class="ph-bold ph-trash text-sm"></i>
+                                <span>Hapus</span>
                             </button>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                            <div class="sm:col-span-4">
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Nama Lengkap & Gelar *</label>
+                                <input type="text" name="peserta_nama[]" required value="{{ p.nama }}" placeholder="Nama Pegawai" class="input-nama w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div class="sm:col-span-3">
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NIP</label>
+                                <input type="text" name="peserta_nip[]" value="{{ p.nip or '' }}" placeholder="19XXXXXXXX XXXXXX X XXX" class="input-nip w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Pangkat / Gol.</label>
+                                <input type="text" name="peserta_pangkat[]" value="{{ p.pangkat_golongan or '' }}" placeholder="Pembina (IV/a)" class="input-pangkat w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div class="sm:col-span-3">
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Jabatan</label>
+                                <input type="text" name="peserta_jabatan[]" value="{{ p.jabatan or '' }}" placeholder="Jabatan" class="input-jabatan w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
                         </div>
                     </div>
                     {% endfor %}
                 {% else %}
                     <!-- Default first row -->
-                    <div class="peserta-row grid grid-cols-1 sm:grid-cols-12 gap-2 p-3 bg-slate-50/70 border border-slate-200 rounded-xl items-center">
-                        <div class="sm:col-span-4">
-                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Nama Lengkap & Gelar *</label>
-                            <input type="text" name="peserta_nama[]" required value="{{ default_pelaksana_nama }}" placeholder="Nama Pegawai" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
-                        </div>
-                        <div class="sm:col-span-3">
-                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NIP</label>
-                            <input type="text" name="peserta_nip[]" value="{{ default_pelaksana_nip }}" placeholder="19XXXXXXXX XXXXXX X XXX" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Pangkat / Gol.</label>
-                            <input type="text" name="peserta_pangkat[]" value="{{ default_pelaksana_pangkat }}" placeholder="Pembina (IV/a)" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Jabatan</label>
-                            <input type="text" name="peserta_jabatan[]" value="{{ default_pelaksana_jabatan }}" placeholder="Jabatan" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
-                        </div>
-                        <div class="sm:col-span-1 flex justify-center pt-3 sm:pt-0">
-                            <button type="button" onclick="hapusRow(this)" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition" title="Hapus">
-                                <i class="ph-bold ph-trash text-base"></i>
+                    <div class="peserta-row p-3.5 bg-slate-50/80 border border-slate-200 rounded-xl space-y-2.5 transition">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
+                            <div class="flex items-center gap-2 flex-1">
+                                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold row-number">
+                                    1
+                                </span>
+                                <div class="flex-1 max-w-md">
+                                    <select onchange="pilihPegawaiRow(this)" class="row-select-pegawai w-full px-2.5 py-1 text-xs border border-blue-200 rounded-lg bg-white text-slate-700 font-medium focus:ring-2 focus:ring-blue-500">
+                                        <option value="">-- Pilih dari Daftar Pegawai (Otomatis Isi NIP, Pangkat, Jabatan) --</option>
+                                        {% for peg in pegawai_list %}
+                                        <option value="{{ peg.id }}" data-nama="{{ peg.nama }}" data-nip="{{ peg.nip }}" data-pangkat="{{ peg.pangkat }}" data-jabatan="{{ peg.jabatan }}">
+                                            {{ loop.index }}. {{ peg.nama }} - {{ peg.jabatan }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="button" onclick="hapusRow(this)" class="inline-flex items-center gap-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 text-xs font-semibold px-2 py-1 rounded-lg transition" title="Hapus Pelaksana">
+                                <i class="ph-bold ph-trash text-sm"></i>
+                                <span>Hapus</span>
                             </button>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                            <div class="sm:col-span-4">
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Nama Lengkap & Gelar *</label>
+                                <input type="text" name="peserta_nama[]" required value="{{ default_pelaksana_nama }}" placeholder="Nama Pegawai" class="input-nama w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div class="sm:col-span-3">
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NIP</label>
+                                <input type="text" name="peserta_nip[]" value="{{ default_pelaksana_nip }}" placeholder="19XXXXXXXX XXXXXX X XXX" class="input-nip w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Pangkat / Gol.</label>
+                                <input type="text" name="peserta_pangkat[]" value="{{ default_pelaksana_pangkat }}" placeholder="Pembina (IV/a)" class="input-pangkat w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div class="sm:col-span-3">
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Jabatan</label>
+                                <input type="text" name="peserta_jabatan[]" value="{{ default_pelaksana_jabatan }}" placeholder="Jabatan" class="input-jabatan w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
                         </div>
                     </div>
                 {% endif %}
@@ -515,44 +569,136 @@ function recalculateDuration() {
     }
 }
 
+// Master Pegawai Data from Backend (19 ASN)
+const PEGAWAI_MASTER = [
+    {% for peg in pegawai_list %}
+    {
+        id: {{ peg.id }},
+        nama: {{ peg.nama|tojson }},
+        nip: {{ peg.nip|tojson }},
+        pangkat: {{ peg.pangkat|tojson }},
+        jabatan: {{ peg.jabatan|tojson }}
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+];
+
+function generatePegawaiOptions(selectedNama = '') {
+    let html = '<option value="">-- Pilih dari Daftar Pegawai (Otomatis Isi NIP, Pangkat, Jabatan) --</option>';
+    PEGAWAI_MASTER.forEach((peg, index) => {
+        const isSelected = selectedNama && selectedNama === peg.nama ? 'selected' : '';
+        html += `<option value="${peg.id}" data-nama="${escapeHtml(peg.nama)}" data-nip="${escapeHtml(peg.nip)}" data-pangkat="${escapeHtml(peg.pangkat)}" data-jabatan="${escapeHtml(peg.jabatan)}" ${isSelected}>
+            ${index + 1}. ${peg.nama} - ${peg.jabatan}
+        </option>`;
+    });
+    return html;
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function pilihPegawaiRow(selectEl) {
+    const selectedOpt = selectEl.options[selectEl.selectedIndex];
+    if (!selectedOpt || !selectedOpt.value) return;
+
+    const row = selectEl.closest('.peserta-row');
+    if (!row) return;
+
+    const nama = selectedOpt.getAttribute('data-nama') || '';
+    const nip = selectedOpt.getAttribute('data-nip') || '';
+    const pangkat = selectedOpt.getAttribute('data-pangkat') || '';
+    const jabatan = selectedOpt.getAttribute('data-jabatan') || '';
+
+    row.querySelector('.input-nama').value = nama;
+    row.querySelector('.input-nip').value = nip;
+    row.querySelector('.input-pangkat').value = pangkat;
+    row.querySelector('.input-jabatan').value = jabatan;
+}
+
+function tambahPesertaDariDropdown(selectEl) {
+    const selectedOpt = selectEl.options[selectEl.selectedIndex];
+    if (!selectedOpt || !selectedOpt.value) return;
+
+    const data = {
+        nama: selectedOpt.getAttribute('data-nama') || '',
+        nip: selectedOpt.getAttribute('data-nip') || '',
+        pangkat: selectedOpt.getAttribute('data-pangkat') || '',
+        jabatan: selectedOpt.getAttribute('data-jabatan') || ''
+    };
+
+    tambahPeserta(data);
+    selectEl.value = ''; // Reset header dropdown
+}
+
 // Dynamic Peserta Rows
-function tambahPeserta() {
+function tambahPeserta(data = null) {
     const container = document.getElementById('pesertaContainer');
+    const rowCount = container.querySelectorAll('.peserta-row').length + 1;
     const div = document.createElement('div');
-    div.className = 'peserta-row grid grid-cols-1 sm:grid-cols-12 gap-2 p-3 bg-slate-50/70 border border-slate-200 rounded-xl items-center';
+    div.className = 'peserta-row p-3.5 bg-slate-50/80 border border-slate-200 rounded-xl space-y-2.5 transition';
+
+    const namaVal = data ? escapeHtml(data.nama) : '';
+    const nipVal = data ? escapeHtml(data.nip) : '';
+    const pangkatVal = data ? escapeHtml(data.pangkat) : '';
+    const jabatanVal = data ? escapeHtml(data.jabatan) : '';
+
     div.innerHTML = `
-        <div class="sm:col-span-4">
-            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Nama Lengkap & Gelar *</label>
-            <input type="text" name="peserta_nama[]" required placeholder="Nama Pegawai" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
-        </div>
-        <div class="sm:col-span-3">
-            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NIP</label>
-            <input type="text" name="peserta_nip[]" placeholder="19XXXXXXXX XXXXXX X XXX" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
-        </div>
-        <div class="sm:col-span-2">
-            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Pangkat / Gol.</label>
-            <input type="text" name="peserta_pangkat[]" placeholder="Penata (III/c)" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
-        </div>
-        <div class="sm:col-span-2">
-            <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Jabatan</label>
-            <input type="text" name="peserta_jabatan[]" placeholder="Staf Pelaksana" class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg">
-        </div>
-        <div class="sm:col-span-1 flex justify-center pt-3 sm:pt-0">
-            <button type="button" onclick="hapusRow(this)" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition" title="Hapus">
-                <i class="ph-bold ph-trash text-base"></i>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
+            <div class="flex items-center gap-2 flex-1">
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold row-number">
+                    ${rowCount}
+                </span>
+                <div class="flex-1 max-w-md">
+                    <select onchange="pilihPegawaiRow(this)" class="row-select-pegawai w-full px-2.5 py-1 text-xs border border-blue-200 rounded-lg bg-white text-slate-700 font-medium focus:ring-2 focus:ring-blue-500">
+                        ${generatePegawaiOptions(data ? data.nama : '')}
+                    </select>
+                </div>
+            </div>
+            <button type="button" onclick="hapusRow(this)" class="inline-flex items-center gap-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 text-xs font-semibold px-2 py-1 rounded-lg transition" title="Hapus Pelaksana">
+                <i class="ph-bold ph-trash text-sm"></i>
+                <span>Hapus</span>
             </button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+            <div class="sm:col-span-4">
+                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Nama Lengkap & Gelar *</label>
+                <input type="text" name="peserta_nama[]" required value="${namaVal}" placeholder="Nama Pegawai" class="input-nama w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="sm:col-span-3">
+                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NIP</label>
+                <input type="text" name="peserta_nip[]" value="${nipVal}" placeholder="19XXXXXXXX XXXXXX X XXX" class="input-nip w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="sm:col-span-2">
+                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Pangkat / Gol.</label>
+                <input type="text" name="peserta_pangkat[]" value="${pangkatVal}" placeholder="Pembina (IV/a)" class="input-pangkat w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="sm:col-span-3">
+                <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Jabatan</label>
+                <input type="text" name="peserta_jabatan[]" value="${jabatanVal}" placeholder="Jabatan" class="input-jabatan w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
         </div>
     `;
     container.appendChild(div);
+    updateRowNumbers();
 }
 
 function hapusRow(btn) {
     const rows = document.querySelectorAll('.peserta-row');
     if (rows.length > 1) {
         btn.closest('.peserta-row').remove();
+        updateRowNumbers();
     } else {
         alert('Minimal harus ada 1 nama pelaksana perjalanan dinas.');
     }
+}
+
+function updateRowNumbers() {
+    const rows = document.querySelectorAll('.peserta-row');
+    rows.forEach((row, idx) => {
+        const badge = row.querySelector('.row-number');
+        if (badge) badge.innerText = idx + 1;
+    });
 }
 
 // Dynamic Biaya Rows

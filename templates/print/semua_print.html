@@ -36,12 +36,7 @@
 
     <!-- DOKUMEN 1: SURAT PERINTAH TUGAS (SPT) -->
     <div class="printable-sheet naskah-dinas">
-        <div class="kop-surat">
-            <div class="kop-instansi-induk">{{ s.instansi_nama_induk }}</div>
-            <div class="kop-instansi-nama">{{ s.instansi_nama }}</div>
-            <div class="kop-alamat">{{ s.instansi_alamat }}</div>
-            <div class="kop-kontak">{{ s.instansi_kontak }}</div>
-        </div>
+        {% include 'print/_kop_surat.html' %}
 
         <div class="judul-dokumen">SURAT PERINTAH TUGAS</div>
         <div class="nomor-dokumen">Nomor : {{ spj.nomor_spt }}</div>
@@ -126,12 +121,7 @@
 
     <!-- DOKUMEN 2: RINCIAN BIAYA PERJALANAN DINAS -->
     <div class="printable-sheet naskah-dinas">
-        <div class="kop-surat">
-            <div class="kop-instansi-induk">{{ s.instansi_nama_induk }}</div>
-            <div class="kop-instansi-nama">{{ s.instansi_nama }}</div>
-            <div class="kop-alamat">{{ s.instansi_alamat }}</div>
-            <div class="kop-kontak">{{ s.instansi_kontak }}</div>
-        </div>
+        {% include 'print/_kop_surat.html' %}
 
         <div class="judul-dokumen">RINCIAN BIAYA PERJALANAN DINAS</div>
         <div class="nomor-dokumen">Lampiran SPPD Nomor : {{ spj.nomor_sppd }}</div>
@@ -198,10 +188,10 @@
             </div>
             <div style="margin-top: 25px; text-align: center; width: 60%; margin-left: auto; margin-right: auto;" class="text-xs">
                 <div>Mengetahui / Menyetujui :</div>
-                <div style="font-weight: bold;">Pejabat Pembuat Komitmen (PPK)</div>
+                <div style="font-weight: bold;">{{ s.pejabat_pptk_jabatan or s.pejabat_ppk_jabatan or 'Pejabat Pelaksana Teknis Kegiatan (PPTK)' }}</div>
                 <div class="ttd-space"></div>
-                <div class="ttd-nama">{{ s.pejabat_ppk_nama }}</div>
-                <div class="ttd-nip">NIP. {{ s.pejabat_ppk_nip }}</div>
+                <div class="ttd-nama">{{ s.pejabat_pptk_nama or s.pejabat_ppk_nama }}</div>
+                <div class="ttd-nip">NIP. {{ s.pejabat_pptk_nip or s.pejabat_ppk_nip }}</div>
             </div>
         </div>
     </div>
@@ -210,12 +200,7 @@
 
     <!-- DOKUMEN 3: KWITANSI -->
     <div class="printable-sheet naskah-dinas">
-        <div class="kop-surat">
-            <div class="kop-instansi-induk">{{ s.instansi_nama_induk }}</div>
-            <div class="kop-instansi-nama">{{ s.instansi_nama }}</div>
-            <div class="kop-alamat">{{ s.instansi_alamat }}</div>
-            <div class="kop-kontak">{{ s.instansi_kontak }}</div>
-        </div>
+        {% include 'print/_kop_surat.html' %}
 
         <div class="judul-dokumen">KWITANSI / BUKTI PEMBAYARAN</div>
         <div class="nomor-dokumen">Nomor Bukti : KW/{{ spj.nomor_sppd }}</div>
@@ -257,10 +242,10 @@
             <div class="ttd-tiga-kolom text-xs">
                 <div class="ttd-item">
                     <div>Setuju Dibayar :</div>
-                    <div style="font-weight: bold;">Pejabat Pembuat Komitmen</div>
+                    <div style="font-weight: bold;">{{ s.pejabat_pptk_jabatan or s.pejabat_ppk_jabatan or 'Pejabat Pelaksana Teknis Kegiatan (PPTK)' }}</div>
                     <div class="ttd-space"></div>
-                    <div class="ttd-nama">{{ s.pejabat_ppk_nama }}</div>
-                    <div class="ttd-nip">NIP. {{ s.pejabat_ppk_nip }}</div>
+                    <div class="ttd-nama">{{ s.pejabat_pptk_nama or s.pejabat_ppk_nama }}</div>
+                    <div class="ttd-nip">NIP. {{ s.pejabat_pptk_nip or s.pejabat_ppk_nip }}</div>
                 </div>
                 <div class="ttd-item">
                     <div>Lunas Dibayar :</div>
@@ -284,12 +269,7 @@
 
     <!-- DOKUMEN 4: DAFTAR PENGELUARAN RIIL -->
     <div class="printable-sheet naskah-dinas">
-        <div class="kop-surat">
-            <div class="kop-instansi-induk">{{ s.instansi_nama_induk }}</div>
-            <div class="kop-instansi-nama">{{ s.instansi_nama }}</div>
-            <div class="kop-alamat">{{ s.instansi_alamat }}</div>
-            <div class="kop-kontak">{{ s.instansi_kontak }}</div>
-        </div>
+        {% include 'print/_kop_surat.html' %}
 
         <div class="judul-dokumen">DAFTAR PENGELUARAN RIIL</div>
         <div class="nomor-dokumen">Lampiran SPPD Nomor : {{ spj.nomor_sppd }}</div>
@@ -339,10 +319,10 @@
             <div class="ttd-dua-kolom text-xs">
                 <div class="ttd-item">
                     <div>Mengetahui / Menyetujui :</div>
-                    <div style="font-weight: bold;">Pejabat Pembuat Komitmen (PPK)</div>
+                    <div style="font-weight: bold;">{{ s.pejabat_pptk_jabatan or s.pejabat_ppk_jabatan or 'Pejabat Pelaksana Teknis Kegiatan (PPTK)' }}</div>
                     <div class="ttd-space"></div>
-                    <div class="ttd-nama">{{ s.pejabat_ppk_nama }}</div>
-                    <div class="ttd-nip">NIP. {{ s.pejabat_ppk_nip }}</div>
+                    <div class="ttd-nama">{{ s.pejabat_pptk_nama or s.pejabat_ppk_nama }}</div>
+                    <div class="ttd-nip">NIP. {{ s.pejabat_pptk_nip or s.pejabat_ppk_nip }}</div>
                 </div>
                 <div class="ttd-item">
                     <div>{{ s.instansi_kota }}, {{ format_tanggal(spj.tanggal_pulang) }}</div>
@@ -359,12 +339,7 @@
 
     <!-- DOKUMEN 5: LAPORAN PERJALANAN DINAS -->
     <div class="printable-sheet naskah-dinas">
-        <div class="kop-surat">
-            <div class="kop-instansi-induk">{{ s.instansi_nama_induk }}</div>
-            <div class="kop-instansi-nama">{{ s.instansi_nama }}</div>
-            <div class="kop-alamat">{{ s.instansi_alamat }}</div>
-            <div class="kop-kontak">{{ s.instansi_kontak }}</div>
-        </div>
+        {% include 'print/_kop_surat.html' %}
 
         <div class="judul-dokumen">LAPORAN HASIL PERJALANAN DINAS</div>
         <div class="nomor-dokumen">Lampiran SPT Nomor : {{ spj.nomor_spt }}</div>

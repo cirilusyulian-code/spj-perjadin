@@ -50,7 +50,7 @@ def init_db():
         tanggal_pulang DATE NOT NULL,
         lama_hari INTEGER DEFAULT 1,
         tempat_berangkat TEXT DEFAULT 'Tempat Kedudukan',
-        angkutan TEXT DEFAULT 'Pesawat Udara',
+        angkutan TEXT DEFAULT 'Kendaraan Dinas / Mobil',
         mata_anggaran TEXT DEFAULT '5.1.02.04.01.0001 (Belanja Perjalanan Dinas Biasa)',
         spt_penandatangan_nama TEXT,
         spt_penandatangan_nip TEXT,

@@ -36,7 +36,7 @@ Sistem aplikasi web lengkap untuk pembuatan, pengelolaan, dan pencetakan dokumen
 
 4. **Siap Cetak & Export PDF:**
    - Tombol cetak per lembar dokumen.
-   - Tombol **"Cetak 1 Bundel Lengkap"** untuk mencetak seluruh 5 dokumen sekaligus dengan page-break otomatis standar A4/F4.
+   - Tombol **"Cetak 1 Bundel Lengkap"** untuk mencetak seluruh 5 dokumen sekaligus dengan page-break otomatis standar kertas F4 / Folio (215 x 330 mm).
 
 ---
 

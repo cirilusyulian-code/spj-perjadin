@@ -236,9 +236,16 @@
     print-color-adjust: exact;
 }
 
+/* Page Setup Standar Kertas F4 / Folio (215mm x 330mm) */
+@page {
+    size: 215mm 330mm;
+    margin: 1.2cm 1.5cm 1.2cm 1.5cm;
+}
+
 /* Print Handling */
 @media print {
     @page {
+        size: 215mm 330mm;
         margin: 1.2cm 1.5cm 1.2cm 1.5cm;
     }
 
@@ -281,12 +288,12 @@
     scrollbar-width: none;
 }
 
-/* Screen Simulation Preview */
+/* Screen Simulation Preview - Standar Kertas F4 / Folio (215mm x 330mm) */
 .printable-sheet {
     background: #fff;
-    width: 210mm;
-    min-height: 297mm;
-    padding: 20mm;
+    width: 215mm;
+    min-height: 330mm;
+    padding: 15mm 18mm;
     margin: 20px auto;
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
     box-sizing: border-box;

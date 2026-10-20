@@ -3,10 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Bundel Lengkap Dokumen SPJ - {{ spj.nomor_spt }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}?v=2.2">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}?v=2.4">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
+        @page {
+            size: 215mm 330mm;
+            margin: 1.2cm 1.5cm 1.2cm 1.5cm;
+        }
         .bundel-separator {
             page-break-after: always;
             break-after: page;
@@ -25,6 +29,7 @@
             </a>
             <span>•</span>
             <span class="text-slate-500">Mencetak 1 Bundel Lengkap: 5 Dokumen SPJ Sekaligus</span>
+            <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11px] font-bold border border-blue-200">Ukuran F4 / Folio</span>
         </div>
         <div>
             <button onclick="window.print()" class="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow flex items-center justify-center gap-1.5">

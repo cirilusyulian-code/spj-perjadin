@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Surat Perintah Tugas - {{ spj.nomor_spt }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}?v=2.2">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}?v=2.4">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
@@ -22,6 +22,7 @@
             <span>•</span>
             <span class="text-slate-500">Pratinjau Cetak: Surat Perintah Tugas (SPT {% if spj.jenis_spt == 'kadis'
                 %}Kepala Dinas{% else %}Staf{% endif %})</span>
+            <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11px] font-bold border border-blue-200">Ukuran F4 / Folio</span>
         </div>
         <div class="flex items-center gap-2">
             <button onclick="window.print()"
@@ -32,7 +33,7 @@
         </div>
     </div>
 
-    <!-- Printable Paper Sheet (F4/A4) -->
+    <!-- Printable Paper Sheet (F4) -->
     <div class="printable-sheet naskah-dinas">
         <!-- Kop Surat -->
         {% include 'print/_kop_surat.html' %}

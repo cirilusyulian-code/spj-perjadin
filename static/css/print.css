@@ -66,9 +66,9 @@
 }
 
 .kop-instansi-nama {
-    font-size: 13pt;
+    font-size: 12pt;
     font-weight: 800;
-    letter-spacing: 0.2px;
+    letter-spacing: -0.2px;
     text-transform: uppercase;
     margin: 1px 0;
     white-space: nowrap;

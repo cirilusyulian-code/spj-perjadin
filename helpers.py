@@ -81,3 +81,16 @@ def hitung_hari(tgl_mulai, tgl_selesai):
         return max(1, delta)
     except Exception:
         return 1
+
+import re
+
+def clean_uraian(keterangan, nama=None):
+    if not keterangan:
+        return ""
+    text = str(keterangan).strip()
+    if nama and str(nama).strip():
+        clean_nama = re.escape(str(nama).strip())
+        text = re.sub(rf'\s*-\s*{clean_nama}.*$', '', text, flags=re.IGNORECASE)
+    # Also strip any generic " - Pelaksana \d+"
+    text = re.sub(r'\s*-\s*Pelaksana\s*\d+.*$', '', text, flags=re.IGNORECASE)
+    return text.strip()

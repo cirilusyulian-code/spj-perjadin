@@ -1,4 +1,4 @@
-{% set kop = get_kop(s, spj.jenis_spt if spj else 'staf') %}
+{% set kop = get_kop(s, force_kop if force_kop is defined and force_kop else (spj.jenis_spt if spj else 'staf')) %}
 <div class="kop-surat">
     <table class="kop-table">
         <tr>

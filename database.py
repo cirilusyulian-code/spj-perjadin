@@ -52,11 +52,31 @@ def init_db():
         tempat_berangkat TEXT DEFAULT 'Tempat Kedudukan',
         angkutan TEXT DEFAULT 'Pesawat Udara',
         mata_anggaran TEXT DEFAULT '5.1.02.04.01.0001 (Belanja Perjalanan Dinas Biasa)',
+        spt_penandatangan_nama TEXT,
+        spt_penandatangan_nip TEXT,
+        spt_penandatangan_pangkat TEXT,
+        spt_penandatangan_jabatan TEXT,
+        spt_penandatangan_an TEXT,
         status TEXT DEFAULT 'Draft', -- 'Draft', 'Disetujui', 'Selesai'
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     ''')
+
+    # Ensure migration columns for spt_penandatangan exist in spj
+    cursor.execute("PRAGMA table_info(spj)")
+    existing_cols = [c[1] for c in cursor.fetchall()]
+    new_cols = [
+        ('spt_penandatangan_nama', 'TEXT'),
+        ('spt_penandatangan_nip', 'TEXT'),
+        ('spt_penandatangan_pangkat', 'TEXT'),
+        ('spt_penandatangan_jabatan', 'TEXT'),
+        ('spt_penandatangan_an', 'TEXT')
+    ]
+    for col_name, col_type in new_cols:
+        if col_name not in existing_cols:
+            cursor.execute(f"ALTER TABLE spj ADD COLUMN {col_name} {col_type}")
+
 
     # SPJ Peserta
     cursor.execute('''
@@ -88,7 +108,11 @@ def init_db():
     )
     ''')
 
-    # SPJ Laporan
+    # Ensure migration columns for spj_biaya exist
+    cursor.execute("PRAGMA table_info(spj_biaya)")
+    biaya_cols = [c[1] for c in cursor.fetchall()]
+    if 'peserta_nama' not in biaya_cols:
+        cursor.execute("ALTER TABLE spj_biaya ADD COLUMN peserta_nama TEXT")
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS spj_laporan (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -188,6 +212,11 @@ def init_db():
         'pejabat_bendahara_nip': '19880918 201101 2 007',
         'pejabat_bendahara_pangkat': 'Penata Tk. I (III/d)',
         'pejabat_bendahara_jabatan': 'Bendahara Pengeluaran',
+        'pejabat_ttd_kadis_an': 'a.n. Bupati Kepahiang',
+        'pejabat_ttd_kadis_jabatan': 'Sekretaris Daerah',
+        'pejabat_ttd_kadis_nama': 'Dr. HARTONO, S.Pd., S.H,. M.Pd,. M.H',
+        'pejabat_ttd_kadis_nip': '19701229 199409 1 001',
+        'pejabat_ttd_kadis_pangkat': 'Pembina Utama Madya (IV/d)',
         'template_spt_kadis': 'Berdasarkan Disposisi Pimpinan Daerah dan DPA SKPD Dinas Komunikasi dan Informatika Tahun Anggaran 2026 tentang Program Peningkatan Tata Kelola Pemerintahan Berbasis Elektronik (SPBE).',
         'template_spt_staf': 'Berdasarkan Peraturan Bupati/Walikota tentang Pedoman Pelaksanaan Perjalanan Dinas dan Dokumen Pelaksanaan Anggaran (DPA) Dinas Komunikasi dan Informatika Tahun Anggaran 2026.',
         'template_pengeluaran_riil': 'Dengan ini menyatakan dengan sesungguhnya bahwa biaya perjalanan dinas di bawah ini yang tidak dapat diperoleh bukti-bukti pengeluarannya meliputi biaya transportasi lokal/taksi dan pengeluaran darat riil, benar-benar dikeluarkan untuk keperluan pelaksanaan tugas dan apabila di kemudian hari terdapat kelebihan atas pembayaran tersebut kami bersedia menyetorkan kelebihan tersebut ke Kas Daerah.',
@@ -286,8 +315,8 @@ def create_sample_data():
         INSERT INTO spj (nomor_spt, nomor_sppd, jenis_spt, tujuan, instansi_tujuan, maksud, dasar_hukum, tanggal_berangkat, tanggal_pulang, lama_hari, angkutan, mata_anggaran, status)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
-            '090/102/SPT/DISKOMINFO/2026',
-            '094/102/SPPD/DISKOMINFO/2026',
+            '800/001/Dukcapil-Kph/2026',
+            '800/001/SPPD/Dukcapil-Kph/2026',
             'kadis',
             'Jakarta Pusat',
             'Kementerian Komunikasi dan Digital RI',
@@ -308,27 +337,28 @@ def create_sample_data():
         VALUES (?, ?, ?, ?, ?, ?)
         ''', (spj1_id, 'Dr. H. Bambang Setiawan, M.Si.', '19740615 199903 1 005', 'Pembina Utama Muda (IV/c)', 'Kepala Dinas Komunikasi dan Informatika', 1))
 
-        # Biaya SPJ 1
+        # Biaya SPJ 1 (5 Template Baku Per Pelaksana)
+        p1_nama = 'Dr. H. Bambang Setiawan, M.Si.'
         biaya1 = [
-            ('uang_harian', 'Uang Harian (3 Hari)', 3, 'Hari', 530000, 1590000, 0),
-            ('tiket_pesawat', 'Tiket Pesawat Garuda Indonesia (PP Jakarta)', 1, 'PP', 3450000, 3450000, 0),
-            ('hotel', 'Akomodasi / Hotel Santika Premiere (2 Malam)', 2, 'Malam', 850000, 1700000, 0),
-            ('taxi', 'Taksi Bandara Soekarno Hatta - Hotel PP', 2, 'Kali', 225000, 450000, 1),
-            ('transportasi', 'Transportasi Lokal Kedinasan Dalam Kota', 2, 'Hari', 180000, 360000, 1)
+            ('uang_harian', 'Uang harian', 3, 'OH', 530000, 1590000, 0, p1_nama),
+            ('transportasi', 'Biaya Transportasi', 1, 'PP', 3450000, 3450000, 0, p1_nama),
+            ('hotel', 'Biaya Penginapan', 2, 'Malam', 850000, 1700000, 0, p1_nama),
+            ('representasi', 'Uang representasi perjalanan dinas', 3, 'OH', 150000, 450000, 0, p1_nama),
+            ('taxi', 'Biaya taxi', 2, 'Kali', 225000, 450000, 1, p1_nama)
         ]
         for b in biaya1:
             cursor.execute('''
-            INSERT INTO spj_biaya (spj_id, jenis_biaya, keterangan, kuantitas, satuan, tarif, total, termasuk_riil)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (spj1_id, b[0], b[1], b[2], b[3], b[4], b[5], b[6]))
+            INSERT INTO spj_biaya (spj_id, jenis_biaya, keterangan, kuantitas, satuan, tarif, total, termasuk_riil, peserta_nama)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (spj1_id, b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]))
 
         # Sample 2: SPT Staf (Tim Teknis)
         cursor.execute('''
         INSERT INTO spj (nomor_spt, nomor_sppd, jenis_spt, tujuan, instansi_tujuan, maksud, dasar_hukum, tanggal_berangkat, tanggal_pulang, lama_hari, angkutan, mata_anggaran, status)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
-            '090/108/SPT/DISKOMINFO/2026',
-            '094/108/SPPD/DISKOMINFO/2026',
+            '800/002/Dukcapil-Kph/2026',
+            '800/002/SPPD/Dukcapil-Kph/2026',
             'staf',
             'Surabaya, Jawa Timur',
             'Dinas Kominfo Provinsi Jawa Timur',

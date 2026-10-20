@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 
 from database import (init_db, get_db, get_settings, update_settings, verify_user, create_sample_data, 
                       get_pegawai_list, get_pegawai_by_id, add_pegawai, update_pegawai, delete_pegawai)
-from helpers import format_rupiah, terbilang, format_tanggal, hitung_hari, angka_murni
+from helpers import format_rupiah, terbilang, format_tanggal, hitung_hari, angka_murni, clean_uraian
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'spj-secret-key-super-secure-2026-vps')
@@ -46,12 +46,14 @@ def get_kop(s, jenis_spt='staf'):
 app.jinja_env.filters['format_rupiah'] = format_rupiah
 app.jinja_env.filters['terbilang'] = terbilang
 app.jinja_env.filters['format_tanggal'] = format_tanggal
+app.jinja_env.filters['clean_uraian'] = clean_uraian
 app.jinja_env.globals.update(
     format_rupiah=format_rupiah,
     terbilang=terbilang,
     format_tanggal=format_tanggal,
     angka_murni=angka_murni,
-    get_kop=get_kop
+    get_kop=get_kop,
+    clean_uraian=clean_uraian
 )
 
 @app.context_processor
@@ -170,6 +172,7 @@ def spj_list():
 
 # ----------------- CREATE SPJ -----------------
 @app.route('/spj/create', methods=['GET', 'POST'])
+@app.route('/spj/baru', methods=['GET', 'POST'])
 @login_required
 def spj_create():
     s = get_settings()
@@ -189,17 +192,39 @@ def spj_create():
         angkutan = request.form.get('angkutan', 'Pesawat Udara').strip()
         mata_anggaran = request.form.get('mata_anggaran', '').strip()
         status = request.form.get('status', 'Draft').strip()
+        spt_penandatangan_an = request.form.get('spt_penandatangan_an', '').strip()
+        spt_penandatangan_jabatan = request.form.get('spt_penandatangan_jabatan', '').strip()
+        spt_penandatangan_nama = request.form.get('spt_penandatangan_nama', '').strip()
+        spt_penandatangan_nip = request.form.get('spt_penandatangan_nip', '').strip()
+        spt_penandatangan_pangkat = request.form.get('spt_penandatangan_pangkat', '').strip()
+
+        # If SPT Kadis and custom fields empty, fallback to settings default
+        if jenis_spt == 'kadis':
+            if not spt_penandatangan_nama:
+                spt_penandatangan_nama = s.get('pejabat_ttd_kadis_nama', '')
+            if not spt_penandatangan_jabatan:
+                spt_penandatangan_jabatan = s.get('pejabat_ttd_kadis_jabatan', '')
+            if not spt_penandatangan_nip:
+                spt_penandatangan_nip = s.get('pejabat_ttd_kadis_nip', '')
+            if not spt_penandatangan_pangkat:
+                spt_penandatangan_pangkat = s.get('pejabat_ttd_kadis_pangkat', '')
+            if not spt_penandatangan_an and 'spt_penandatangan_an' not in request.form:
+                spt_penandatangan_an = s.get('pejabat_ttd_kadis_an', '')
 
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute('''
             INSERT INTO spj (
                 nomor_spt, nomor_sppd, jenis_spt, tujuan, instansi_tujuan, maksud, dasar_hukum,
-                tanggal_berangkat, tanggal_pulang, lama_hari, angkutan, mata_anggaran, status
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                tanggal_berangkat, tanggal_pulang, lama_hari, angkutan, mata_anggaran, status,
+                spt_penandatangan_an, spt_penandatangan_jabatan, spt_penandatangan_nama,
+                spt_penandatangan_nip, spt_penandatangan_pangkat
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             nomor_spt, nomor_sppd, jenis_spt, tujuan, instansi_tujuan, maksud, dasar_hukum,
-            tanggal_berangkat, tanggal_pulang, lama_hari, angkutan, mata_anggaran, status
+            tanggal_berangkat, tanggal_pulang, lama_hari, angkutan, mata_anggaran, status,
+            spt_penandatangan_an, spt_penandatangan_jabatan, spt_penandatangan_nama,
+            spt_penandatangan_nip, spt_penandatangan_pangkat
         ))
         spj_id = cursor.lastrowid
 
@@ -220,25 +245,28 @@ def spj_create():
                 ''', (spj_id, nama.strip(), nip, pangkat, jabatan, idx + 1))
 
         # Insert Biaya
+        biaya_peserta = request.form.getlist('biaya_peserta[]')
         biaya_jenis = request.form.getlist('biaya_jenis[]')
         biaya_keterangan = request.form.getlist('biaya_keterangan[]')
         biaya_kuantitas = request.form.getlist('biaya_kuantitas[]')
         biaya_satuan = request.form.getlist('biaya_satuan[]')
         biaya_tarif = request.form.getlist('biaya_tarif[]')
+        biaya_riil = request.form.getlist('biaya_riil[]')
 
         for idx, jenis_b in enumerate(biaya_jenis):
             ket = biaya_keterangan[idx].strip() if idx < len(biaya_keterangan) else ''
             if ket:
+                p_nama = biaya_peserta[idx].strip() if idx < len(biaya_peserta) else ''
                 qty = float(biaya_kuantitas[idx]) if idx < len(biaya_kuantitas) and biaya_kuantitas[idx] else 1.0
-                sat = biaya_satuan[idx].strip() if idx < len(biaya_satuan) else 'Hari'
+                sat = biaya_satuan[idx].strip() if idx < len(biaya_satuan) else 'OH'
                 tarif = float(biaya_tarif[idx]) if idx < len(biaya_tarif) and biaya_tarif[idx] else 0.0
                 total = qty * tarif
-                is_riil = 1 if request.form.get(f'biaya_riil_{idx}') == '1' else 0
+                is_riil = 1 if (idx < len(biaya_riil) and biaya_riil[idx] == '1') or request.form.get(f'biaya_riil_{idx}') == '1' else 0
 
                 cursor.execute('''
-                    INSERT INTO spj_biaya (spj_id, jenis_biaya, keterangan, kuantitas, satuan, tarif, total, termasuk_riil)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (spj_id, jenis_b, ket, qty, sat, tarif, total, is_riil))
+                    INSERT INTO spj_biaya (spj_id, jenis_biaya, keterangan, kuantitas, satuan, tarif, total, termasuk_riil, peserta_nama)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (spj_id, jenis_b, ket, qty, sat, tarif, total, is_riil, p_nama))
 
         conn.commit()
         conn.close()
@@ -251,8 +279,8 @@ def spj_create():
     current_cnt = conn.execute('SELECT COUNT(*) as c FROM spj').fetchone()['c'] + 1
     conn.close()
     year = datetime.date.today().year
-    default_nomor_spt = f"090/{current_cnt:03d}/SPT/DISKOMINFO/{year}"
-    default_nomor_sppd = f"094/{current_cnt:03d}/SPPD/DISKOMINFO/{year}"
+    default_nomor_spt = f"800/    /Dukcapil-Kph/{year}"
+    default_nomor_sppd = f"800/    /SPPD/Dukcapil-Kph/{year}"
 
     return render_template('spj_form.html',
         spj=None,
@@ -261,11 +289,18 @@ def spj_create():
         today_date=today_str,
         default_nomor_spt=default_nomor_spt,
         default_nomor_sppd=default_nomor_sppd,
+        biaya_json='[]',
+        peserta_json='[]',
         default_dasar_hukum=s.get('template_spt_staf', ''),
         default_pelaksana_nama=s.get('pejabat_kadis_nama', ''),
         default_pelaksana_nip=s.get('pejabat_kadis_nip', ''),
         default_pelaksana_pangkat=s.get('pejabat_kadis_pangkat', ''),
-        default_pelaksana_jabatan=s.get('pejabat_kadis_jabatan', '')
+        default_pelaksana_jabatan=s.get('pejabat_kadis_jabatan', ''),
+        default_ttd_kadis_an=s.get('pejabat_ttd_kadis_an', 'a.n. Bupati Kepahiang'),
+        default_ttd_kadis_jabatan=s.get('pejabat_ttd_kadis_jabatan', 'Sekretaris Daerah'),
+        default_ttd_kadis_nama=s.get('pejabat_ttd_kadis_nama', 'Dr. HARTONO, S.Pd., S.H,. M.Pd,. M.H'),
+        default_ttd_kadis_nip=s.get('pejabat_ttd_kadis_nip', '19701229 199409 1 001'),
+        default_ttd_kadis_pangkat=s.get('pejabat_ttd_kadis_pangkat', 'Pembina Utama Madya (IV/d)')
     )
 
 # ----------------- EDIT SPJ -----------------
@@ -294,17 +329,26 @@ def spj_edit(spj_id):
         angkutan = request.form.get('angkutan', 'Pesawat Udara').strip()
         mata_anggaran = request.form.get('mata_anggaran', '').strip()
         status = request.form.get('status', 'Draft').strip()
+        spt_penandatangan_an = request.form.get('spt_penandatangan_an', '').strip()
+        spt_penandatangan_jabatan = request.form.get('spt_penandatangan_jabatan', '').strip()
+        spt_penandatangan_nama = request.form.get('spt_penandatangan_nama', '').strip()
+        spt_penandatangan_nip = request.form.get('spt_penandatangan_nip', '').strip()
+        spt_penandatangan_pangkat = request.form.get('spt_penandatangan_pangkat', '').strip()
 
         cursor = conn.cursor()
         cursor.execute('''
             UPDATE spj SET
                 nomor_spt = ?, nomor_sppd = ?, jenis_spt = ?, tujuan = ?, instansi_tujuan = ?, maksud = ?, dasar_hukum = ?,
                 tanggal_berangkat = ?, tanggal_pulang = ?, lama_hari = ?, angkutan = ?, mata_anggaran = ?, status = ?,
+                spt_penandatangan_an = ?, spt_penandatangan_jabatan = ?, spt_penandatangan_nama = ?,
+                spt_penandatangan_nip = ?, spt_penandatangan_pangkat = ?,
                 updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
         ''', (
             nomor_spt, nomor_sppd, jenis_spt, tujuan, instansi_tujuan, maksud, dasar_hukum,
-            tanggal_berangkat, tanggal_pulang, lama_hari, angkutan, mata_anggaran, status, spj_id
+            tanggal_berangkat, tanggal_pulang, lama_hari, angkutan, mata_anggaran, status,
+            spt_penandatangan_an, spt_penandatangan_jabatan, spt_penandatangan_nama,
+            spt_penandatangan_nip, spt_penandatangan_pangkat, spj_id
         ))
 
         # Re-sync Peserta
@@ -326,25 +370,28 @@ def spj_edit(spj_id):
 
         # Re-sync Biaya
         cursor.execute('DELETE FROM spj_biaya WHERE spj_id = ?', (spj_id,))
+        biaya_peserta = request.form.getlist('biaya_peserta[]')
         biaya_jenis = request.form.getlist('biaya_jenis[]')
         biaya_keterangan = request.form.getlist('biaya_keterangan[]')
         biaya_kuantitas = request.form.getlist('biaya_kuantitas[]')
         biaya_satuan = request.form.getlist('biaya_satuan[]')
         biaya_tarif = request.form.getlist('biaya_tarif[]')
+        biaya_riil = request.form.getlist('biaya_riil[]')
 
         for idx, jenis_b in enumerate(biaya_jenis):
             ket = biaya_keterangan[idx].strip() if idx < len(biaya_keterangan) else ''
             if ket:
+                p_nama = biaya_peserta[idx].strip() if idx < len(biaya_peserta) else ''
                 qty = float(biaya_kuantitas[idx]) if idx < len(biaya_kuantitas) and biaya_kuantitas[idx] else 1.0
-                sat = biaya_satuan[idx].strip() if idx < len(biaya_satuan) else 'Hari'
+                sat = biaya_satuan[idx].strip() if idx < len(biaya_satuan) else 'OH'
                 tarif = float(biaya_tarif[idx]) if idx < len(biaya_tarif) and biaya_tarif[idx] else 0.0
                 total = qty * tarif
-                is_riil = 1 if request.form.get(f'biaya_riil_{idx}') == '1' else 0
+                is_riil = 1 if (idx < len(biaya_riil) and biaya_riil[idx] == '1') or request.form.get(f'biaya_riil_{idx}') == '1' else 0
 
                 cursor.execute('''
-                    INSERT INTO spj_biaya (spj_id, jenis_biaya, keterangan, kuantitas, satuan, tarif, total, termasuk_riil)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (spj_id, jenis_b, ket, qty, sat, tarif, total, is_riil))
+                    INSERT INTO spj_biaya (spj_id, jenis_biaya, keterangan, kuantitas, satuan, tarif, total, termasuk_riil, peserta_nama)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (spj_id, jenis_b, ket, qty, sat, tarif, total, is_riil, p_nama))
 
         conn.commit()
         conn.close()
@@ -360,10 +407,17 @@ def spj_edit(spj_id):
         spj=spj,
         peserta_list=peserta_list,
         biaya_list=biaya_list,
+        biaya_json=json.dumps([dict(b) for b in biaya_list]),
+        peserta_json=json.dumps([dict(p) for p in peserta_list]),
         today_date=spj['tanggal_berangkat'],
         default_nomor_spt=spj['nomor_spt'],
         default_nomor_sppd=spj['nomor_sppd'],
-        default_dasar_hukum=spj['dasar_hukum']
+        default_dasar_hukum=spj['dasar_hukum'],
+        default_ttd_kadis_an=s.get('pejabat_ttd_kadis_an', 'a.n. Bupati Kepahiang'),
+        default_ttd_kadis_jabatan=s.get('pejabat_ttd_kadis_jabatan', 'Sekretaris Daerah'),
+        default_ttd_kadis_nama=s.get('pejabat_ttd_kadis_nama', 'Dr. HARTONO, S.Pd., S.H,. M.Pd,. M.H'),
+        default_ttd_kadis_nip=s.get('pejabat_ttd_kadis_nip', '19701229 199409 1 001'),
+        default_ttd_kadis_pangkat=s.get('pejabat_ttd_kadis_pangkat', 'Pembina Utama Madya (IV/d)')
     )
 
 # ----------------- DELETE SPJ -----------------
@@ -443,6 +497,9 @@ def update_laporan(spj_id):
 def cetak_spt(spj_id):
     conn = get_db()
     spj = conn.execute('SELECT * FROM spj WHERE id = ?', (spj_id,)).fetchone()
+    if not spj:
+        conn.close()
+        abort(404)
     peserta = conn.execute('SELECT * FROM spj_peserta WHERE spj_id = ? ORDER BY urutan ASC', (spj_id,)).fetchall()
     conn.close()
     s = get_settings()
@@ -453,6 +510,9 @@ def cetak_spt(spj_id):
 def cetak_pengeluaran_riil(spj_id):
     conn = get_db()
     spj = conn.execute('SELECT * FROM spj WHERE id = ?', (spj_id,)).fetchone()
+    if not spj:
+        conn.close()
+        abort(404)
     peserta = conn.execute('SELECT * FROM spj_peserta WHERE spj_id = ? ORDER BY urutan ASC', (spj_id,)).fetchall()
     biaya = conn.execute('SELECT * FROM spj_biaya WHERE spj_id = ? ORDER BY id ASC', (spj_id,)).fetchall()
     conn.close()
@@ -464,6 +524,9 @@ def cetak_pengeluaran_riil(spj_id):
 def cetak_kwitansi(spj_id):
     conn = get_db()
     spj = conn.execute('SELECT * FROM spj WHERE id = ?', (spj_id,)).fetchone()
+    if not spj:
+        conn.close()
+        abort(404)
     peserta = conn.execute('SELECT * FROM spj_peserta WHERE spj_id = ? ORDER BY urutan ASC', (spj_id,)).fetchall()
     biaya = conn.execute('SELECT * FROM spj_biaya WHERE spj_id = ? ORDER BY id ASC', (spj_id,)).fetchall()
     conn.close()
@@ -476,6 +539,9 @@ def cetak_kwitansi(spj_id):
 def cetak_rincian_biaya(spj_id):
     conn = get_db()
     spj = conn.execute('SELECT * FROM spj WHERE id = ?', (spj_id,)).fetchone()
+    if not spj:
+        conn.close()
+        abort(404)
     peserta = conn.execute('SELECT * FROM spj_peserta WHERE spj_id = ? ORDER BY urutan ASC', (spj_id,)).fetchall()
     biaya = conn.execute('SELECT * FROM spj_biaya WHERE spj_id = ? ORDER BY id ASC', (spj_id,)).fetchall()
     conn.close()
@@ -487,6 +553,9 @@ def cetak_rincian_biaya(spj_id):
 def cetak_laporan(spj_id):
     conn = get_db()
     spj = conn.execute('SELECT * FROM spj WHERE id = ?', (spj_id,)).fetchone()
+    if not spj:
+        conn.close()
+        abort(404)
     peserta = conn.execute('SELECT * FROM spj_peserta WHERE spj_id = ? ORDER BY urutan ASC', (spj_id,)).fetchall()
     laporan = conn.execute('SELECT * FROM spj_laporan WHERE spj_id = ?', (spj_id,)).fetchone()
     conn.close()
@@ -499,6 +568,9 @@ def cetak_laporan(spj_id):
 def cetak_semua(spj_id):
     conn = get_db()
     spj = conn.execute('SELECT * FROM spj WHERE id = ?', (spj_id,)).fetchone()
+    if not spj:
+        conn.close()
+        abort(404)
     peserta = conn.execute('SELECT * FROM spj_peserta WHERE spj_id = ? ORDER BY urutan ASC', (spj_id,)).fetchall()
     biaya = conn.execute('SELECT * FROM spj_biaya WHERE spj_id = ? ORDER BY id ASC', (spj_id,)).fetchall()
     laporan = conn.execute('SELECT * FROM spj_laporan WHERE spj_id = ?', (spj_id,)).fetchone()
@@ -528,6 +600,7 @@ def settings_view():
             'kop_kadis_instansi_induk', 'kop_kadis_instansi_nama', 'kop_kadis_alamat', 'kop_kadis_kontak', 'kop_kadis_kota',
             'kop_staf_instansi_induk', 'kop_staf_instansi_nama', 'kop_staf_alamat', 'kop_staf_kontak', 'kop_staf_kota',
             'pejabat_kadis_nama', 'pejabat_kadis_nip', 'pejabat_kadis_pangkat', 'pejabat_kadis_jabatan',
+            'pejabat_ttd_kadis_an', 'pejabat_ttd_kadis_jabatan', 'pejabat_ttd_kadis_nama', 'pejabat_ttd_kadis_nip', 'pejabat_ttd_kadis_pangkat',
             'pejabat_ppk_nama', 'pejabat_ppk_nip', 'pejabat_ppk_pangkat', 'pejabat_ppk_jabatan',
             'pejabat_pptk_nama', 'pejabat_pptk_nip', 'pejabat_pptk_pangkat', 'pejabat_pptk_jabatan',
             'pejabat_bendahara_nama', 'pejabat_bendahara_nip', 'pejabat_bendahara_pangkat', 'pejabat_bendahara_jabatan',

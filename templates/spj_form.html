@@ -50,20 +50,84 @@
                     </div>
                 </div>
 
+                <!-- Input Khusus Penandatangan SPT Kepala Dinas -->
+                <div id="sectionPenandatanganKadis" class="col-span-1 md:col-span-2 p-4 bg-indigo-50/70 border border-indigo-200 rounded-xl space-y-3 transition-all" style="display: none;">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-100 pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs shadow-xs">
+                                <i class="ph-bold ph-pen-nib"></i>
+                            </span>
+                            <span class="text-xs font-bold text-indigo-950 uppercase tracking-wider">Pejabat Penandatangan SPT Kepala Dinas</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-semibold bg-indigo-100/80 text-indigo-700 px-2.5 py-0.5 rounded-full border border-indigo-200">
+                                Ditandatangani oleh Atasan (Bupati / Sekda)
+                            </span>
+                            <button type="button" onclick="resetTtdKadisDefault()" class="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 underline">
+                                Reset ke Default Pengaturan
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-600">
+                        Karena Kepala Dinas yang melaksanakan dinas luar, SPT ini ditandatangani oleh atasan/pejabat berwenang (misal: Sekretaris Daerah atas nama Bupati, atau Bupati).
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Atas Nama (a.n.)</label>
+                            <input type="text" id="ttd_an" name="spt_penandatangan_an" value="{{ spj.spt_penandatangan_an if (spj and spj.spt_penandatangan_an is not none) else default_ttd_kadis_an }}"
+                                placeholder="Contoh: a.n. Bupati Kepahiang"
+                                class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
+                            <span class="text-[10px] text-slate-400">Kosongkan jika Bupati langsung</span>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Jabatan Resmi *</label>
+                            <input type="text" id="ttd_jabatan" name="spt_penandatangan_jabatan" value="{{ spj.spt_penandatangan_jabatan if spj and spj.spt_penandatangan_jabatan else default_ttd_kadis_jabatan }}"
+                                placeholder="Contoh: Sekretaris Daerah"
+                                class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Nama Lengkap & Gelar *</label>
+                            <input type="text" id="ttd_nama" name="spt_penandatangan_nama" value="{{ spj.spt_penandatangan_nama if spj and spj.spt_penandatangan_nama else default_ttd_kadis_nama }}"
+                                placeholder="Nama Pejabat"
+                                class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">Pangkat / Golongan</label>
+                            <input type="text" id="ttd_pangkat" name="spt_penandatangan_pangkat" value="{{ spj.spt_penandatangan_pangkat if spj and spj.spt_penandatangan_pangkat else default_ttd_kadis_pangkat }}"
+                                placeholder="Contoh: Pembina Utama Madya (IV/d)"
+                                class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-700 mb-1">NIP Penandatangan</label>
+                            <input type="text" id="ttd_nip" name="spt_penandatangan_nip" value="{{ spj.spt_penandatangan_nip if spj and spj.spt_penandatangan_nip else default_ttd_kadis_nip }}"
+                                placeholder="19XXXXXXXX XXXXXX X XXX"
+                                class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Nomor SPT -->
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Surat Perintah Tugas (SPT) *</label>
-                    <input type="text" name="nomor_spt" required value="{{ spj.nomor_spt if spj else default_nomor_spt }}"
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-semibold text-slate-700">Nomor Surat Perintah Tugas (SPT) *</label>
+                        <button type="button" onclick="document.getElementById('nomor_spt').value='800/    /Dukcapil-Kph/2026'" class="text-[11px] text-blue-600 hover:text-blue-800 font-medium">Reset ke Format Baku</button>
+                    </div>
+                    <input type="text" id="nomor_spt" name="nomor_spt" required value="{{ spj.nomor_spt if spj else default_nomor_spt }}"
                         class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                        placeholder="Contoh: 090/112/SPT/DISKOMINFO/2026">
+                        placeholder="Contoh: 800/    /Dukcapil-Kph/2026">
+                    <p class="text-[10px] text-slate-400 mt-1">Format baku Dukcapil: <code>800/    /Dukcapil-Kph/2026</code> (isi nomor agenda di antara garis miring)</p>
                 </div>
 
                 <!-- Nomor SPPD -->
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Surat Perintah Perjalanan Dinas (SPPD) *</label>
-                    <input type="text" name="nomor_sppd" required value="{{ spj.nomor_sppd if spj else default_nomor_sppd }}"
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="block text-xs font-semibold text-slate-700">Nomor Surat Perintah Perjalanan Dinas (SPPD) *</label>
+                        <button type="button" onclick="document.getElementById('nomor_sppd').value='800/    /SPPD/Dukcapil-Kph/2026'" class="text-[11px] text-blue-600 hover:text-blue-800 font-medium">Reset ke Format Baku</button>
+                    </div>
+                    <input type="text" id="nomor_sppd" name="nomor_sppd" required value="{{ spj.nomor_sppd if spj else default_nomor_sppd }}"
                         class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                        placeholder="Contoh: 094/112/SPPD/DISKOMINFO/2026">
+                        placeholder="Contoh: 800/    /SPPD/Dukcapil-Kph/2026">
+                    <p class="text-[10px] text-slate-400 mt-1">Format baku: <code>800/    /SPPD/Dukcapil-Kph/2026</code></p>
                 </div>
             </div>
         </div>
@@ -289,239 +353,35 @@
             </div>
         </div>
 
-        <!-- 5. Rincian Biaya (Uang Harian & Additional: Taxi, Hotel, Pesawat/Kapal) -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <!-- 5. Rincian Biaya Perjalanan Dinas (Hitungan Per Orang) -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-3">
                 <div>
                     <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
                         <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">5</span>
-                        Rincian Biaya Perjalanan Dinas
+                        <span>Rincian Biaya Perjalanan Dinas (Hitungan Per Orang)</span>
                     </h2>
-                    <p class="text-[11px] text-slate-400 mt-0.5">Uang harian, penginapan hotel, tiket pesawat/kapal, taksi, dan transportasi lokal</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">
+                        Dihitung per pelaksana dengan 5 template baku: <strong>1. Uang harian (OH)</strong>, <strong>2. Biaya Transportasi (PP)</strong>, <strong>3. Biaya Penginapan (Malam)</strong>, <strong>4. Uang representasi perjalanan dinas (OH)</strong>, dan <strong>5. Biaya taxi (Kali)</strong>.
+                    </p>
                 </div>
-                <button type="button" onclick="tambahBiaya()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-bold transition">
-                    <i class="ph-bold ph-plus-circle"></i>
-                    <span>Tambah Baris Biaya</span>
-                </button>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="sinkronkanBiayaDenganPeserta(false)" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-bold transition shadow-xs" title="Reset dan isi ulang 5 template baku untuk semua pelaksana">
+                        <i class="ph-bold ph-arrows-clockwise text-sm"></i>
+                        <span>Reset 5 Template Per Pelaksana</span>
+                    </button>
+                </div>
             </div>
 
-            <!-- Table of Costs -->
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs" id="biayaTable">
-                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px]">
-                        <tr>
-                            <th class="p-2 w-36">Kategori Biaya</th>
-                            <th class="p-2">Uraian / Keterangan</th>
-                            <th class="p-2 w-20">Volume</th>
-                            <th class="p-2 w-20">Satuan</th>
-                            <th class="p-2 w-32">Tarif Satuan (Rp)</th>
-                            <th class="p-2 w-32 text-right">Subtotal (Rp)</th>
-                            <th class="p-2 w-28 text-center" title="Centang jika biaya ini masuk ke Surat Pernyataan Pengeluaran Riil (non-tiket resmi/kwitansi pihak ke-3)">Pengeluaran Riil?</th>
-                            <th class="p-2 w-10 text-center"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="biayaContainer" class="divide-y divide-slate-100">
-                        {% if biaya_list %}
-                            {% for b in biaya_list %}
-                            <tr class="biaya-row hover:bg-slate-50/50">
-                                <td class="p-2">
-                                    <select name="biaya_jenis[]" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg bg-white">
-                                        <option value="uang_harian" {% if b.jenis_biaya == 'uang_harian' %}selected{% endif %}>Uang Harian</option>
-                                        <option value="tiket_pesawat" {% if b.jenis_biaya == 'tiket_pesawat' %}selected{% endif %}>Tiket Pesawat</option>
-                                        <option value="tiket_kapal" {% if b.jenis_biaya == 'tiket_kapal' %}selected{% endif %}>Tiket Kapal</option>
-                                        <option value="hotel" {% if b.jenis_biaya == 'hotel' %}selected{% endif %}>Hotel / Penginapan</option>
-                                        <option value="taxi" {% if b.jenis_biaya == 'taxi' %}selected{% endif %}>Taksi Bandara/Stasiun</option>
-                                        <option value="transportasi" {% if b.jenis_biaya == 'transportasi' %}selected{% endif %}>Transportasi Lokal</option>
-                                        <option value="lainnya" {% if b.jenis_biaya == 'lainnya' %}selected{% endif %}>Lain-Lain</option>
-                                    </select>
-                                </td>
-                                <td class="p-2">
-                                    <input type="text" name="biaya_keterangan[]" required value="{{ b.keterangan }}" placeholder="Misal: Uang Harian 3 Hari" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg">
-                                </td>
-                                <td class="p-2">
-                                    <input type="number" step="any" name="biaya_kuantitas[]" required value="{{ b.kuantitas }}" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-qty text-center">
-                                </td>
-                                <td class="p-2">
-                                    <input type="text" name="biaya_satuan[]" required value="{{ b.satuan }}" placeholder="Hari / PP" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg text-center">
-                                </td>
-                                <td class="p-2">
-                                    <input type="number" step="any" name="biaya_tarif[]" required value="{{ b.tarif }}" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-tarif text-right">
-                                </td>
-                                <td class="p-2 text-right font-bold text-slate-800 biaya-subtotal">
-                                    {{ format_rupiah(b.total) }}
-                                </td>
-                                <td class="p-2 text-center">
-                                    <input type="checkbox" name="biaya_riil_{{ loop.index0 }}" value="1" {% if b.termasuk_riil %}checked{% endif %} class="w-4 h-4 text-blue-600 rounded">
-                                </td>
-                                <td class="p-2 text-center">
-                                    <button type="button" onclick="hapusBiayaRow(this)" class="text-rose-500 hover:text-rose-700">
-                                        <i class="ph-bold ph-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <!-- Default Pre-populated Rows -->
-                            <!-- Row 1: Uang Harian -->
-                            <tr class="biaya-row hover:bg-slate-50/50">
-                                <td class="p-2">
-                                    <select name="biaya_jenis[]" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg bg-white">
-                                        <option value="uang_harian" selected>Uang Harian</option>
-                                        <option value="tiket_pesawat">Tiket Pesawat</option>
-                                        <option value="tiket_kapal">Tiket Kapal</option>
-                                        <option value="hotel">Hotel / Penginapan</option>
-                                        <option value="taxi">Taksi Bandara/Stasiun</option>
-                                        <option value="transportasi">Transportasi Lokal</option>
-                                        <option value="lainnya">Lain-Lain</option>
-                                    </select>
-                                </td>
-                                <td class="p-2">
-                                    <input type="text" name="biaya_keterangan[]" required value="Uang Harian Perjalanan Dinas" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg">
-                                </td>
-                                <td class="p-2">
-                                    <input type="number" step="any" name="biaya_kuantitas[]" required value="1" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-qty text-center">
-                                </td>
-                                <td class="p-2">
-                                    <input type="text" name="biaya_satuan[]" required value="Hari" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg text-center">
-                                </td>
-                                <td class="p-2">
-                                    <input type="number" step="any" name="biaya_tarif[]" required value="530000" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-tarif text-right">
-                                </td>
-                                <td class="p-2 text-right font-bold text-slate-800 biaya-subtotal">
-                                    Rp 530.000
-                                </td>
-                                <td class="p-2 text-center">
-                                    <input type="checkbox" name="biaya_riil_0" value="1" class="w-4 h-4 text-blue-600 rounded">
-                                </td>
-                                <td class="p-2 text-center">
-                                    <button type="button" onclick="hapusBiayaRow(this)" class="text-rose-500 hover:text-rose-700">
-                                        <i class="ph-bold ph-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-
-                            <!-- Row 2: Tiket Pesawat / Kapal -->
-                            <tr class="biaya-row hover:bg-slate-50/50">
-                                <td class="p-2">
-                                    <select name="biaya_jenis[]" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg bg-white">
-                                        <option value="uang_harian">Uang Harian</option>
-                                        <option value="tiket_pesawat" selected>Tiket Pesawat</option>
-                                        <option value="tiket_kapal">Tiket Kapal</option>
-                                        <option value="hotel">Hotel / Penginapan</option>
-                                        <option value="taxi">Taksi Bandara/Stasiun</option>
-                                        <option value="transportasi">Transportasi Lokal</option>
-                                        <option value="lainnya">Lain-Lain</option>
-                                    </select>
-                                </td>
-                                <td class="p-2">
-                                    <input type="text" name="biaya_keterangan[]" required value="Tiket Pesawat Udara PP" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg">
-                                </td>
-                                <td class="p-2">
-                                    <input type="number" step="any" name="biaya_kuantitas[]" required value="1" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-qty text-center">
-                                </td>
-                                <td class="p-2">
-                                    <input type="text" name="biaya_satuan[]" required value="PP" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg text-center">
-                                </td>
-                                <td class="p-2">
-                                    <input type="number" step="any" name="biaya_tarif[]" required value="2800000" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-tarif text-right">
-                                </td>
-                                <td class="p-2 text-right font-bold text-slate-800 biaya-subtotal">
-                                    Rp 2.800.000
-                                </td>
-                                <td class="p-2 text-center">
-                                    <input type="checkbox" name="biaya_riil_1" value="1" class="w-4 h-4 text-blue-600 rounded">
-                                </td>
-                                <td class="p-2 text-center">
-                                    <button type="button" onclick="hapusBiayaRow(this)" class="text-rose-500 hover:text-rose-700">
-                                        <i class="ph-bold ph-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-
-                            <!-- Row 3: Hotel -->
-                            <tr class="biaya-row hover:bg-slate-50/50">
-                                <td class="p-2">
-                                    <select name="biaya_jenis[]" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg bg-white">
-                                        <option value="uang_harian">Uang Harian</option>
-                                        <option value="tiket_pesawat">Tiket Pesawat</option>
-                                        <option value="tiket_kapal">Tiket Kapal</option>
-                                        <option value="hotel" selected>Hotel / Penginapan</option>
-                                        <option value="taxi">Taksi Bandara/Stasiun</option>
-                                        <option value="transportasi">Transportasi Lokal</option>
-                                        <option value="lainnya">Lain-Lain</option>
-                                    </select>
-                                </td>
-                                <td class="p-2">
-                                    <input type="text" name="biaya_keterangan[]" required value="Biaya Penginapan / Hotel" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg">
-                                </td>
-                                <td class="p-2">
-                                    <input type="number" step="any" name="biaya_kuantitas[]" required value="1" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-qty text-center">
-                                </td>
-                                <td class="p-2">
-                                    <input type="text" name="biaya_satuan[]" required value="Malam" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg text-center">
-                                </td>
-                                <td class="p-2">
-                                    <input type="number" step="any" name="biaya_tarif[]" required value="750000" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-tarif text-right">
-                                </td>
-                                <td class="p-2 text-right font-bold text-slate-800 biaya-subtotal">
-                                    Rp 750.000
-                                </td>
-                                <td class="p-2 text-center">
-                                    <input type="checkbox" name="biaya_riil_2" value="1" class="w-4 h-4 text-blue-600 rounded">
-                                </td>
-                                <td class="p-2 text-center">
-                                    <button type="button" onclick="hapusBiayaRow(this)" class="text-rose-500 hover:text-rose-700">
-                                        <i class="ph-bold ph-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-
-                            <!-- Row 4: Taksi (Pengeluaran Riil) -->
-                            <tr class="biaya-row hover:bg-slate-50/50">
-                                <td class="p-2">
-                                    <select name="biaya_jenis[]" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg bg-white">
-                                        <option value="uang_harian">Uang Harian</option>
-                                        <option value="tiket_pesawat">Tiket Pesawat</option>
-                                        <option value="tiket_kapal">Tiket Kapal</option>
-                                        <option value="hotel">Hotel / Penginapan</option>
-                                        <option value="taxi" selected>Taksi Bandara/Stasiun</option>
-                                        <option value="transportasi">Transportasi Lokal</option>
-                                        <option value="lainnya">Lain-Lain</option>
-                                    </select>
-                                </td>
-                                <td class="p-2">
-                                    <input type="text" name="biaya_keterangan[]" required value="Biaya Taksi Bandara PP" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg">
-                                </td>
-                                <td class="p-2">
-                                    <input type="number" step="any" name="biaya_kuantitas[]" required value="2" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-qty text-center">
-                                </td>
-                                <td class="p-2">
-                                    <input type="text" name="biaya_satuan[]" required value="Kali" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg text-center">
-                                </td>
-                                <td class="p-2">
-                                    <input type="number" step="any" name="biaya_tarif[]" required value="200000" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-tarif text-right">
-                                </td>
-                                <td class="p-2 text-right font-bold text-slate-800 biaya-subtotal">
-                                    Rp 400.000
-                                </td>
-                                <td class="p-2 text-center">
-                                    <input type="checkbox" name="biaya_riil_3" value="1" checked class="w-4 h-4 text-blue-600 rounded">
-                                </td>
-                                <td class="p-2 text-center">
-                                    <button type="button" onclick="hapusBiayaRow(this)" class="text-rose-500 hover:text-rose-700">
-                                        <i class="ph-bold ph-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+            <!-- Container Kartu Biaya Per Orang -->
+            <div id="biayaPerPesertaContainer" class="space-y-6">
+                <!-- Di-generate otomatis oleh JavaScript per peserta -->
             </div>
 
             <!-- Grand Total Summary Box -->
             <div class="mt-4 p-4 rounded-xl bg-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div>
-                    <div class="text-[11px] uppercase tracking-wider text-slate-400">Total Perkiraan Biaya SPJ</div>
+                    <div class="text-[11px] uppercase tracking-wider text-slate-400">Total Perkiraan Biaya SPJ (Seluruh Pelaksana)</div>
                     <div id="grandTotalDisplay" class="text-2xl font-black text-emerald-400">Rp 0</div>
                 </div>
                 <div class="text-right sm:max-w-md">
@@ -530,6 +390,7 @@
                 </div>
             </div>
         </div>
+
 
         <!-- 6. Status & Submit Action -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -565,7 +426,23 @@ function recalculateDuration() {
         const d2 = new Date(tgl2);
         const diffTime = d2.getTime() - d1.getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-        document.getElementById('lama_hari').value = diffDays > 0 ? diffDays : 1;
+        const newLama = diffDays > 0 ? diffDays : 1;
+        document.getElementById('lama_hari').value = newLama;
+
+        // Auto-update volume of Uang Harian and Penginapan for all cards
+        document.querySelectorAll('.peserta-biaya-card').forEach(card => {
+            card.querySelectorAll('.biaya-row').forEach(tr => {
+                const jenis = tr.querySelector('.biaya-jenis')?.value;
+                const qtyInput = tr.querySelector('.biaya-qty');
+                if (jenis === 'uang_harian' || jenis === 'representasi') {
+                    qtyInput.value = newLama;
+                    hitungSubtotal(qtyInput);
+                } else if (jenis === 'hotel') {
+                    qtyInput.value = newLama > 1 ? (newLama - 1) : 1;
+                    hitungSubtotal(qtyInput);
+                }
+            });
+        });
     }
 }
 
@@ -580,6 +457,59 @@ const PEGAWAI_MASTER = [
         jabatan: {{ peg.jabatan|tojson }}
     }{% if not loop.last %},{% endif %}
     {% endfor %}
+];
+
+// Initial Data from Server (for Edit mode)
+const INITIAL_BIAYA_DATA = {{ biaya_json|safe }};
+const INITIAL_PESERTA_DATA = {{ peserta_json|safe }};
+
+// 5 Kategori Template Baku Sesuai Standar Resmi SPJ
+const TEMPLATE_5_BIAYA = [
+    {
+        jenis: 'uang_harian',
+        label: '1. Uang harian',
+        uraian: 'Uang harian',
+        satuan: 'OH',
+        getQty: (lamaHari) => lamaHari || 1,
+        defaultTarif: 530000,
+        isRiil: 0
+    },
+    {
+        jenis: 'transportasi',
+        label: '2. Biaya Transportasi',
+        uraian: 'Biaya Transportasi',
+        satuan: 'PP',
+        getQty: () => 1,
+        defaultTarif: 0,
+        isRiil: 0
+    },
+    {
+        jenis: 'hotel',
+        label: '3. Biaya Penginapan',
+        uraian: 'Biaya Penginapan',
+        satuan: 'Malam',
+        getQty: (lamaHari) => (lamaHari > 1 ? lamaHari - 1 : 1),
+        defaultTarif: 0,
+        isRiil: 0
+    },
+    {
+        jenis: 'representasi',
+        label: '4. Uang representasi perjalanan dinas',
+        uraian: 'Uang representasi perjalanan dinas',
+        satuan: 'OH',
+        getQty: (lamaHari) => lamaHari || 1,
+        defaultTarif: 0,
+        isRiil: 0
+    },
+    {
+        jenis: 'taxi',
+        label: '5. Biaya taxi',
+        uraian: 'Biaya taxi',
+        satuan: 'Kali',
+        getQty: () => 2,
+        defaultTarif: 0,
+        isRiil: 1
+    }
 ];
 
 function generatePegawaiOptions(selectedNama = '') {
@@ -614,6 +544,8 @@ function pilihPegawaiRow(selectEl) {
     row.querySelector('.input-nip').value = nip;
     row.querySelector('.input-pangkat').value = pangkat;
     row.querySelector('.input-jabatan').value = jabatan;
+
+    updatePesertaNamaSync();
 }
 
 function tambahPesertaDariDropdown(selectEl) {
@@ -628,10 +560,9 @@ function tambahPesertaDariDropdown(selectEl) {
     };
 
     tambahPeserta(data);
-    selectEl.value = ''; // Reset header dropdown
+    selectEl.value = '';
 }
 
-// Dynamic Peserta Rows
 function tambahPeserta(data = null) {
     const container = document.getElementById('pesertaContainer');
     const rowCount = container.querySelectorAll('.peserta-row').length + 1;
@@ -663,7 +594,7 @@ function tambahPeserta(data = null) {
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
             <div class="sm:col-span-4">
                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Nama Lengkap & Gelar *</label>
-                <input type="text" name="peserta_nama[]" required value="${namaVal}" placeholder="Nama Pegawai" class="input-nama w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <input type="text" name="peserta_nama[]" required value="${namaVal}" oninput="updatePesertaNamaSync()" placeholder="Nama Pegawai" class="input-nama w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
             </div>
             <div class="sm:col-span-3">
                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NIP</label>
@@ -681,6 +612,7 @@ function tambahPeserta(data = null) {
     `;
     container.appendChild(div);
     updateRowNumbers();
+    sinkronkanBiayaDenganPeserta(true);
 }
 
 function hapusRow(btn) {
@@ -688,6 +620,7 @@ function hapusRow(btn) {
     if (rows.length > 1) {
         btn.closest('.peserta-row').remove();
         updateRowNumbers();
+        sinkronkanBiayaDenganPeserta(true);
     } else {
         alert('Minimal harus ada 1 nama pelaksana perjalanan dinas.');
     }
@@ -701,59 +634,344 @@ function updateRowNumbers() {
     });
 }
 
-// Dynamic Biaya Rows
-function tambahBiaya() {
-    const container = document.getElementById('biayaContainer');
-    const rowCount = container.querySelectorAll('.biaya-row').length;
+function getPesertaListFromForm() {
+    const list = [];
+    document.querySelectorAll('.peserta-row').forEach((row, idx) => {
+        const inputNama = row.querySelector('.input-nama');
+        const nama = inputNama ? inputNama.value.trim() : '';
+        list.push({
+            index: idx,
+            nama: nama || `Pelaksana ${idx + 1}`
+        });
+    });
+    return list;
+}
+
+function updatePesertaNamaSync() {
+    const pesertaList = getPesertaListFromForm();
+    pesertaList.forEach((p, idx) => {
+        const card = document.querySelector(`.peserta-biaya-card[data-peserta-index="${idx}"]`);
+        if (card) {
+            card.querySelector('.card-peserta-nama').innerText = p.nama;
+            card.querySelectorAll('.biaya-peserta-hidden').forEach(inp => inp.value = p.nama);
+        }
+    });
+}
+
+// ----------------- PER-PERSON COST BREAKDOWN SYSTEM -----------------
+function onBiayaJenisChange(selectEl) {
+    const tr = selectEl.closest('.biaya-row');
+    const satuanInput = tr.querySelector('.biaya-satuan');
+    const riilCheckbox = tr.querySelector('.biaya-riil-cb');
+    const riilHidden = tr.querySelector('.biaya-riil-val');
+    const val = selectEl.value;
+
+    if (val === 'uang_harian') {
+        satuanInput.value = 'OH';
+        if (riilCheckbox) { riilCheckbox.checked = false; riilHidden.value = '0'; }
+    } else if (val === 'transportasi' || val === 'tiket_pesawat' || val === 'tiket_kapal') {
+        satuanInput.value = 'PP';
+        if (riilCheckbox) { riilCheckbox.checked = false; riilHidden.value = '0'; }
+    } else if (val === 'hotel') {
+        satuanInput.value = 'Malam';
+        if (riilCheckbox) { riilCheckbox.checked = false; riilHidden.value = '0'; }
+    } else if (val === 'representasi') {
+        satuanInput.value = 'OH';
+        if (riilCheckbox) { riilCheckbox.checked = false; riilHidden.value = '0'; }
+    } else if (val === 'taxi') {
+        satuanInput.value = 'Kali';
+        if (riilCheckbox) { riilCheckbox.checked = true; riilHidden.value = '1'; }
+    } else {
+        satuanInput.value = 'Paket';
+    }
+    recalculateAllBiaya();
+}
+
+function createBiayaRowElement(pesertaIdx, pesertaNama, noUrut, jenis, keterangan, qty, satuan, tarif, isRiil) {
     const tr = document.createElement('tr');
     tr.className = 'biaya-row hover:bg-slate-50/50';
+    tr.setAttribute('data-peserta-index', pesertaIdx);
+
+    const numQty = parseFloat(qty) || 0;
+    const numTarif = parseFloat(tarif) || 0;
+    const subtotal = numQty * numTarif;
+
     tr.innerHTML = `
+        <td class="p-2 text-center font-bold text-slate-400 row-no">${noUrut}.</td>
         <td class="p-2">
-            <select name="biaya_jenis[]" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg bg-white">
-                <option value="uang_harian">Uang Harian</option>
-                <option value="tiket_pesawat">Tiket Pesawat</option>
-                <option value="tiket_kapal">Tiket Kapal</option>
-                <option value="hotel">Hotel / Penginapan</option>
-                <option value="taxi">Taksi Bandara/Stasiun</option>
-                <option value="transportasi" selected>Transportasi Lokal</option>
-                <option value="lainnya">Lain-Lain</option>
+            <input type="hidden" name="biaya_peserta[]" class="biaya-peserta-hidden" value="${escapeHtml(pesertaNama)}">
+            <select name="biaya_jenis[]" onchange="onBiayaJenisChange(this)" class="biaya-jenis w-full p-1.5 text-xs border border-slate-300 rounded-lg bg-white">
+                <option value="uang_harian" ${jenis === 'uang_harian' ? 'selected' : ''}>1. Uang harian</option>
+                <option value="transportasi" ${jenis === 'transportasi' ? 'selected' : ''}>2. Biaya Transportasi</option>
+                <option value="hotel" ${jenis === 'hotel' ? 'selected' : ''}>3. Biaya Penginapan</option>
+                <option value="representasi" ${jenis === 'representasi' ? 'selected' : ''}>4. Uang representasi perjalanan dinas</option>
+                <option value="taxi" ${jenis === 'taxi' ? 'selected' : ''}>5. Biaya taxi</option>
+                <option value="tiket_pesawat" ${jenis === 'tiket_pesawat' ? 'selected' : ''}>Tiket Pesawat</option>
+                <option value="tiket_kapal" ${jenis === 'tiket_kapal' ? 'selected' : ''}>Tiket Kapal</option>
+                <option value="lainnya" ${jenis === 'lainnya' ? 'selected' : ''}>Lain-Lain</option>
             </select>
         </td>
         <td class="p-2">
-            <input type="text" name="biaya_keterangan[]" required placeholder="Uraian biaya..." class="w-full p-1.5 text-xs border border-slate-300 rounded-lg">
+            <input type="text" name="biaya_keterangan[]" required value="${escapeHtml(keterangan || '')}" placeholder="Uraian biaya..." class="biaya-keterangan w-full p-1.5 text-xs border border-slate-300 rounded-lg">
         </td>
-        <td class="p-2">
-            <input type="number" step="any" name="biaya_kuantitas[]" required value="1" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-qty text-center">
+        <td class="p-2 text-center">
+            <input type="number" step="any" name="biaya_kuantitas[]" required value="${numQty}" oninput="hitungSubtotal(this)" class="biaya-qty w-full p-1.5 text-xs border border-slate-300 rounded-lg text-center">
         </td>
-        <td class="p-2">
-            <input type="text" name="biaya_satuan[]" required value="Hari" placeholder="Satuan" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg text-center">
+        <td class="p-2 text-center">
+            <input type="text" name="biaya_satuan[]" required value="${escapeHtml(satuan || 'OH')}" placeholder="OH / PP / Malam" class="biaya-satuan w-full p-1.5 text-xs border border-slate-300 rounded-lg text-center font-medium">
         </td>
-        <td class="p-2">
-            <input type="number" step="any" name="biaya_tarif[]" required value="0" oninput="hitungSubtotal(this)" class="w-full p-1.5 text-xs border border-slate-300 rounded-lg biaya-tarif text-right">
+        <td class="p-2 text-right">
+            <input type="number" step="any" name="biaya_tarif[]" required value="${numTarif}" oninput="hitungSubtotal(this)" class="biaya-tarif w-full p-1.5 text-xs border border-slate-300 rounded-lg text-right">
         </td>
         <td class="p-2 text-right font-bold text-slate-800 biaya-subtotal">
-            Rp 0
+            Rp ${subtotal.toLocaleString('id-ID')}
         </td>
         <td class="p-2 text-center">
-            <input type="checkbox" name="biaya_riil_${rowCount}" value="1" class="w-4 h-4 text-blue-600 rounded">
+            <input type="hidden" name="biaya_riil[]" class="biaya-riil-val" value="${isRiil ? '1' : '0'}">
+            <input type="checkbox" class="biaya-riil-cb w-4 h-4 text-blue-600 rounded cursor-pointer" ${isRiil ? 'checked' : ''} onchange="this.previousElementSibling.value = this.checked ? '1' : '0'; recalculateAllBiaya();">
         </td>
         <td class="p-2 text-center">
-            <button type="button" onclick="hapusBiayaRow(this)" class="text-rose-500 hover:text-rose-700">
+            <button type="button" onclick="hapusBiayaRow(this)" class="text-rose-500 hover:text-rose-700" title="Hapus Baris Biaya">
                 <i class="ph-bold ph-trash"></i>
             </button>
         </td>
     `;
-    container.appendChild(tr);
+    return tr;
+}
+
+function tambahBarisCustom(pesertaIdx) {
+    const card = document.querySelector(`.peserta-biaya-card[data-peserta-index="${pesertaIdx}"]`);
+    if (!card) return;
+    const tbody = card.querySelector('.peserta-biaya-tbody');
+    const pNama = card.querySelector('.card-peserta-nama')?.innerText || '';
+    const noUrut = tbody.querySelectorAll('.biaya-row').length + 1;
+    tbody.appendChild(createBiayaRowElement(pesertaIdx, pNama, noUrut, 'lainnya', 'Biaya Tambahan', 1, 'Paket', 0, false));
     recalculateAllBiaya();
 }
 
-function hapusBiayaRow(btn) {
-    const rows = document.querySelectorAll('.biaya-row');
-    if (rows.length > 1) {
-        btn.closest('.biaya-row').remove();
+function resetTemplatePeserta(pesertaIdx) {
+    const card = document.querySelector(`.peserta-biaya-card[data-peserta-index="${pesertaIdx}"]`);
+    if (!card) return;
+    const tbody = card.querySelector('.peserta-biaya-tbody');
+    const pNama = card.querySelector('.card-peserta-nama')?.innerText || '';
+    const lamaHari = parseInt(document.getElementById('lama_hari').value) || 1;
+
+    tbody.innerHTML = '';
+    TEMPLATE_5_BIAYA.forEach((t, tIdx) => {
+        const qty = t.getQty(lamaHari);
+        const ket = t.label.substring(3);
+        tbody.appendChild(createBiayaRowElement(pesertaIdx, pNama, tIdx + 1, t.jenis, ket, qty, t.satuan, t.defaultTarif, t.isRiil === 1));
+    });
+    recalculateAllBiaya();
+}
+
+function sinkronkanBiayaDenganPeserta(preserveValues = true) {
+    const container = document.getElementById('biayaPerPesertaContainer');
+    const pesertaList = getPesertaListFromForm();
+    const lamaHari = parseInt(document.getElementById('lama_hari').value) || 1;
+
+    let existingDataByPeserta = {};
+    if (preserveValues) {
+        container.querySelectorAll('.peserta-biaya-card').forEach(card => {
+            const pIdx = card.getAttribute('data-peserta-index');
+            const rowsData = [];
+            card.querySelectorAll('.biaya-row').forEach(tr => {
+                rowsData.push({
+                    jenis: tr.querySelector('.biaya-jenis')?.value || 'uang_harian',
+                    keterangan: tr.querySelector('.biaya-keterangan')?.value || '',
+                    qty: tr.querySelector('.biaya-qty')?.value || 1,
+                    satuan: tr.querySelector('.biaya-satuan')?.value || 'OH',
+                    tarif: tr.querySelector('.biaya-tarif')?.value || 0,
+                    isRiil: tr.querySelector('.biaya-riil-val')?.value === '1'
+                });
+            });
+            if (rowsData.length > 0) {
+                existingDataByPeserta[pIdx] = rowsData;
+            }
+        });
+    }
+
+    container.innerHTML = '';
+
+    pesertaList.forEach((p, idx) => {
+        const card = document.createElement('div');
+        card.className = 'peserta-biaya-card border border-slate-200/90 rounded-2xl p-4 bg-slate-50/50 space-y-3 shadow-xs';
+        card.setAttribute('data-peserta-index', idx);
+
+        card.innerHTML = `
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b border-slate-200/80 gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">
+                        <i class="ph-bold ph-user"></i>
+                    </span>
+                    <div>
+                        <span class="text-xs font-bold text-slate-800 card-peserta-nama">${p.nama}</span>
+                        <span class="text-[10px] text-slate-400 ml-2">(Rincian Biaya Per Pelaksana)</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-xs font-semibold text-slate-600">
+                        Subtotal: <span class="font-bold text-emerald-600 card-subtotal">Rp 0</span>
+                    </div>
+                    <button type="button" onclick="tambahBarisCustom(${idx})" class="text-[11px] text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1">
+                        <i class="ph-bold ph-plus"></i> Tambah Biaya Lain
+                    </button>
+                    <button type="button" onclick="resetTemplatePeserta(${idx})" class="text-[11px] text-slate-500 hover:text-slate-800 font-medium">
+                        Reset 5 Template
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-white border-b border-slate-200 text-slate-500 font-bold uppercase text-[10px]">
+                        <tr>
+                            <th class="p-2 w-10 text-center">No.</th>
+                            <th class="p-2 w-48">Kategori Biaya</th>
+                            <th class="p-2">Uraian / Keterangan</th>
+                            <th class="p-2 w-20 text-center">Volume</th>
+                            <th class="p-2 w-24 text-center">Satuan</th>
+                            <th class="p-2 w-32 text-right">Tarif Satuan (Rp)</th>
+                            <th class="p-2 w-32 text-right">Subtotal (Rp)</th>
+                            <th class="p-2 w-28 text-center" title="Centang jika biaya ini masuk ke Daftar Pengeluaran Riil (non-tiket resmi/kwitansi)">Pengeluaran Riil?</th>
+                            <th class="p-2 w-8 text-center"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="peserta-biaya-tbody divide-y divide-slate-100 bg-white" data-tbody-index="${idx}">
+                    </tbody>
+                </table>
+            </div>
+        `;
+        container.appendChild(card);
+
+        const tbody = card.querySelector('.peserta-biaya-tbody');
+
+        if (preserveValues && existingDataByPeserta[idx] && existingDataByPeserta[idx].length > 0) {
+            existingDataByPeserta[idx].forEach((r, rIdx) => {
+                tbody.appendChild(createBiayaRowElement(idx, p.nama, rIdx + 1, r.jenis, r.keterangan, r.qty, r.satuan, r.tarif, r.isRiil));
+            });
+        } else {
+            TEMPLATE_5_BIAYA.forEach((t, tIdx) => {
+                const qty = t.getQty(lamaHari);
+                const ket = t.label.substring(3);
+                tbody.appendChild(createBiayaRowElement(idx, p.nama, tIdx + 1, t.jenis, ket, qty, t.satuan, t.defaultTarif, t.isRiil === 1));
+            });
+        }
+    });
+
+    recalculateAllBiaya();
+}
+
+function initBiayaFromData() {
+    if (INITIAL_BIAYA_DATA && INITIAL_BIAYA_DATA.length > 0) {
+        const container = document.getElementById('biayaPerPesertaContainer');
+        container.innerHTML = '';
+
+        const groups = {};
+        INITIAL_BIAYA_DATA.forEach(b => {
+            const pNama = b.peserta_nama ? b.peserta_nama.trim() : '';
+            const key = pNama || 'Pelaksana 1';
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(b);
+        });
+
+        const formPeserta = getPesertaListFromForm();
+        formPeserta.forEach(p => {
+            if (!groups[p.nama] && !groups[p.nama.trim()]) {
+                groups[p.nama] = [];
+            }
+        });
+
+        let idx = 0;
+        for (const [pNama, rows] of Object.entries(groups)) {
+            const card = document.createElement('div');
+            card.className = 'peserta-biaya-card border border-slate-200/90 rounded-2xl p-4 bg-slate-50/50 space-y-3 shadow-xs';
+            card.setAttribute('data-peserta-index', idx);
+
+            card.innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b border-slate-200/80 gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">
+                            <i class="ph-bold ph-user"></i>
+                        </span>
+                        <div>
+                            <span class="text-xs font-bold text-slate-800 card-peserta-nama">${pNama}</span>
+                            <span class="text-[10px] text-slate-400 ml-2">(Rincian Biaya Per Pelaksana)</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="text-xs font-semibold text-slate-600">
+                            Subtotal: <span class="font-bold text-emerald-600 card-subtotal">Rp 0</span>
+                        </div>
+                        <button type="button" onclick="tambahBarisCustom(${idx})" class="text-[11px] text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1">
+                            <i class="ph-bold ph-plus"></i> Tambah Biaya Lain
+                        </button>
+                        <button type="button" onclick="resetTemplatePeserta(${idx})" class="text-[11px] text-slate-500 hover:text-slate-800 font-medium">
+                            Reset 5 Template
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-white border-b border-slate-200 text-slate-500 font-bold uppercase text-[10px]">
+                            <tr>
+                                <th class="p-2 w-10 text-center">No.</th>
+                                <th class="p-2 w-48">Kategori Biaya</th>
+                                <th class="p-2">Uraian / Keterangan</th>
+                                <th class="p-2 w-20 text-center">Volume</th>
+                                <th class="p-2 w-24 text-center">Satuan</th>
+                                <th class="p-2 w-32 text-right">Tarif Satuan (Rp)</th>
+                                <th class="p-2 w-32 text-right">Subtotal (Rp)</th>
+                                <th class="p-2 w-28 text-center" title="Centang jika biaya ini masuk ke Daftar Pengeluaran Riil (non-tiket resmi/kwitansi)">Pengeluaran Riil?</th>
+                                <th class="p-2 w-8 text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="peserta-biaya-tbody divide-y divide-slate-100 bg-white" data-tbody-index="${idx}">
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.appendChild(card);
+
+            const tbody = card.querySelector('.peserta-biaya-tbody');
+            if (rows.length > 0) {
+                rows.forEach((r, rIdx) => {
+                    let cleanKet = r.keterangan || '';
+                    if (pNama) {
+                        const escapedNama = pNama.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                        cleanKet = cleanKet.replace(new RegExp(`\\s*-\\s*${escapedNama}.*$`, 'i'), '');
+                    }
+                    cleanKet = cleanKet.replace(/\s*-\s*Pelaksana\s*\d+.*$/i, '').trim();
+                    tbody.appendChild(createBiayaRowElement(idx, pNama, rIdx + 1, r.jenis_biaya, cleanKet, r.kuantitas, r.satuan, r.tarif, r.termasuk_riil == 1));
+                });
+            } else {
+                const lamaHari = parseInt(document.getElementById('lama_hari').value) || 1;
+                TEMPLATE_5_BIAYA.forEach((t, tIdx) => {
+                    const qty = t.getQty(lamaHari);
+                    tbody.appendChild(createBiayaRowElement(idx, pNama, tIdx + 1, t.jenis, t.label.substring(3), qty, t.satuan, t.defaultTarif, t.isRiil === 1));
+                });
+            }
+            idx++;
+        }
         recalculateAllBiaya();
     } else {
-        alert('Minimal harus ada 1 rincian biaya.');
+        sinkronkanBiayaDenganPeserta(false);
+    }
+}
+
+function hapusBiayaRow(btn) {
+    const tbody = btn.closest('.peserta-biaya-tbody');
+    const rows = tbody.querySelectorAll('.biaya-row');
+    if (rows.length > 1) {
+        btn.closest('.biaya-row').remove();
+        tbody.querySelectorAll('.biaya-row').forEach((tr, idx) => {
+            const noEl = tr.querySelector('.row-no');
+            if (noEl) noEl.innerText = (idx + 1) + '.';
+        });
+        recalculateAllBiaya();
+    } else {
+        alert('Minimal harus ada 1 rincian biaya untuk pelaksana ini.');
     }
 }
 
@@ -768,19 +986,29 @@ function hitungSubtotal(input) {
 
 function recalculateAllBiaya() {
     let grandTotal = 0;
-    document.querySelectorAll('.biaya-row').forEach(tr => {
-        const qty = parseFloat(tr.querySelector('.biaya-qty').value) || 0;
-        const tarif = parseFloat(tr.querySelector('.biaya-tarif').value) || 0;
-        grandTotal += (qty * tarif);
+    document.querySelectorAll('.peserta-biaya-card').forEach(card => {
+        let cardTotal = 0;
+        card.querySelectorAll('.biaya-row').forEach(tr => {
+            const qty = parseFloat(tr.querySelector('.biaya-qty')?.value) || 0;
+            const tarif = parseFloat(tr.querySelector('.biaya-tarif')?.value) || 0;
+            cardTotal += (qty * tarif);
+        });
+        const subtotalEl = card.querySelector('.card-subtotal');
+        if (subtotalEl) subtotalEl.innerText = 'Rp ' + cardTotal.toLocaleString('id-ID');
+        grandTotal += cardTotal;
     });
-    document.getElementById('grandTotalDisplay').innerText = 'Rp ' + grandTotal.toLocaleString('id-ID');
-    document.getElementById('terbilangDisplay').innerText = angkaKeTerbilang(grandTotal) + ' Rupiah';
+
+    const grandTotalEl = document.getElementById('grandTotalDisplay');
+    if (grandTotalEl) grandTotalEl.innerText = 'Rp ' + grandTotal.toLocaleString('id-ID');
+    const terbilangEl = document.getElementById('terbilangDisplay');
+    if (terbilangEl) terbilangEl.innerText = angkaKeTerbilang(grandTotal) + ' Rupiah';
 }
 
-// Simple client-side Indonesian number to words
+// Client-side Indonesian number to words
 function angkaKeTerbilang(nilai) {
     nilai = Math.floor(Math.abs(nilai));
     const satuan = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
+    if (nilai === 0) return "Nol";
     if (nilai < 12) return satuan[nilai];
     if (nilai < 20) return angkaKeTerbilang(nilai - 10) + " Belas";
     if (nilai < 100) return angkaKeTerbilang(Math.floor(nilai / 10)) + " Puluh " + angkaKeTerbilang(nilai % 10);
@@ -793,9 +1021,43 @@ function angkaKeTerbilang(nilai) {
     return "";
 }
 
+const DEFAULT_TTD_KADIS = {
+    an: {{ default_ttd_kadis_an|tojson }},
+    jabatan: {{ default_ttd_kadis_jabatan|tojson }},
+    nama: {{ default_ttd_kadis_nama|tojson }},
+    pangkat: {{ default_ttd_kadis_pangkat|tojson }},
+    nip: {{ default_ttd_kadis_nip|tojson }}
+};
+
+function resetTtdKadisDefault() {
+    document.getElementById('ttd_an').value = DEFAULT_TTD_KADIS.an;
+    document.getElementById('ttd_jabatan').value = DEFAULT_TTD_KADIS.jabatan;
+    document.getElementById('ttd_nama').value = DEFAULT_TTD_KADIS.nama;
+    document.getElementById('ttd_pangkat').value = DEFAULT_TTD_KADIS.pangkat;
+    document.getElementById('ttd_nip').value = DEFAULT_TTD_KADIS.nip;
+}
+
+function handleJenisSptChange() {
+    const radioKadis = document.querySelector('input[name="jenis_spt"][value="kadis"]');
+    const isKadis = radioKadis ? radioKadis.checked : false;
+    const section = document.getElementById('sectionPenandatanganKadis');
+    if (section) {
+        section.style.display = isKadis ? 'block' : 'none';
+    }
+}
+
 // Run on load
 document.addEventListener('DOMContentLoaded', () => {
-    recalculateAllBiaya();
+    initBiayaFromData();
+    handleJenisSptChange();
+    document.querySelectorAll('input[name="jenis_spt"]').forEach(radio => {
+        radio.addEventListener('change', handleJenisSptChange);
+    });
+
+    // Attach sync to initial input-nama
+    document.querySelectorAll('.input-nama').forEach(inp => {
+        inp.addEventListener('input', updatePesertaNamaSync);
+    });
 });
 </script>
 {% endblock %}

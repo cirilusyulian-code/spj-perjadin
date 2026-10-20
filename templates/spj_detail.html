@@ -26,6 +26,12 @@
                 {% endif %}
             </div>
             <p class="text-xs text-slate-500 mt-1">SPPD: <strong>{{ spj.nomor_sppd }}</strong> • Tujuan: <strong>{{ spj.tujuan }}</strong></p>
+            {% if spj.jenis_spt == 'kadis' %}
+                <div class="mt-2 text-xs text-indigo-700 bg-indigo-50/80 border border-indigo-200/80 px-3 py-1.5 rounded-xl inline-flex items-center gap-1.5 shadow-xs">
+                    <i class="ph-bold ph-pen-nib text-indigo-600"></i>
+                    <span>Pejabat Penandatangan SPT: <strong>{{ spj.spt_penandatangan_nama or s.pejabat_ttd_kadis_nama }}</strong> ({% if spj.spt_penandatangan_an or s.pejabat_ttd_kadis_an %}{{ spj.spt_penandatangan_an or s.pejabat_ttd_kadis_an }} - {% endif %}{{ spj.spt_penandatangan_jabatan or s.pejabat_ttd_kadis_jabatan }})</span>
+                </div>
+            {% endif %}
         </div>
 
         <div class="flex flex-wrap items-center gap-2">

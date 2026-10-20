@@ -31,15 +31,15 @@
 }
 
 .kop-logo-cell {
-    width: 80px;
+    width: 70px;
     vertical-align: middle;
     text-align: center;
-    padding-right: 12px;
+    padding-right: 8px;
 }
 
 .kop-logo-img {
-    max-height: 75px;
-    max-width: 75px;
+    max-height: 70px;
+    max-width: 70px;
     width: auto;
     height: auto;
     object-fit: contain;
@@ -54,23 +54,24 @@
 }
 
 .kop-spacer-cell {
-    width: 80px;
+    width: 70px;
 }
 
 .kop-instansi-induk {
-    font-size: 13pt;
+    font-size: 11.5pt;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
     margin: 0;
 }
 
 .kop-instansi-nama {
-    font-size: 15pt;
+    font-size: 13pt;
     font-weight: 800;
-    letter-spacing: 1px;
+    letter-spacing: 0.2px;
     text-transform: uppercase;
-    margin: 2px 0;
+    margin: 1px 0;
+    white-space: nowrap;
 }
 
 .kop-alamat {
@@ -134,7 +135,7 @@
 .ttd-kanan {
     float: right;
     width: 45%;
-    text-align: left;
+    text-align: center;
 }
 
 .ttd-dua-kolom {
@@ -146,6 +147,18 @@
 .ttd-item {
     width: 45%;
     text-align: left;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.text-left {
+    text-align: left !important;
 }
 
 .ttd-tiga-kolom {
@@ -226,8 +239,7 @@
 /* Print Handling */
 @media print {
     @page {
-        size: A4 portrait;
-        margin: 1.5cm 1.5cm 1.5cm 1.5cm;
+        margin: 1.2cm 1.5cm 1.2cm 1.5cm;
     }
 
     body {
@@ -247,11 +259,16 @@
         margin: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
+        min-height: auto !important;
     }
 
-    .page-break {
-        page-break-after: always;
-        break-after: page;
+    .page-break, .bundel-separator {
+        page-break-after: always !important;
+        break-after: page !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
     }
 }
 

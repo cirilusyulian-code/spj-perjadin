@@ -240,12 +240,12 @@
                     </h2>
                     <p class="text-[11px] text-slate-400 mt-0.5">Pilih dari database 19 ASN Pegawai atau ketik manual</p>
                 </div>
-                <div class="flex flex-wrap items-center gap-2">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
                     <!-- Dropdown Tambah Pelaksana dari Spreadsheet -->
-                    <div class="relative">
+                    <div class="relative w-full sm:w-auto">
                         <select id="quickSelectPegawai" onchange="tambahPesertaDariDropdown(this)"
-                            class="px-3.5 py-1.5 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition cursor-pointer focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-xs">
-                            <option value="">+ Tambah Pelaksana dari Daftar Pegawai (19 ASN)</option>
+                            class="w-full sm:w-auto px-3.5 py-1.5 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition cursor-pointer focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-xs">
+                            <option value="">+ Tambah Pelaksana (19 ASN)</option>
                             {% for peg in pegawai_list %}
                             <option value="{{ peg.id }}" data-nama="{{ peg.nama }}" data-nip="{{ peg.nip }}" data-pangkat="{{ peg.pangkat }}" data-jabatan="{{ peg.jabatan }}">
                                 {{ loop.index }}. {{ peg.nama }} ({{ peg.jabatan }})
@@ -254,7 +254,7 @@
                         </select>
                     </div>
 
-                    <button type="button" onclick="tambahPeserta()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+                    <button type="button" onclick="tambahPeserta()" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
                         <i class="ph-bold ph-plus text-sm"></i>
                         <span>Baris Kosong</span>
                     </button>
@@ -393,8 +393,8 @@
 
 
         <!-- 6. Status & Submit Action -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div class="flex items-center gap-3">
+        <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="flex items-center justify-between sm:justify-start gap-3">
                 <label class="text-xs font-semibold text-slate-700">Status Dokumen:</label>
                 <select name="status" class="px-3 py-1.5 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
                     <option value="Draft" {% if spj and spj.status == 'Draft' %}selected{% endif %}>Draft</option>
@@ -403,13 +403,13 @@
                 </select>
             </div>
 
-            <div class="flex items-center gap-3">
-                <a href="{{ url_for('spj_list') }}" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition">
+            <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                <a href="{{ url_for('spj_list') }}" class="flex-1 sm:flex-none text-center px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition">
                     Batal
                 </a>
-                <button type="submit" class="px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 active:bg-blue-800 shadow-md shadow-blue-500/20 transition flex items-center gap-2">
+                <button type="submit" class="flex-2 sm:flex-none justify-center px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 active:bg-blue-800 shadow-md shadow-blue-500/20 transition flex items-center gap-2">
                     <i class="ph-bold ph-floppy-disk text-base"></i>
-                    <span>Simpan & Buat Dokumen SPJ</span>
+                    <span>Simpan & Buat Dokumen</span>
                 </button>
             </div>
         </div>
@@ -822,8 +822,12 @@ function sinkronkanBiayaDenganPeserta(preserveValues = true) {
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs">
+            <div class="overflow-x-auto pb-1">
+                <div class="md:hidden text-[10px] text-slate-500 bg-slate-100/80 px-2.5 py-1 rounded-lg flex items-center gap-1.5 mb-2 border border-slate-200/60">
+                    <i class="ph-bold ph-arrows-left-right text-blue-600"></i>
+                    <span>Geser tabel ke samping untuk melihat & edit tarif/volume</span>
+                </div>
+                <table class="w-full text-left text-xs min-w-[700px]">
                     <thead class="bg-white border-b border-slate-200 text-slate-500 font-bold uppercase text-[10px]">
                         <tr>
                             <th class="p-2 w-10 text-center">No.</th>
@@ -912,8 +916,12 @@ function initBiayaFromData() {
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
+                <div class="overflow-x-auto pb-1">
+                    <div class="md:hidden text-[10px] text-slate-500 bg-slate-100/80 px-2.5 py-1 rounded-lg flex items-center gap-1.5 mb-2 border border-slate-200/60">
+                        <i class="ph-bold ph-arrows-left-right text-blue-600"></i>
+                        <span>Geser tabel ke samping untuk melihat & edit tarif/volume</span>
+                    </div>
+                    <table class="w-full text-left text-xs min-w-[700px]">
                         <thead class="bg-white border-b border-slate-200 text-slate-500 font-bold uppercase text-[10px]">
                             <tr>
                                 <th class="p-2 w-10 text-center">No.</th>

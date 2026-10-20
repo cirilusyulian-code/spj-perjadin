@@ -46,92 +46,96 @@
         </div>
     </div>
 
-    <!-- Quick Info Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+    <!-- Quick Info Cards (2x2 on Mobile, 4x1 on Desktop) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-xs">
             <div class="text-[10px] font-bold uppercase text-slate-400">Total Biaya SPJ</div>
-            <div class="text-lg font-black text-emerald-600 mt-0.5">{{ format_rupiah(total_biaya) }}</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">{{ biaya|length }} Item Pengeluaran</div>
+            <div class="text-base sm:text-lg font-black text-emerald-600 mt-0.5 truncate">{{ format_rupiah(total_biaya) }}</div>
+            <div class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5">{{ biaya|length }} Item Pengeluaran</div>
         </div>
 
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-xs">
             <div class="text-[10px] font-bold uppercase text-slate-400">Jadwal Perjadin</div>
-            <div class="text-sm font-bold text-slate-800 mt-0.5">{{ spj.lama_hari }} Hari ({{ format_tanggal(spj.tanggal_berangkat) }})</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">s.d. {{ format_tanggal(spj.tanggal_pulang) }}</div>
+            <div class="text-xs sm:text-sm font-bold text-slate-800 mt-0.5">{{ spj.lama_hari }} Hari ({{ format_tanggal(spj.tanggal_berangkat) }})</div>
+            <div class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5">s.d. {{ format_tanggal(spj.tanggal_pulang) }}</div>
         </div>
 
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-            <div class="text-[10px] font-bold uppercase text-slate-400">Jumlah Pelaksana</div>
-            <div class="text-sm font-bold text-slate-800 mt-0.5">{{ peserta|length }} Orang Pegawai</div>
-            <div class="text-[11px] text-slate-400 mt-0.5 truncate">{{ peserta[0].nama if peserta else '-' }}</div>
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-xs">
+            <div class="text-[10px] font-bold uppercase text-slate-400">Pelaksana</div>
+            <div class="text-xs sm:text-sm font-bold text-slate-800 mt-0.5">{{ peserta|length }} Orang Pegawai</div>
+            <div class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">{{ peserta[0].nama if peserta else '-' }}</div>
         </div>
 
-        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-xs">
             <div class="text-[10px] font-bold uppercase text-slate-400">Transportasi</div>
-            <div class="text-sm font-bold text-slate-800 mt-0.5">{{ spj.angkutan }}</div>
-            <div class="text-[11px] text-slate-400 mt-0.5 truncate">{{ spj.mata_anggaran }}</div>
+            <div class="text-xs sm:text-sm font-bold text-slate-800 mt-0.5 truncate">{{ spj.angkutan }}</div>
+            <div class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">{{ spj.mata_anggaran }}</div>
         </div>
     </div>
 
     <!-- 5 Documents Navigation Bar -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
-        <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div class="p-3.5 sm:p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <h3 class="text-xs sm:text-sm font-bold text-slate-800 flex items-center gap-2">
                     <i class="ph-bold ph-files text-blue-600 text-base"></i>
                     Pilih Dokumen untuk Dilihat & Dicetak
                 </h3>
-                <p class="text-[11px] text-slate-500">Klik salah satu dokumen di bawah untuk memuat tampilan cetak</p>
+                <p class="text-[10px] sm:text-[11px] text-slate-500">Pilih dokumen di bawah untuk memuat tampilan cetak</p>
             </div>
             <div class="flex items-center gap-2">
+                <a id="btnOpenNewTab" href="{{ url_for('cetak_spt', spj_id=spj.id) }}" target="_blank" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold flex items-center gap-1.5 transition shadow-xs" title="Buka pratinjau lembar ini di tab baru layar penuh">
+                    <i class="ph-bold ph-arrow-square-out text-sm"></i>
+                    <span>Layar Penuh</span>
+                </a>
                 <button onclick="printCurrentTab()" class="px-3.5 py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold shadow flex items-center gap-1.5 transition">
                     <i class="ph-bold ph-printer"></i>
-                    <span>Cetak Dokumen Terpilih</span>
+                    <span>Cetak</span>
                 </button>
             </div>
         </div>
 
-        <!-- Document Tab Buttons -->
-        <div class="p-3 bg-white border-b border-slate-100 flex flex-wrap gap-2">
-            <button onclick="loadDoc('{{ url_for('cetak_spt', spj_id=spj.id) }}', this)" class="doc-tab-btn active px-3 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white flex items-center gap-1.5 transition shadow-sm">
+        <!-- Document Tab Buttons (Horizontally Scrollable on Mobile) -->
+        <div class="p-2 sm:p-3 bg-white border-b border-slate-100 flex overflow-x-auto no-scrollbar gap-2">
+            <button onclick="loadDoc('{{ url_for('cetak_spt', spj_id=spj.id) }}', this)" class="doc-tab-btn active px-3 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white flex items-center gap-1.5 transition shadow-sm whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-file-text"></i>
                 <span>1. SPT ({% if spj.jenis_spt == 'kadis' %}Kadis{% else %}Staf{% endif %})</span>
             </button>
-            <button onclick="loadDoc('{{ url_for('cetak_pengeluaran_riil', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition">
+            <button onclick="loadDoc('{{ url_for('cetak_pengeluaran_riil', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-receipt"></i>
                 <span>2. Pengeluaran Riil</span>
             </button>
-            <button onclick="loadDoc('{{ url_for('cetak_kwitansi', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition">
+            <button onclick="loadDoc('{{ url_for('cetak_kwitansi', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-money"></i>
                 <span>3. Kwitansi</span>
             </button>
-            <button onclick="loadDoc('{{ url_for('cetak_rincian_biaya', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition">
+            <button onclick="loadDoc('{{ url_for('cetak_rincian_biaya', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-table"></i>
                 <span>4. Rincian Biaya</span>
             </button>
-            <button onclick="loadDoc('{{ url_for('cetak_laporan', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition">
+            <button onclick="loadDoc('{{ url_for('cetak_laporan', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-newspaper-clipping"></i>
                 <span>5. Laporan Perjadin</span>
             </button>
         </div>
 
-        <!-- Embedded Interactive Preview Iframe -->
-        <div class="p-4 bg-slate-100 flex justify-center">
-            <iframe id="docFrame" src="{{ url_for('cetak_spt', spj_id=spj.id) }}" class="w-full h-[850px] bg-white rounded-xl shadow-inner border border-slate-300"></iframe>
+        <!-- Embedded Interactive Preview Iframe with responsive height -->
+        <div class="p-2 sm:p-4 bg-slate-100 flex justify-center">
+            <iframe id="docFrame" src="{{ url_for('cetak_spt', spj_id=spj.id) }}" class="w-full h-[520px] sm:h-[680px] md:h-[850px] bg-white rounded-xl shadow-inner border border-slate-300"></iframe>
         </div>
     </div>
 
     <!-- Edit Laporan Form -->
-    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 mb-8">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+    <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-3">
             <div>
-                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <h3 class="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2">
                     <i class="ph-bold ph-note-pencil text-amber-600 text-base"></i>
                     Kustomisasi Narasi Laporan Perjalanan Dinas Ini
                 </h3>
-                <p class="text-xs text-slate-400 mt-0.5">Ubah bab kegiatan, hasil, dan kesimpulan khusus untuk kegiatan penugasan ini</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Ubah bab kegiatan, hasil, dan kesimpulan khusus untuk kegiatan penugasan ini</p>
             </div>
-            <button type="submit" form="laporanForm" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1.5">
+            <button type="submit" form="laporanForm" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
                 <i class="ph-bold ph-floppy-disk"></i>
                 <span>Simpan Narasi Laporan</span>
             </button>
@@ -158,6 +162,8 @@
 <script>
 function loadDoc(url, btn) {
     document.getElementById('docFrame').src = url;
+    const btnNewTab = document.getElementById('btnOpenNewTab');
+    if (btnNewTab) btnNewTab.href = url;
     document.querySelectorAll('.doc-tab-btn').forEach(b => {
         b.classList.remove('bg-blue-600', 'text-white');
         b.classList.add('bg-slate-100', 'text-slate-700');

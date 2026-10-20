@@ -8,36 +8,36 @@
     <!-- Header -->
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Pengaturan Template SPJ</h1>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Pengaturan Template SPJ</h1>
             <p class="text-xs text-slate-500 mt-1">Sesuaikan kop dinas, pejabat penandatangan, format 2 tipe SPT, dan 4 dokumen pendukung</p>
         </div>
         <div>
-            <button type="submit" form="settingsForm" id="topSaveBtn" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 active:bg-blue-800 transition shadow-md shadow-blue-500/20">
+            <button type="submit" form="settingsForm" id="topSaveBtn" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 active:bg-blue-800 transition shadow-md shadow-blue-500/20">
                 <i class="ph-bold ph-floppy-disk text-base"></i>
-                <span>Simpan Perubahan Pengaturan</span>
+                <span>Simpan Pengaturan</span>
             </button>
         </div>
     </div>
 
-    <!-- Navigation Tabs -->
-    <div class="flex border-b border-slate-200 mb-6 overflow-x-auto space-x-2 text-xs font-semibold" id="tabsHeader">
-        <button type="button" onclick="switchTab('kop')" id="tab-btn-kop" class="tab-btn px-4 py-3 border-b-2 border-blue-600 text-blue-600 flex items-center gap-2 whitespace-nowrap">
+    <!-- Navigation Tabs (Horizontally Scrollable without scrollbar) -->
+    <div class="flex border-b border-slate-200 mb-6 overflow-x-auto no-scrollbar space-x-2 text-xs font-semibold py-1" id="tabsHeader">
+        <button type="button" onclick="switchTab('kop')" id="tab-btn-kop" class="tab-btn px-4 py-2.5 border-b-2 border-blue-600 text-blue-600 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
             <i class="ph-bold ph-buildings text-base"></i>
             <span>Instansi & Kop Surat</span>
         </button>
-        <button type="button" onclick="switchTab('pejabat')" id="tab-btn-pejabat" class="tab-btn px-4 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap">
+        <button type="button" onclick="switchTab('pejabat')" id="tab-btn-pejabat" class="tab-btn px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
             <i class="ph-bold ph-identification-card text-base"></i>
             <span>Pejabat Penandatangan</span>
         </button>
-        <button type="button" onclick="switchTab('spt')" id="tab-btn-spt" class="tab-btn px-4 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap">
+        <button type="button" onclick="switchTab('spt')" id="tab-btn-spt" class="tab-btn px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
             <i class="ph-bold ph-file-text text-base"></i>
             <span>Template SPT (Kadis & Staf)</span>
         </button>
-        <button type="button" onclick="switchTab('lainnya')" id="tab-btn-lainnya" class="tab-btn px-4 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap">
+        <button type="button" onclick="switchTab('lainnya')" id="tab-btn-lainnya" class="tab-btn px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
             <i class="ph-bold ph-stamp text-base"></i>
             <span>Template Riil, Kwitansi, Rincian, Laporan</span>
         </button>
-        <button type="button" onclick="switchTab('pegawai')" id="tab-btn-pegawai" class="tab-btn px-4 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap">
+        <button type="button" onclick="switchTab('pegawai')" id="tab-btn-pegawai" class="tab-btn px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
             <i class="ph-bold ph-users text-base"></i>
             <span>Master Pegawai</span>
             <span class="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700" id="badgeTotalPegawai">{{ pegawai_list|length }}</span>

@@ -10,8 +10,8 @@
 <body class="bg-slate-100 py-6">
 
     <!-- Control Bar -->
-    <div class="no-print max-w-4xl mx-auto mb-4 flex items-center justify-between bg-white p-3 rounded-xl shadow border border-slate-200">
-        <div class="flex items-center gap-2 text-xs font-semibold text-slate-700">
+    <div class="no-print max-w-4xl mx-3 sm:mx-auto mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-xl shadow border border-slate-200">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-700">
             <a href="{{ url_for('spj_detail', spj_id=spj.id) }}" class="text-blue-600 hover:underline flex items-center gap-1">
                 <i class="ph ph-arrow-left"></i> Kembali ke Detail SPJ
             </a>
@@ -19,7 +19,7 @@
             <span class="text-slate-500">Pratinjau Cetak: Laporan Hasil Perjalanan Dinas</span>
         </div>
         <div>
-            <button onclick="window.print()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow flex items-center gap-1.5">
+            <button onclick="window.print()" class="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow flex items-center justify-center gap-1.5">
                 <i class="ph-bold ph-printer text-base"></i>
                 <span>Cetak / Simpan PDF</span>
             </button>

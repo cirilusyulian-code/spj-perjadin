@@ -41,51 +41,95 @@
             <div class="flex items-center justify-between h-16">
                 <!-- Brand / Logo -->
                 <div class="flex items-center gap-3">
-                    <a href="{{ url_for('dashboard') }}" class="flex items-center gap-3 group">
-                        <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-inner group-hover:bg-blue-500 transition">
+                    <a href="{{ url_for('dashboard') }}" class="flex items-center gap-2.5 sm:gap-3 group">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-inner group-hover:bg-blue-500 transition flex-shrink-0">
                             <i class="ph-bold ph-airplane-tilt"></i>
                         </div>
                         <div>
-                            <div class="font-bold text-base tracking-wide flex items-center gap-2">
+                            <div class="font-bold text-sm sm:text-base tracking-wide flex items-center gap-1.5 sm:gap-2">
                                 <span>e-SPJ Dinas</span>
-                                <span class="bg-blue-500/20 text-blue-300 text-xs px-2 py-0.5 rounded font-mono border border-blue-500/30">v2.0</span>
+                                <span class="bg-blue-500/20 text-blue-300 text-[10px] sm:text-xs px-1.5 py-0.5 rounded font-mono border border-blue-500/30">v2.0</span>
                             </div>
-                            <div class="text-xs text-slate-400">Sistem Dokumen Pertanggungjawaban Perjadin</div>
+                            <div class="text-[10px] sm:text-xs text-slate-400 hidden xs:block truncate max-w-[200px] sm:max-w-none">Sistem Dokumen SPJ Perjadin</div>
                         </div>
                     </a>
                 </div>
 
-                <!-- Navigation Links -->
+                <!-- Desktop Navigation Links -->
                 <nav class="hidden md:flex items-center space-x-1">
-                    <a href="{{ url_for('dashboard') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 {% if request.endpoint == 'dashboard' %}bg-blue-600 text-white{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
+                    <a href="{{ url_for('dashboard') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 {% if request.endpoint == 'dashboard' %}bg-blue-600 text-white shadow-sm{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
                         <i class="ph ph-squares-four text-base"></i>
                         Dashboard
                     </a>
-                    <a href="{{ url_for('spj_list') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 {% if request.endpoint in ['spj_list', 'spj_detail', 'spj_edit'] %}bg-blue-600 text-white{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
+                    <a href="{{ url_for('spj_list') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 {% if request.endpoint in ['spj_list', 'spj_detail', 'spj_edit'] %}bg-blue-600 text-white shadow-sm{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
                         <i class="ph ph-files text-base"></i>
                         Data SPJ
                     </a>
-                    <a href="{{ url_for('spj_create') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 {% if request.endpoint == 'spj_create' %}bg-blue-600 text-white{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
-                        <i class="ph ph-plus-circle text-base"></i>
+                    <a href="{{ url_for('spj_create') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 {% if request.endpoint == 'spj_create' %}bg-blue-600 text-white shadow-sm{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
+                        <i class="ph-bold ph-plus-circle text-base"></i>
                         Buat SPJ Baru
                     </a>
-                    <a href="{{ url_for('settings_view') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 {% if request.endpoint == 'settings_view' %}bg-blue-600 text-white{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
+                    <a href="{{ url_for('settings_view') }}" class="px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 {% if request.endpoint == 'settings_view' %}bg-blue-600 text-white shadow-sm{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
                         <i class="ph ph-gear text-base"></i>
                         Pengaturan Template
                     </a>
                 </nav>
 
-                <!-- User profile & Logout -->
-                <div class="flex items-center gap-3">
+                <!-- Right Action & Mobile Hamburger Button -->
+                <div class="flex items-center gap-2 sm:gap-3">
                     <div class="text-right hidden sm:block">
                         <div class="text-xs font-semibold text-slate-200">{{ session.get('full_name', 'Admin') }}</div>
                         <div class="text-[11px] text-blue-400 capitalize">{{ session.get('role', 'Operator') }}</div>
                     </div>
-                    <a href="{{ url_for('logout') }}" title="Keluar dari Aplikasi" class="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition">
+                    <a href="{{ url_for('logout') }}" title="Keluar dari Aplikasi" class="p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-800 transition hidden sm:inline-flex">
                         <i class="ph-bold ph-sign-out text-lg"></i>
                     </a>
+
+                    <!-- Hamburger Button for Mobile -->
+                    <button type="button" onclick="toggleMobileMenu()" id="mobileMenuBtn" aria-label="Buka Menu" class="md:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                        <i id="mobileMenuIcon" class="ph-bold ph-list text-2xl"></i>
+                    </button>
                 </div>
             </div>
+        </div>
+
+        <!-- Mobile Drawer Menu Dropdown -->
+        <div id="mobileMenuDropdown" class="hidden md:hidden border-t border-slate-800 bg-slate-900/98 px-4 pt-3 pb-4 space-y-2 shadow-2xl transition-all duration-200">
+            <!-- Mobile User Profile -->
+            <div class="flex items-center justify-between pb-3 mb-2 border-b border-slate-800/80">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs">
+                        {{ session.get('full_name', 'A')[:1] }}
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-slate-100">{{ session.get('full_name', 'Admin') }}</div>
+                        <div class="text-[10px] text-blue-400 capitalize">{{ session.get('role', 'Operator') }}</div>
+                    </div>
+                </div>
+                <a href="{{ url_for('logout') }}" class="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-500/10 border border-rose-500/20">
+                    <i class="ph-bold ph-sign-out"></i>
+                    <span>Keluar</span>
+                </a>
+            </div>
+
+            <nav class="space-y-1">
+                <a href="{{ url_for('dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition {% if request.endpoint == 'dashboard' %}bg-blue-600 text-white{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
+                    <i class="ph-bold ph-squares-four text-lg"></i>
+                    <span>Dashboard Utama</span>
+                </a>
+                <a href="{{ url_for('spj_list') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition {% if request.endpoint in ['spj_list', 'spj_detail', 'spj_edit'] %}bg-blue-600 text-white{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
+                    <i class="ph-bold ph-files text-lg"></i>
+                    <span>Daftar Data SPJ</span>
+                </a>
+                <a href="{{ url_for('spj_create') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition {% if request.endpoint == 'spj_create' %}bg-blue-600 text-white{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
+                    <i class="ph-bold ph-plus-circle text-lg"></i>
+                    <span>Buat SPJ Baru</span>
+                </a>
+                <a href="{{ url_for('settings_view') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition {% if request.endpoint == 'settings_view' %}bg-blue-600 text-white{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
+                    <i class="ph-bold ph-gear text-lg"></i>
+                    <span>Pengaturan Template SPJ</span>
+                </a>
+            </nav>
         </div>
     </header>
     {% endif %}
@@ -95,22 +139,22 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                <div class="mb-4 p-4 rounded-xl flex items-center justify-between text-sm shadow-sm border 
+                <div class="mb-4 p-3.5 sm:p-4 rounded-xl flex items-center justify-between text-xs sm:text-sm shadow-sm border 
                     {% if category == 'success' %}bg-emerald-50 text-emerald-800 border-emerald-200
                     {% elif category == 'danger' or category == 'error' %}bg-rose-50 text-rose-800 border-rose-200
                     {% elif category == 'warning' %}bg-amber-50 text-amber-800 border-amber-200
                     {% else %}bg-blue-50 text-blue-800 border-blue-200{% endif %}">
                     <div class="flex items-center gap-2">
                         {% if category == 'success' %}
-                            <i class="ph-fill ph-check-circle text-lg text-emerald-600"></i>
+                            <i class="ph-fill ph-check-circle text-lg text-emerald-600 flex-shrink-0"></i>
                         {% elif category == 'danger' or category == 'error' %}
-                            <i class="ph-fill ph-warning-circle text-lg text-rose-600"></i>
+                            <i class="ph-fill ph-warning-circle text-lg text-rose-600 flex-shrink-0"></i>
                         {% else %}
-                            <i class="ph-fill ph-info text-lg text-blue-600"></i>
+                            <i class="ph-fill ph-info text-lg text-blue-600 flex-shrink-0"></i>
                         {% endif %}
-                        <span>{{ message }}</span>
+                        <span class="break-words">{{ message }}</span>
                     </div>
-                    <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-600 text-lg">
+                    <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-600 text-lg flex-shrink-0 ml-2">
                         <i class="ph ph-x"></i>
                     </button>
                 </div>
@@ -119,10 +163,43 @@
         {% endwith %}
     </div>
 
-    <!-- Main Content -->
-    <main class="flex-1 w-full pb-16">
+    <!-- Main Content with responsive padding for mobile bottom nav -->
+    <main class="flex-1 w-full pb-24 md:pb-16">
         {% block content %}{% endblock %}
     </main>
+
+    {% if session.get('user_id') %}
+    <!-- Mobile Bottom Navigation Bar (Thumb Friendly) -->
+    <nav class="md:hidden no-print fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 flex items-center justify-around py-1.5 px-2 shadow-2xl safe-area-inset-bottom">
+        <a href="{{ url_for('dashboard') }}" class="flex flex-col items-center justify-center w-16 py-1 text-center transition {% if request.endpoint == 'dashboard' %}text-blue-400 font-bold{% else %}text-slate-400 hover:text-slate-200{% endif %}">
+            <i class="{% if request.endpoint == 'dashboard' %}ph-fill{% else %}ph{% endif %} ph-squares-four text-xl"></i>
+            <span class="text-[10px] mt-0.5">Beranda</span>
+        </a>
+
+        <a href="{{ url_for('spj_list') }}" class="flex flex-col items-center justify-center w-16 py-1 text-center transition {% if request.endpoint in ['spj_list', 'spj_detail', 'spj_edit'] %}text-blue-400 font-bold{% else %}text-slate-400 hover:text-slate-200{% endif %}">
+            <i class="{% if request.endpoint in ['spj_list', 'spj_detail', 'spj_edit'] %}ph-fill{% else %}ph{% endif %} ph-files text-xl"></i>
+            <span class="text-[10px] mt-0.5">Data SPJ</span>
+        </a>
+
+        <!-- Raised Center Create Button -->
+        <a href="{{ url_for('spj_create') }}" class="flex flex-col items-center justify-center -mt-5 group" title="Buat SPJ Baru">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/40 ring-4 ring-slate-900 group-active:scale-95 transition">
+                <i class="ph-bold ph-plus text-2xl"></i>
+            </div>
+            <span class="text-[10px] mt-1 text-slate-300 font-semibold">Buat SPJ</span>
+        </a>
+
+        <a href="{{ url_for('settings_view') }}" class="flex flex-col items-center justify-center w-16 py-1 text-center transition {% if request.endpoint == 'settings_view' %}text-blue-400 font-bold{% else %}text-slate-400 hover:text-slate-200{% endif %}">
+            <i class="{% if request.endpoint == 'settings_view' %}ph-fill{% else %}ph{% endif %} ph-gear text-xl"></i>
+            <span class="text-[10px] mt-0.5">Template</span>
+        </a>
+
+        <button type="button" onclick="toggleMobileMenu()" class="flex flex-col items-center justify-center w-16 py-1 text-center text-slate-400 hover:text-slate-200 transition">
+            <i class="ph ph-dots-three-outline text-xl"></i>
+            <span class="text-[10px] mt-0.5">Menu</span>
+        </button>
+    </nav>
+    {% endif %}
 
     <!-- Footer -->
     <footer class="no-print bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
@@ -137,6 +214,26 @@
             </div>
         </div>
     </footer>
+
+    <script>
+    function toggleMobileMenu() {
+        const menu = document.getElementById('mobileMenuDropdown');
+        const icon = document.getElementById('mobileMenuIcon');
+        if (menu.classList.contains('hidden')) {
+            menu.classList.remove('hidden');
+            if (icon) {
+                icon.classList.remove('ph-list');
+                icon.classList.add('ph-x');
+            }
+        } else {
+            menu.classList.add('hidden');
+            if (icon) {
+                icon.classList.remove('ph-x');
+                icon.classList.add('ph-list');
+            }
+        }
+    }
+    </script>
 
     {% block scripts %}{% endblock %}
 </body>

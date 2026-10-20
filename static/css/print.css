@@ -272,6 +272,15 @@
     }
 }
 
+/* Utility to hide scrollbars while allowing scroll */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
 /* Screen Simulation Preview */
 .printable-sheet {
     background: #fff;
@@ -281,4 +290,14 @@
     margin: 20px auto;
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
     box-sizing: border-box;
+}
+
+@media screen and (max-width: 820px) {
+    body {
+        overflow-x: auto;
+    }
+    .printable-sheet {
+        margin: 10px auto;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
 }

@@ -58,9 +58,97 @@
         </form>
     </div>
 
-    <!-- Data Table -->
-    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
+    <!-- Data List Container -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden mb-6">
+        <!-- 1. Mobile Cards List (Visible on Mobile < md) -->
+        <div class="md:hidden divide-y divide-slate-100">
+            {% for item in spj_items %}
+            <div class="p-4 space-y-3 hover:bg-slate-50/60 transition">
+                <div class="flex items-start justify-between gap-2">
+                    <div>
+                        <div class="font-bold text-slate-900 text-xs">{{ item.nomor_spt }}</div>
+                        <div class="text-[11px] text-slate-400">{{ item.nomor_sppd }}</div>
+                    </div>
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                        {% if item.jenis_spt == 'kadis' %}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                <i class="ph-bold ph-crown"></i> Kadis
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                <i class="ph-bold ph-users"></i> Staf
+                            </span>
+                        {% endif %}
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-semibold 
+                            {% if item.status == 'Disetujui' %}bg-emerald-50 text-emerald-700 border border-emerald-200
+                            {% elif item.status == 'Selesai' %}bg-blue-50 text-blue-700 border border-blue-200
+                            {% else %}bg-slate-100 text-slate-600 border border-slate-200{% endif %}">
+                            {{ item.status }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <div class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <i class="ph-fill ph-map-pin text-rose-500 flex-shrink-0"></i>
+                        <span>{{ item.tujuan }}</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">{{ item.maksud }}</div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-[11px] pt-1 border-t border-slate-100">
+                    <div>
+                        <div class="text-slate-400 text-[10px]">Pelaksana</div>
+                        <div class="font-medium text-slate-700 truncate">
+                            {{ item.nama_peserta_pertama or '-' }}
+                            {% if item.jumlah_peserta > 1 %}
+                            <span class="text-slate-400">(+{{ item.jumlah_peserta - 1 }})</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-slate-400 text-[10px]">Total Anggaran</div>
+                        <div class="font-bold text-slate-900 text-xs">{{ format_rupiah(item.total_biaya) }}</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between text-[11px] text-slate-500 pt-0.5">
+                    <div>
+                        <i class="ph ph-calendar"></i>
+                        <span>{{ format_tanggal(item.tanggal_berangkat) }} ({{ item.lama_hari }} Hari)</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons on Mobile -->
+                <div class="flex items-center gap-2 pt-2 border-t border-slate-100/80">
+                    <a href="{{ url_for('spj_detail', spj_id=item.id) }}" class="flex-1 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold text-center flex items-center justify-center gap-1.5 shadow-sm active:bg-blue-700">
+                        <i class="ph-bold ph-printer text-sm"></i>
+                        <span>Dokumen</span>
+                    </a>
+                    <a href="{{ url_for('spj_edit', spj_id=item.id) }}" class="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold flex items-center gap-1 hover:bg-slate-200">
+                        <i class="ph-bold ph-pencil-simple text-sm"></i>
+                        <span>Edit</span>
+                    </a>
+                    <form action="{{ url_for('spj_delete', spj_id=item.id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data SPJ ini?');" class="inline">
+                        <button type="submit" class="p-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 transition" title="Hapus">
+                            <i class="ph-bold ph-trash text-sm"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="p-10 text-center text-slate-400">
+                <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-xl mb-2">
+                    <i class="ph ph-folder-open"></i>
+                </div>
+                <div class="text-sm font-medium text-slate-600">Tidak ada data SPJ ditemukan</div>
+                <div class="text-xs text-slate-400 mt-1">Coba sesuaikan kata kunci atau buat SPJ baru.</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- 2. Desktop Table View (Visible on Desktop >= md) -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-left text-sm">
                 <thead class="bg-slate-50 border-b border-slate-100 text-[11px] uppercase font-bold text-slate-500 tracking-wider">
                     <tr>

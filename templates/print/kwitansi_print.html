@@ -48,10 +48,10 @@
         <table style="width: 100%; font-size: 10.5pt; margin-top: -6px; margin-bottom: 12px;">
             <tr>
                 <td style="text-align: left; font-weight: 500;">
-                    No Kuitansi : {{ spj.nomor_sppd|replace('SPPD', 'KW') if 'SPPD' in spj.nomor_sppd else ('KW/' + spj.nomor_sppd) }}{% if target_peserta|length > 1 %}/{{ loop.index }}{% endif %}
+                    No Kuitansi : 800/   /KW/Dukcapil-Kph/{{ spj.tanggal_berangkat[:4] }}
                 </td>
                 <td style="text-align: right; font-weight: 500;">
-                    Tahun Anggaran : 2026
+                    Tahun Anggaran : {{ spj.tanggal_berangkat[:4] }}
                 </td>
             </tr>
         </table>

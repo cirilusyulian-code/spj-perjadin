@@ -51,7 +51,8 @@ def init_db():
         lama_hari INTEGER DEFAULT 1,
         tempat_berangkat TEXT DEFAULT 'Tempat Kedudukan',
         angkutan TEXT DEFAULT 'Kendaraan Dinas / Mobil',
-        mata_anggaran TEXT DEFAULT '5.1.02.04.01.0001 (Belanja Perjalanan Dinas Biasa)',
+        mata_anggaran TEXT DEFAULT '5.1.02.04.001.00001 - Belanja Perjalanan Dinas Biasa',
+        tanggal_spt DATE,
         spt_penandatangan_nama TEXT,
         spt_penandatangan_nip TEXT,
         spt_penandatangan_pangkat TEXT,
@@ -63,7 +64,7 @@ def init_db():
     )
     ''')
 
-    # Ensure migration columns for spt_penandatangan exist in spj
+    # Ensure migration columns for spt_penandatangan & tanggal_spt exist in spj
     cursor.execute("PRAGMA table_info(spj)")
     existing_cols = [c[1] for c in cursor.fetchall()]
     new_cols = [
@@ -71,11 +72,14 @@ def init_db():
         ('spt_penandatangan_nip', 'TEXT'),
         ('spt_penandatangan_pangkat', 'TEXT'),
         ('spt_penandatangan_jabatan', 'TEXT'),
-        ('spt_penandatangan_an', 'TEXT')
+        ('spt_penandatangan_an', 'TEXT'),
+        ('tanggal_spt', 'DATE')
     ]
     for col_name, col_type in new_cols:
         if col_name not in existing_cols:
             cursor.execute(f"ALTER TABLE spj ADD COLUMN {col_name} {col_type}")
+
+    cursor.execute("UPDATE spj SET tanggal_spt = tanggal_berangkat WHERE tanggal_spt IS NULL")
 
 
     # SPJ Peserta
@@ -137,6 +141,13 @@ def init_db():
     )
     ''')
 
+    # Migration: Pastikan nomor_spt dan nomor_sppd menggunakan spasi non-breaking
+    cursor.execute("SELECT id, nomor_spt, nomor_sppd FROM spj WHERE nomor_spt LIKE '% %' OR nomor_sppd LIKE '% %'")
+    for r in cursor.fetchall():
+        spt_nb = str(r['nomor_spt']).replace(' ', '\u00a0') if r['nomor_spt'] else r['nomor_spt']
+        sppd_nb = str(r['nomor_sppd']).replace(' ', '\u00a0') if r['nomor_sppd'] else r['nomor_sppd']
+        cursor.execute("UPDATE spj SET nomor_spt = ?, nomor_sppd = ? WHERE id = ?", (spt_nb, sppd_nb, r['id']))
+
     conn.commit()
 
     # Seed Default User if not exists
@@ -186,12 +197,16 @@ def init_db():
         'instansi_kota': 'Jakarta',
         'kop_kadis_instansi_induk': 'PEMERINTAH DAERAH',
         'kop_kadis_instansi_nama': 'DINAS KOMUNIKASI DAN INFORMATIKA',
+        'kop_kadis_size_induk': '11.5pt',
+        'kop_kadis_size_nama': '12pt',
         'kop_kadis_alamat': 'Jl. Protokol No. 12, Kompleks Perkantoran Terpadu',
         'kop_kadis_kontak': 'Telp. (021) 7890123 | Email: kadis@diskominfo.pemda.go.id | Kode Pos 10110',
         'kop_kadis_kota': 'Jakarta',
         'kop_kadis_logo': '/static/img/logo_garuda_default.png',
         'kop_staf_instansi_induk': 'PEMERINTAH DAERAH',
         'kop_staf_instansi_nama': 'DINAS KOMUNIKASI DAN INFORMATIKA',
+        'kop_staf_size_induk': '11.5pt',
+        'kop_staf_size_nama': '12pt',
         'kop_staf_alamat': 'Jl. Protokol No. 12, Kompleks Perkantoran Terpadu',
         'kop_staf_kontak': 'Telp. (021) 7890123 | Email: diskominfo@pemda.go.id | Kode Pos 10110',
         'kop_staf_kota': 'Jakarta',
@@ -326,7 +341,7 @@ def create_sample_data():
             '2026-10-24',
             3,
             'Pesawat Udara',
-            '5.1.02.04.01.0001 - Belanja Perjalanan Dinas Biasa',
+            '5.1.02.04.001.00001 - Belanja Perjalanan Dinas Biasa',
             'Disetujui'
         ))
         spj1_id = cursor.lastrowid
@@ -368,7 +383,7 @@ def create_sample_data():
             '2026-11-06',
             3,
             'Pesawat Udara',
-            '5.1.02.04.01.0001 - Belanja Perjalanan Dinas Biasa',
+            '5.1.02.04.001.00001 - Belanja Perjalanan Dinas Biasa',
             'Draft'
         ))
         spj2_id = cursor.lastrowid

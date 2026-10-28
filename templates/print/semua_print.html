@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Bundel Lengkap Dokumen SPJ - {{ spj.nomor_spt }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}?v=2.4">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}?v=2.5">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
@@ -152,7 +152,7 @@
         <div class="ttd-box">
             <div class="ttd-kanan text-center">
                 <div>Dikeluarkan di : {{ s.kop_kadis_kota or s.instansi_kota or 'Kepahiang' }}</div>
-                <div>Pada Tanggal : {{ format_tanggal(spj.tanggal_berangkat) }}</div>
+                <div>Pada Tanggal : {{ format_tanggal(spj.tanggal_spt or spj.tanggal_berangkat) }}</div>
                 {% if spj.jenis_spt == 'kadis' %}
                     {% set ttd_an = spj.spt_penandatangan_an if (spj.spt_penandatangan_an is not none and spj.spt_penandatangan_an != '') else s.pejabat_ttd_kadis_an %}
                     {% set ttd_jabatan = spj.spt_penandatangan_jabatan or s.pejabat_ttd_kadis_jabatan or 'Sekretaris Daerah' %}
@@ -196,7 +196,7 @@
             <tr>
                 <td style="width: 140px; font-weight: 500;">Lampiran ST Nomor</td>
                 <td style="width: 15px;">:</td>
-                <td>{{ spj.nomor_spt }}</td>
+                <td>{{ spj.nomor_spt | format_nomor_spasi }}</td>
             </tr>
             <tr>
                 <td style="font-weight: 500;">Tanggal</td>
@@ -339,10 +339,10 @@
         <table style="width: 100%; font-size: 10.5pt; margin-top: -6px; margin-bottom: 12px;">
             <tr>
                 <td style="text-align: left; font-weight: 500;">
-                    No Kuitansi : {{ spj.nomor_sppd|replace('SPPD', 'KW') if 'SPPD' in spj.nomor_sppd else ('KW/' + spj.nomor_sppd) }}{% if target_peserta_kw|length > 1 %}/{{ loop.index }}{% endif %}
+                    No Kuitansi : {{ (spj.nomor_sppd|replace('SPPD', 'KW') if (spj.nomor_sppd and 'SPPD' in spj.nomor_sppd) else ('800/      /KW/Dukcapil-Kph/' ~ spj.tanggal_berangkat[:4])) | format_nomor_spasi }}{% if target_peserta_kw|length > 1 %}/{{ loop.index }}{% endif %}
                 </td>
                 <td style="text-align: right; font-weight: 500;">
-                    Tahun Anggaran : 2026
+                    Tahun Anggaran : {{ spj.tanggal_berangkat[:4] }}
                 </td>
             </tr>
         </table>
@@ -480,7 +480,7 @@
 
         <!-- Konsiderans Sesuai Template DOCX -->
         <div class="text-xs text-justify mb-2" style="line-height: 1.6;">
-            Berdasarkan Surat Perjalanan Dinas (SPD) tanggal {{ format_tanggal(spj.tanggal_berangkat) }} Nomor <strong>{{ spj.nomor_sppd }}</strong> Dengan ini kami menyatakan dengan sesungguhnya bahwa:
+            Berdasarkan Surat Perjalanan Dinas (SPD) tanggal {{ format_tanggal(spj.tanggal_berangkat) }} Nomor <strong>{{ spj.nomor_sppd | format_nomor_spasi }}</strong> Dengan ini kami menyatakan dengan sesungguhnya bahwa:
         </div>
         <div class="text-xs text-justify mb-3" style="line-height: 1.6;">
             1. Biaya transportasi pegawai dan/atau biaya penginapan di bawah ini tidak dapat diperoleh bukti-bukti pengeluaran meliputi :
@@ -575,7 +575,7 @@
         {% include 'print/_kop_surat.html' %}
 
         <div class="judul-dokumen">LAPORAN HASIL PERJALANAN DINAS</div>
-        <div class="nomor-dokumen">Lampiran SPT Nomor : {{ spj.nomor_spt }}</div>
+        <div class="nomor-dokumen">Lampiran SPT Nomor : {{ spj.nomor_spt | format_nomor_spasi }}</div>
 
         <!-- Header Memo Laporan -->
         <table class="w-full text-xs mb-4" style="line-height: 1.6; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
@@ -611,7 +611,7 @@
             <div>
                 <div style="font-weight: bold;">I. DASAR PELAKSANAAN</div>
                 <div style="padding-left: 18px;">
-                    Surat Perintah Tugas (SPT) Kepala Dinas Nomor: <strong>{{ spj.nomor_spt }}</strong> tanggal {{ format_tanggal(spj.tanggal_berangkat) }} dan Surat Perintah Perjalanan Dinas (SPPD) Nomor: <strong>{{ spj.nomor_sppd }}</strong>.
+                    Surat Perintah Tugas (SPT) Kepala Dinas Nomor: <strong>{{ spj.nomor_spt | format_nomor_spasi }}</strong> tanggal {{ format_tanggal(spj.tanggal_spt or spj.tanggal_berangkat) }} dan Surat Perintah Perjalanan Dinas (SPPD) Nomor: <strong>{{ spj.nomor_sppd | format_nomor_spasi }}</strong>.
                 </div>
             </div>
 
@@ -658,22 +658,40 @@
 
         <!-- Penutup Laporan -->
         <div class="text-xs mt-4" style="line-height: 1.6;">
-            Demikian laporan pelaksanaan perjalanan dinas ini kami susun dengan sebenarnya untuk dijadikan bahan pertimbangan dan arahan lebih lanjut.
+            Demikian laporan ini dibuat, sebagai salah satu bentuk pertanggungjawaban.
         </div>
 
-        <!-- Tanda Tangan Pelapor -->
-        <div class="ttd-box">
-            <div class="ttd-kanan text-xs">
-                <div>{{ s.instansi_kota }}, {{ format_tanggal(spj.tanggal_pulang) }}</div>
-                <div style="font-weight: bold; margin-bottom: 6px;">Yang Membuat Laporan / Pelaksana,</div>
-                
-                {% for p in peserta %}
-                <div style="margin-top: 25px;">
-                    <div class="ttd-nama">{{ p.nama }}</div>
-                    <div class="ttd-nip">{{ p.pangkat_golongan or '-' }}</div>
-                    <div class="ttd-nip">NIP. {{ p.nip or '-' }}</div>
-                </div>
-                {% endfor %}
+        <!-- Tanda Tangan Pelapor Sesuai Format Word Template -->
+        <div class="ttd-box" style="margin-top: 25px;">
+            <div style="float: right; width: 48%;">
+                <table style="width: 100%; border-collapse: collapse; border: none;">
+                    <tr>
+                        <td colspan="2" style="text-align: center; font-weight: bold; padding-bottom: 12px; font-size: 11pt;">
+                            Yang Melaporkan,
+                        </td>
+                    </tr>
+                    {% if peserta %}
+                        {% for p in peserta %}
+                        <tr style="height: 55px;">
+                            <td style="width: 25px; vertical-align: top; text-align: left; padding-top: 2px; font-size: 11pt;">
+                                {{ loop.index }}.
+                            </td>
+                            <td style="vertical-align: top; text-align: left; padding-top: 2px; font-size: 11pt;">
+                                <div style="font-weight: 500;">{{ p.nama }}</div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr style="height: 55px;">
+                            <td style="width: 25px; vertical-align: top; text-align: left; padding-top: 2px; font-size: 11pt;">
+                                1.
+                            </td>
+                            <td style="vertical-align: top; text-align: left; padding-top: 2px; font-size: 11pt;">
+                                <div style="font-weight: 500;">{{ s.pejabat_kadis_nama }}</div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </table>
             </div>
             <div style="clear: both;"></div>
         </div>

@@ -1,4 +1,5 @@
 import datetime
+from markupsafe import Markup
 try:
     from num2words import num2words
 except ImportError:
@@ -63,14 +64,20 @@ def _terbilang_manual(n):
 
 
 def format_nomor_spasi(nomor):
-    """Tambah 3 spasi lagi setelah 800/ untuk format cetak (total 7 spasi)"""
+    """
+    Format nomor penomoran dengan spasi non-breaking (&nbsp;)
+    sehingga setiap spasi yang diinput user atau ada pada penomoran dokumen
+    tidak diciutkan (collapse) oleh browser menjadi 1 spasi.
+    """
     if not nomor:
         return ""
-    nomor = str(nomor).strip()
-    if nomor.startswith('800/'):
-        rest = nomor[4:].lstrip()
-        return '800/       ' + rest
-    return nomor
+    s = str(nomor)
+    # Jika format 800// tanpa spasi sama sekali, beri spasi default non-breaking
+    if "800//" in s:
+        s = s.replace("800//", "800/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/")
+    # Konversi Unicode non-breaking space (\u00a0) dan spasi biasa (' ') menjadi &nbsp;
+    s = s.replace('\u00a0', '&nbsp;').replace(' ', '&nbsp;')
+    return Markup(s)
 
 def format_tanggal(val):
     if not val:

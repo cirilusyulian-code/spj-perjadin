@@ -66,8 +66,8 @@
             <div class="p-4 space-y-3 hover:bg-slate-50/60 transition">
                 <div class="flex items-start justify-between gap-2">
                     <div>
-                        <div class="font-bold text-slate-900 text-xs">{{ item.nomor_spt }}</div>
-                        <div class="text-[11px] text-slate-400">{{ item.nomor_sppd }}</div>
+                        <div class="font-bold text-slate-900 text-xs">{{ item.nomor_spt | format_nomor_spasi }}</div>
+                        <div class="text-[11px] text-slate-400">{{ item.nomor_sppd | format_nomor_spasi }}</div>
                     </div>
                     <div class="flex items-center gap-1.5 flex-shrink-0">
                         {% if item.jenis_spt == 'kadis' %}
@@ -166,8 +166,8 @@
                     {% for item in spj_items %}
                     <tr class="hover:bg-blue-50/30 transition">
                         <td class="py-4 px-4 whitespace-nowrap">
-                            <div class="font-bold text-slate-900 text-xs">{{ item.nomor_spt }}</div>
-                            <div class="text-[11px] text-slate-400 mt-0.5">{{ item.nomor_sppd }}</div>
+                            <div class="font-bold text-slate-900 text-xs">{{ item.nomor_spt | format_nomor_spasi }}</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">{{ item.nomor_sppd | format_nomor_spasi }}</div>
                         </td>
                         <td class="py-4 px-4 whitespace-nowrap">
                             {% if item.jenis_spt == 'kadis' %}

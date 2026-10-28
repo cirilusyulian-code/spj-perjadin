@@ -157,7 +157,7 @@
         <div class="ttd-box">
             <div class="ttd-kanan text-center">
                 <div>Dikeluarkan di : {{ s.kop_kadis_kota or s.instansi_kota or 'Kepahiang' }}</div>
-                <div>Pada Tanggal : {{ format_tanggal(spj.tanggal_berangkat) }}</div>
+                <div>Pada Tanggal : {{ format_tanggal(spj.tanggal_spt or spj.tanggal_berangkat) }}</div>
                 {% if spj.jenis_spt == 'kadis' %}
                 {% set ttd_an = spj.spt_penandatangan_an if (spj.spt_penandatangan_an is not none and
                 spj.spt_penandatangan_an != '') else s.pejabat_ttd_kadis_an %}

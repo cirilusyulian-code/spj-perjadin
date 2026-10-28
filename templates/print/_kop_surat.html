@@ -8,8 +8,8 @@
             </td>
             {% endif %}
             <td class="kop-text-cell">
-                <div class="kop-instansi-induk">{{ kop.instansi_induk }}</div>
-                <div class="kop-instansi-nama" style="font-size: 12pt !important; font-weight: 800 !important; white-space: nowrap !important; letter-spacing: -0.2px !important;">{{ kop.instansi_nama }}</div>
+                <div class="kop-instansi-induk" style="font-size: {{ kop.size_induk or '11.5pt' }} !important;">{{ kop.instansi_induk }}</div>
+                <div class="kop-instansi-nama" style="font-size: {{ kop.size_nama or '12pt' }} !important; font-weight: 800 !important; white-space: nowrap !important; letter-spacing: -0.2px !important;">{{ kop.instansi_nama }}</div>
                 <div class="kop-alamat">{{ kop.alamat }}</div>
                 <div class="kop-kontak">{{ kop.kontak }}</div>
             </td>

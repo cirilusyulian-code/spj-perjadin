@@ -63,7 +63,7 @@
 
         <!-- Konsiderans Sesuai Template DOCX -->
         <div class="text-xs text-justify mb-2" style="line-height: 1.6;">
-            Berdasarkan Surat Perjalanan Dinas (SPD) tanggal {{ format_tanggal(spj.tanggal_berangkat) }} Nomor <strong>{{ spj.nomor_sppd }}</strong> Dengan ini kami menyatakan dengan sesungguhnya bahwa:
+            Berdasarkan Surat Perjalanan Dinas (SPD) tanggal {{ format_tanggal(spj.tanggal_berangkat) }} Nomor <strong>{{ spj.nomor_sppd | format_nomor_spasi }}</strong> Dengan ini kami menyatakan dengan sesungguhnya bahwa:
         </div>
         <div class="text-xs text-justify mb-3" style="line-height: 1.6;">
             1. Biaya transportasi pegawai dan/atau biaya penginapan di bawah ini tidak dapat diperoleh bukti-bukti pengeluaran meliputi :

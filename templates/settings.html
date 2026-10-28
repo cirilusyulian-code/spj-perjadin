@@ -124,19 +124,49 @@
                 <!-- Formulir Teks Kop Kadis -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Pemerintah / Instansi Induk (Baris 1)</label>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-semibold text-slate-700">Nama Pemerintah / Instansi Induk (Baris 1)</label>
+                            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-lg shadow-2xs">
+                                <span class="text-[10px] text-slate-500 font-semibold"><i class="ph-bold ph-text-aa text-blue-600 mr-0.5"></i> Ukuran:</span>
+                                {% set cur_size_kadis_induk = s.kop_kadis_size_induk or '11.5pt' %}
+                                <select name="kop_kadis_size_induk" id="input_kadis_size_induk" onchange="updateKopSimulasi('kadis')"
+                                    class="text-xs font-bold text-blue-700 bg-transparent focus:outline-none cursor-pointer">
+                                    {% for sz in ['8pt', '8.5pt', '9pt', '9.5pt', '10pt', '10.5pt', '11pt', '11.5pt', '12pt', '12.5pt', '13pt', '13.5pt', '14pt', '15pt', '16pt', '18pt', '20pt'] %}
+                                    <option value="{{ sz }}" {% if cur_size_kadis_induk == sz %}selected{% endif %}>{{ sz }}</option>
+                                    {% endfor %}
+                                    {% if cur_size_kadis_induk not in ['8pt', '8.5pt', '9pt', '9.5pt', '10pt', '10.5pt', '11pt', '11.5pt', '12pt', '12.5pt', '13pt', '13.5pt', '14pt', '15pt', '16pt', '18pt', '20pt'] %}
+                                    <option value="{{ cur_size_kadis_induk }}" selected>{{ cur_size_kadis_induk }}</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                        </div>
                         <input type="text" name="kop_kadis_instansi_induk" id="input_kadis_induk" value="{{ s.kop_kadis_instansi_induk or s.instansi_nama_induk }}" required
                             class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
                             oninput="updateKopSimulasi('kadis')">
-                        <span class="text-[10px] text-slate-400">Contoh: PEMERINTAH DAERAH PROVINSI / KABUPATEN</span>
+                        <span class="text-[10px] text-slate-400">Contoh: PEMERINTAH KABUPATEN KEPAHIANG</span>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Satuan Kerja / Jabatan (Baris 2 Utama)</label>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-semibold text-slate-700">Nama Satuan Kerja / Jabatan (Baris 2 Utama)</label>
+                            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-lg shadow-2xs">
+                                <span class="text-[10px] text-slate-500 font-semibold"><i class="ph-bold ph-text-aa text-blue-600 mr-0.5"></i> Ukuran:</span>
+                                {% set cur_size_kadis_nama = s.kop_kadis_size_nama or '12pt' %}
+                                <select name="kop_kadis_size_nama" id="input_kadis_size_nama" onchange="updateKopSimulasi('kadis')"
+                                    class="text-xs font-bold text-blue-700 bg-transparent focus:outline-none cursor-pointer">
+                                    {% for sz in ['8pt', '8.5pt', '9pt', '9.5pt', '10pt', '10.5pt', '11pt', '11.5pt', '12pt', '12.5pt', '13pt', '13.5pt', '14pt', '15pt', '16pt', '18pt', '20pt'] %}
+                                    <option value="{{ sz }}" {% if cur_size_kadis_nama == sz %}selected{% endif %}>{{ sz }}</option>
+                                    {% endfor %}
+                                    {% if cur_size_kadis_nama not in ['8pt', '8.5pt', '9pt', '9.5pt', '10pt', '10.5pt', '11pt', '11.5pt', '12pt', '12.5pt', '13pt', '13.5pt', '14pt', '15pt', '16pt', '18pt', '20pt'] %}
+                                    <option value="{{ cur_size_kadis_nama }}" selected>{{ cur_size_kadis_nama }}</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                        </div>
                         <input type="text" name="kop_kadis_instansi_nama" id="input_kadis_nama" value="{{ s.kop_kadis_instansi_nama or s.instansi_nama }}" required
                             class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold"
                             oninput="updateKopSimulasi('kadis')">
-                        <span class="text-[10px] text-slate-400">Contoh: DINAS KOMUNIKASI DAN INFORMATIKA</span>
+                        <span class="text-[10px] text-slate-400">Contoh: SEKRETARIAT DAERAH</span>
                     </div>
 
                     <div class="col-span-1 md:col-span-2">
@@ -181,10 +211,10 @@
 
                                 <!-- Kolom Teks Kop (Tengah) -->
                                 <td style="text-align: center; vertical-align: middle; padding: 0 4px;">
-                                    <div id="simulasi_kadis_induk" class="text-xs sm:text-sm font-bold tracking-wider uppercase text-slate-900 leading-tight">
+                                    <div id="simulasi_kadis_induk" style="font-size: {{ s.kop_kadis_size_induk or '11.5pt' }};" class="font-bold tracking-wider uppercase text-slate-900 leading-tight">
                                         {{ s.kop_kadis_instansi_induk or s.instansi_nama_induk }}
                                     </div>
-                                    <div id="simulasi_kadis_nama" class="text-sm sm:text-base font-extrabold tracking-wide uppercase text-slate-950 mt-0.5 leading-tight">
+                                    <div id="simulasi_kadis_nama" style="font-size: {{ s.kop_kadis_size_nama or '12pt' }};" class="font-extrabold tracking-wide uppercase text-slate-950 mt-0.5 leading-tight">
                                         {{ s.kop_kadis_instansi_nama or s.instansi_nama }}
                                     </div>
                                     <div id="simulasi_kadis_alamat" class="text-[11px] text-slate-700 mt-1 leading-snug">
@@ -267,19 +297,49 @@
                 <!-- Formulir Teks Kop Staf -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Pemerintah / Instansi Induk (Baris 1)</label>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-semibold text-slate-700">Nama Pemerintah / Instansi Induk (Baris 1)</label>
+                            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-lg shadow-2xs">
+                                <span class="text-[10px] text-slate-500 font-semibold"><i class="ph-bold ph-text-aa text-blue-600 mr-0.5"></i> Ukuran:</span>
+                                {% set cur_size_staf_induk = s.kop_staf_size_induk or '11.5pt' %}
+                                <select name="kop_staf_size_induk" id="input_staf_size_induk" onchange="updateKopSimulasi('staf')"
+                                    class="text-xs font-bold text-blue-700 bg-transparent focus:outline-none cursor-pointer">
+                                    {% for sz in ['8pt', '8.5pt', '9pt', '9.5pt', '10pt', '10.5pt', '11pt', '11.5pt', '12pt', '12.5pt', '13pt', '13.5pt', '14pt', '15pt', '16pt', '18pt', '20pt'] %}
+                                    <option value="{{ sz }}" {% if cur_size_staf_induk == sz %}selected{% endif %}>{{ sz }}</option>
+                                    {% endfor %}
+                                    {% if cur_size_staf_induk not in ['8pt', '8.5pt', '9pt', '9.5pt', '10pt', '10.5pt', '11pt', '11.5pt', '12pt', '12.5pt', '13pt', '13.5pt', '14pt', '15pt', '16pt', '18pt', '20pt'] %}
+                                    <option value="{{ cur_size_staf_induk }}" selected>{{ cur_size_staf_induk }}</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                        </div>
                         <input type="text" name="kop_staf_instansi_induk" id="input_staf_induk" value="{{ s.kop_staf_instansi_induk or s.instansi_nama_induk }}" required
                             class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
                             oninput="updateKopSimulasi('staf')">
-                        <span class="text-[10px] text-slate-400">Contoh: PEMERINTAH DAERAH PROVINSI / KABUPATEN</span>
+                        <span class="text-[10px] text-slate-400">Contoh: PEMERINTAH KABUPATEN KEPAHIANG</span>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Satuan Kerja / Dinas (Baris 2 Utama)</label>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-semibold text-slate-700">Nama Satuan Kerja / Dinas (Baris 2 Utama)</label>
+                            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-lg shadow-2xs">
+                                <span class="text-[10px] text-slate-500 font-semibold"><i class="ph-bold ph-text-aa text-blue-600 mr-0.5"></i> Ukuran:</span>
+                                {% set cur_size_staf_nama = s.kop_staf_size_nama or '12pt' %}
+                                <select name="kop_staf_size_nama" id="input_staf_size_nama" onchange="updateKopSimulasi('staf')"
+                                    class="text-xs font-bold text-blue-700 bg-transparent focus:outline-none cursor-pointer">
+                                    {% for sz in ['8pt', '8.5pt', '9pt', '9.5pt', '10pt', '10.5pt', '11pt', '11.5pt', '12pt', '12.5pt', '13pt', '13.5pt', '14pt', '15pt', '16pt', '18pt', '20pt'] %}
+                                    <option value="{{ sz }}" {% if cur_size_staf_nama == sz %}selected{% endif %}>{{ sz }}</option>
+                                    {% endfor %}
+                                    {% if cur_size_staf_nama not in ['8pt', '8.5pt', '9pt', '9.5pt', '10pt', '10.5pt', '11pt', '11.5pt', '12pt', '12.5pt', '13pt', '13.5pt', '14pt', '15pt', '16pt', '18pt', '20pt'] %}
+                                    <option value="{{ cur_size_staf_nama }}" selected>{{ cur_size_staf_nama }}</option>
+                                    {% endif %}
+                                </select>
+                            </div>
+                        </div>
                         <input type="text" name="kop_staf_instansi_nama" id="input_staf_nama" value="{{ s.kop_staf_instansi_nama or s.instansi_nama }}" required
                             class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold"
                             oninput="updateKopSimulasi('staf')">
-                        <span class="text-[10px] text-slate-400">Contoh: DINAS KOMUNIKASI DAN INFORMATIKA</span>
+                        <span class="text-[10px] text-slate-400">Contoh: DINAS KEPENDUDUKAN DAN PENCATATAN SIPIL</span>
                     </div>
 
                     <div class="col-span-1 md:col-span-2">
@@ -324,10 +384,10 @@
 
                                 <!-- Kolom Teks Kop (Tengah) -->
                                 <td style="text-align: center; vertical-align: middle; padding: 0 4px;">
-                                    <div id="simulasi_staf_induk" class="text-xs sm:text-sm font-bold tracking-wider uppercase text-slate-900 leading-tight">
+                                    <div id="simulasi_staf_induk" style="font-size: {{ s.kop_staf_size_induk or '11.5pt' }};" class="font-bold tracking-wider uppercase text-slate-900 leading-tight">
                                         {{ s.kop_staf_instansi_induk or s.instansi_nama_induk }}
                                     </div>
-                                    <div id="simulasi_staf_nama" class="text-sm sm:text-base font-extrabold tracking-wide uppercase text-slate-950 mt-0.5 leading-tight">
+                                    <div id="simulasi_staf_nama" style="font-size: {{ s.kop_staf_size_nama or '12pt' }};" class="font-extrabold tracking-wide uppercase text-slate-950 mt-0.5 leading-tight">
                                         {{ s.kop_staf_instansi_nama or s.instansi_nama }}
                                     </div>
                                     <div id="simulasi_staf_alamat" class="text-[11px] text-slate-700 mt-1 leading-snug">
@@ -998,10 +1058,26 @@ function updateKopSimulasi(type) {
     const alamat = document.getElementById('input_' + type + '_alamat').value.trim() || 'Jl. Kantor Lengkap';
     const kontak = document.getElementById('input_' + type + '_kontak').value.trim() || 'Kontak & Email';
 
-    document.getElementById('simulasi_' + type + '_induk').innerText = induk;
-    document.getElementById('simulasi_' + type + '_nama').innerText = nama;
-    document.getElementById('simulasi_' + type + '_alamat').innerText = alamat;
-    document.getElementById('simulasi_' + type + '_kontak').innerText = kontak;
+    const sizeIndukElem = document.getElementById('input_' + type + '_size_induk');
+    const sizeNamaElem = document.getElementById('input_' + type + '_size_nama');
+    const sizeInduk = sizeIndukElem ? sizeIndukElem.value : '11.5pt';
+    const sizeNama = sizeNamaElem ? sizeNamaElem.value : '12pt';
+
+    const simInduk = document.getElementById('simulasi_' + type + '_induk');
+    const simNama = document.getElementById('simulasi_' + type + '_nama');
+    const simAlamat = document.getElementById('simulasi_' + type + '_alamat');
+    const simKontak = document.getElementById('simulasi_' + type + '_kontak');
+
+    if (simInduk) {
+        simInduk.innerText = induk;
+        simInduk.style.fontSize = sizeInduk;
+    }
+    if (simNama) {
+        simNama.innerText = nama;
+        simNama.style.fontSize = sizeNama;
+    }
+    if (simAlamat) simAlamat.innerText = alamat;
+    if (simKontak) simKontak.innerText = kontak;
 }
 
 // Copy values from Kadis to Staf
@@ -1011,6 +1087,12 @@ function copyKadisToStaf() {
     document.getElementById('input_staf_alamat').value = document.getElementById('input_kadis_alamat').value;
     document.getElementById('input_staf_kontak').value = document.getElementById('input_kadis_kontak').value;
     document.getElementById('input_staf_kota').value = document.getElementById('input_kadis_kota').value;
+    if (document.getElementById('input_kadis_size_induk') && document.getElementById('input_staf_size_induk')) {
+        document.getElementById('input_staf_size_induk').value = document.getElementById('input_kadis_size_induk').value;
+    }
+    if (document.getElementById('input_kadis_size_nama') && document.getElementById('input_staf_size_nama')) {
+        document.getElementById('input_staf_size_nama').value = document.getElementById('input_kadis_size_nama').value;
+    }
     updateKopSimulasi('staf');
 }
 

@@ -28,6 +28,8 @@ def get_kop(s, jenis_spt='staf'):
             'logo': s.get('kop_kadis_logo', ''),
             'instansi_induk': s.get('kop_kadis_instansi_induk') or s.get('instansi_nama_induk', 'PEMERINTAH DAERAH'),
             'instansi_nama': s.get('kop_kadis_instansi_nama') or s.get('instansi_nama', 'DINAS KOMUNIKASI DAN INFORMATIKA'),
+            'size_induk': s.get('kop_kadis_size_induk') or '11.5pt',
+            'size_nama': s.get('kop_kadis_size_nama') or '12pt',
             'alamat': s.get('kop_kadis_alamat') or s.get('instansi_alamat', ''),
             'kontak': s.get('kop_kadis_kontak') or s.get('instansi_kontak', ''),
             'kota': s.get('kop_kadis_kota') or s.get('instansi_kota', '')
@@ -37,6 +39,8 @@ def get_kop(s, jenis_spt='staf'):
             'logo': s.get('kop_staf_logo', ''),
             'instansi_induk': s.get('kop_staf_instansi_induk') or s.get('instansi_nama_induk', 'PEMERINTAH DAERAH'),
             'instansi_nama': s.get('kop_staf_instansi_nama') or s.get('instansi_nama', 'DINAS KOMUNIKASI DAN INFORMATIKA'),
+            'size_induk': s.get('kop_staf_size_induk') or '11.5pt',
+            'size_nama': s.get('kop_staf_size_nama') or '12pt',
             'alamat': s.get('kop_staf_alamat') or s.get('instansi_alamat', ''),
             'kontak': s.get('kop_staf_kontak') or s.get('instansi_kontak', ''),
             'kota': s.get('kop_staf_kota') or s.get('instansi_kota', '')
@@ -147,9 +151,10 @@ def spj_list():
     params = []
 
     if q:
-        sql += ' AND (s.nomor_spt LIKE ? OR s.nomor_sppd LIKE ? OR s.tujuan LIKE ? OR s.maksud LIKE ?)'
-        wildcard = f'%{q}%'
-        params.extend([wildcard, wildcard, wildcard, wildcard])
+        q_clean = q.strip()
+        q_nbsp = q_clean.replace(' ', '\u00a0')
+        sql += ' AND (s.nomor_spt LIKE ? OR s.nomor_spt LIKE ? OR s.nomor_sppd LIKE ? OR s.nomor_sppd LIKE ? OR s.tujuan LIKE ? OR s.maksud LIKE ?)'
+        params.extend([f'%{q_clean}%', f'%{q_nbsp}%', f'%{q_clean}%', f'%{q_nbsp}%', f'%{q_clean}%', f'%{q_clean}%'])
 
     if jenis:
         sql += ' AND s.jenis_spt = ?'
@@ -181,8 +186,9 @@ def spj_create():
     today_str = datetime.date.today().strftime('%Y-%m-%d')
 
     if request.method == 'POST':
-        nomor_spt = request.form.get('nomor_spt', '').strip()
-        nomor_sppd = request.form.get('nomor_sppd', '').strip()
+        # Konversi semua spasi pada penomoran menjadi format spasi non-breaking
+        nomor_spt = request.form.get('nomor_spt', '').strip().replace(' ', '\u00a0')
+        nomor_sppd = request.form.get('nomor_sppd', '').strip().replace(' ', '\u00a0')
         jenis_spt = request.form.get('jenis_spt', 'staf').strip()
         tujuan = request.form.get('tujuan', '').strip()
         instansi_tujuan = request.form.get('instansi_tujuan', '').strip()
@@ -190,6 +196,7 @@ def spj_create():
         dasar_hukum = request.form.get('dasar_hukum', '').strip()
         tanggal_berangkat = request.form.get('tanggal_berangkat', today_str).strip()
         tanggal_pulang = request.form.get('tanggal_pulang', today_str).strip()
+        tanggal_spt = request.form.get('tanggal_spt', '').strip() or tanggal_berangkat
         lama_hari = int(request.form.get('lama_hari', 1))
         angkutan = request.form.get('angkutan', 'Kendaraan Dinas / Mobil').strip()
         mata_anggaran = request.form.get('mata_anggaran', '').strip()
@@ -218,13 +225,13 @@ def spj_create():
         cursor.execute('''
             INSERT INTO spj (
                 nomor_spt, nomor_sppd, jenis_spt, tujuan, instansi_tujuan, maksud, dasar_hukum,
-                tanggal_berangkat, tanggal_pulang, lama_hari, angkutan, mata_anggaran, status,
+                tanggal_berangkat, tanggal_pulang, tanggal_spt, lama_hari, angkutan, mata_anggaran, status,
                 spt_penandatangan_an, spt_penandatangan_jabatan, spt_penandatangan_nama,
                 spt_penandatangan_nip, spt_penandatangan_pangkat
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             nomor_spt, nomor_sppd, jenis_spt, tujuan, instansi_tujuan, maksud, dasar_hukum,
-            tanggal_berangkat, tanggal_pulang, lama_hari, angkutan, mata_anggaran, status,
+            tanggal_berangkat, tanggal_pulang, tanggal_spt, lama_hari, angkutan, mata_anggaran, status,
             spt_penandatangan_an, spt_penandatangan_jabatan, spt_penandatangan_nama,
             spt_penandatangan_nip, spt_penandatangan_pangkat
         ))
@@ -281,14 +288,15 @@ def spj_create():
     current_cnt = conn.execute('SELECT COUNT(*) as c FROM spj').fetchone()['c'] + 1
     conn.close()
     year = datetime.date.today().year
-    default_nomor_spt = f"800/    /Dukcapil-Kph/{year}"
-    default_nomor_sppd = f"800/    /SPPD/Dukcapil-Kph/{year}"
+    default_nomor_spt = f"800/      /Dukcapil-Kph/{year}".replace(' ', '\u00a0')
+    default_nomor_sppd = f"800/      /SPPD/Dukcapil-Kph/{year}".replace(' ', '\u00a0')
 
     return render_template('spj_form.html',
         spj=None,
         peserta_list=[],
         biaya_list=[],
         today_date=today_str,
+        today_str=today_str,
         default_nomor_spt=default_nomor_spt,
         default_nomor_sppd=default_nomor_sppd,
         biaya_json='[]',
@@ -318,8 +326,9 @@ def spj_edit(spj_id):
     s = get_settings()
 
     if request.method == 'POST':
-        nomor_spt = request.form.get('nomor_spt', '').strip()
-        nomor_sppd = request.form.get('nomor_sppd', '').strip()
+        # Konversi semua spasi pada penomoran menjadi format spasi non-breaking
+        nomor_spt = request.form.get('nomor_spt', '').strip().replace(' ', '\u00a0')
+        nomor_sppd = request.form.get('nomor_sppd', '').strip().replace(' ', '\u00a0')
         jenis_spt = request.form.get('jenis_spt', 'staf').strip()
         tujuan = request.form.get('tujuan', '').strip()
         instansi_tujuan = request.form.get('instansi_tujuan', '').strip()
@@ -327,6 +336,7 @@ def spj_edit(spj_id):
         dasar_hukum = request.form.get('dasar_hukum', '').strip()
         tanggal_berangkat = request.form.get('tanggal_berangkat', '').strip()
         tanggal_pulang = request.form.get('tanggal_pulang', '').strip()
+        tanggal_spt = request.form.get('tanggal_spt', '').strip() or tanggal_berangkat
         lama_hari = int(request.form.get('lama_hari', 1))
         angkutan = request.form.get('angkutan', 'Kendaraan Dinas / Mobil').strip()
         mata_anggaran = request.form.get('mata_anggaran', '').strip()
@@ -341,14 +351,14 @@ def spj_edit(spj_id):
         cursor.execute('''
             UPDATE spj SET
                 nomor_spt = ?, nomor_sppd = ?, jenis_spt = ?, tujuan = ?, instansi_tujuan = ?, maksud = ?, dasar_hukum = ?,
-                tanggal_berangkat = ?, tanggal_pulang = ?, lama_hari = ?, angkutan = ?, mata_anggaran = ?, status = ?,
+                tanggal_berangkat = ?, tanggal_pulang = ?, tanggal_spt = ?, lama_hari = ?, angkutan = ?, mata_anggaran = ?, status = ?,
                 spt_penandatangan_an = ?, spt_penandatangan_jabatan = ?, spt_penandatangan_nama = ?,
                 spt_penandatangan_nip = ?, spt_penandatangan_pangkat = ?,
                 updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
         ''', (
             nomor_spt, nomor_sppd, jenis_spt, tujuan, instansi_tujuan, maksud, dasar_hukum,
-            tanggal_berangkat, tanggal_pulang, lama_hari, angkutan, mata_anggaran, status,
+            tanggal_berangkat, tanggal_pulang, tanggal_spt, lama_hari, angkutan, mata_anggaran, status,
             spt_penandatangan_an, spt_penandatangan_jabatan, spt_penandatangan_nama,
             spt_penandatangan_nip, spt_penandatangan_pangkat, spj_id
         ))
@@ -412,6 +422,7 @@ def spj_edit(spj_id):
         biaya_json=json.dumps([dict(b) for b in biaya_list]),
         peserta_json=json.dumps([dict(p) for p in peserta_list]),
         today_date=spj['tanggal_berangkat'],
+        today_str=datetime.date.today().strftime('%Y-%m-%d'),
         default_nomor_spt=spj['nomor_spt'],
         default_nomor_sppd=spj['nomor_sppd'],
         default_dasar_hukum=spj['dasar_hukum'],
@@ -600,7 +611,9 @@ def settings_view():
         keys = [
             'instansi_nama_induk', 'instansi_nama', 'instansi_alamat', 'instansi_kontak', 'instansi_kota',
             'kop_kadis_instansi_induk', 'kop_kadis_instansi_nama', 'kop_kadis_alamat', 'kop_kadis_kontak', 'kop_kadis_kota',
+            'kop_kadis_size_induk', 'kop_kadis_size_nama',
             'kop_staf_instansi_induk', 'kop_staf_instansi_nama', 'kop_staf_alamat', 'kop_staf_kontak', 'kop_staf_kota',
+            'kop_staf_size_induk', 'kop_staf_size_nama',
             'pejabat_kadis_nama', 'pejabat_kadis_nip', 'pejabat_kadis_pangkat', 'pejabat_kadis_jabatan',
             'pejabat_ttd_kadis_an', 'pejabat_ttd_kadis_jabatan', 'pejabat_ttd_kadis_nama', 'pejabat_ttd_kadis_nip', 'pejabat_ttd_kadis_pangkat',
             'pejabat_ppk_nama', 'pejabat_ppk_nip', 'pejabat_ppk_pangkat', 'pejabat_ppk_jabatan',

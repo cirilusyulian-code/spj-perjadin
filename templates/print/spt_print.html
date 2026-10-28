@@ -40,7 +40,7 @@
 
         <!-- Judul SPT -->
         <div class="judul-dokumen">SURAT TUGAS</div>
-        <div class="nomor-dokumen">Nomor: {{ spj.nomor_spt }}</div>
+        <div class="nomor-dokumen">Nomor: {{ spj.nomor_spt | format_nomor_spasi }}</div>
 
         <!-- Tabel Konsiderans & Isi Penugasan -->
         <table class="w-full text-xs" style="line-height: 1.6; border-collapse: collapse; margin-bottom: 8px;">

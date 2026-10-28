@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 
 from database import (init_db, get_db, get_settings, update_settings, verify_user, create_sample_data, 
                       get_pegawai_list, get_pegawai_by_id, add_pegawai, update_pegawai, delete_pegawai)
-from helpers import format_rupiah, terbilang, format_tanggal, hitung_hari, angka_murni, clean_uraian
+from helpers import format_rupiah, terbilang, format_tanggal, hitung_hari, angka_murni, clean_uraian, format_nomor_spasi
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'spj-secret-key-super-secure-2026-vps')
@@ -47,13 +47,15 @@ app.jinja_env.filters['format_rupiah'] = format_rupiah
 app.jinja_env.filters['terbilang'] = terbilang
 app.jinja_env.filters['format_tanggal'] = format_tanggal
 app.jinja_env.filters['clean_uraian'] = clean_uraian
+app.jinja_env.filters['format_nomor_spasi'] = format_nomor_spasi
 app.jinja_env.globals.update(
     format_rupiah=format_rupiah,
     terbilang=terbilang,
     format_tanggal=format_tanggal,
     angka_murni=angka_murni,
     get_kop=get_kop,
-    clean_uraian=clean_uraian
+    clean_uraian=clean_uraian,
+    format_nomor_spasi=format_nomor_spasi
 )
 
 @app.context_processor

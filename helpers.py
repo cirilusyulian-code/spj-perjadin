@@ -61,6 +61,17 @@ def _terbilang_manual(n):
     else:
         return _terbilang_manual(n // 1000000000000) + " Triliun " + _terbilang_manual(n % 1000000000000)
 
+
+def format_nomor_spasi(nomor):
+    """Tambah 3 spasi lagi setelah 800/ untuk format cetak (total 7 spasi)"""
+    if not nomor:
+        return ""
+    nomor = str(nomor).strip()
+    if nomor.startswith('800/'):
+        rest = nomor[4:].lstrip()
+        return '800/       ' + rest
+    return nomor
+
 def format_tanggal(val):
     if not val:
         return "-"

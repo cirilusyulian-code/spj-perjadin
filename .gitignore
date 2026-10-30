@@ -24,3 +24,6 @@ env/
 ENV/
 .vscode/
 .idea/
+*.db
+*.sqlite
+*.sqlite3

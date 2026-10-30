@@ -6,6 +6,7 @@ Aturan Pembaruan:
 - MAJOR: Perubahan arsitektur besar / alur kerja fundamental (misal: 3.0.0)
 - MINOR: Penambahan fitur baru yang kompatibel ke belakang (misal: 2.1.0, 2.2.0)
 - PATCH: Perbaikan bug kecil / perbaikan tata letak / styling (misal: 2.1.1)
+- DATABASE: spj_database.db diatur skip-worktree agar data transaksi/operasional lokal tidak ikut ter-push kecuali jika ada migrasi struktur tabel.
 """
 
 VERSION_MAJOR = 2

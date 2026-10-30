@@ -15,12 +15,16 @@
                 Kelola Surat Perintah Tugas (SPT), SPPD, dan Dokumen Pertanggungjawaban Keuangan.
             </p>
         </div>
-        <div class="grid grid-cols-2 sm:flex sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
-            <a href="{{ url_for('settings_view') }}" class="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-700 text-xs sm:text-sm font-medium hover:bg-slate-50 transition shadow-sm text-center">
+        <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+            <a href="{{ url_for('blanko_sppd') }}" target="_blank" class="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-700 text-xs sm:text-sm font-medium hover:bg-slate-50 hover:text-blue-600 transition shadow-sm text-center flex-1 sm:flex-initial" title="Cetak / Buka Blanko SPPD Kosong (PDF)">
+                <i class="ph-bold ph-printer text-sm sm:text-base text-blue-600"></i>
+                <span>Blanko SPPD</span>
+            </a>
+            <a href="{{ url_for('settings_view') }}" class="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-700 text-xs sm:text-sm font-medium hover:bg-slate-50 transition shadow-sm text-center flex-1 sm:flex-initial">
                 <i class="ph ph-sliders text-sm sm:text-base text-slate-500"></i>
                 <span>Pengaturan</span>
             </a>
-            <a href="{{ url_for('spj_create') }}" class="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-semibold hover:bg-blue-700 active:bg-blue-800 transition shadow-md shadow-blue-500/20 text-center">
+            <a href="{{ url_for('spj_create') }}" class="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-semibold hover:bg-blue-700 active:bg-blue-800 transition shadow-md shadow-blue-500/20 text-center w-full sm:w-auto">
                 <i class="ph-bold ph-plus text-sm sm:text-base"></i>
                 <span>Buat SPJ</span>
             </a>
@@ -85,14 +89,17 @@
                 <div class="inline-flex items-center gap-1.5 bg-blue-500/20 text-blue-300 text-[11px] px-2.5 py-0.5 rounded-full border border-blue-400/30">
                     <i class="ph-fill ph-file-doc"></i> Template Dokumen Siap Cetak
                 </div>
-                <h3 class="text-base sm:text-lg font-bold text-white">Satu Input Formulir Menghasilkan 5 Dokumen Lengkap</h3>
+                <h3 class="text-base sm:text-lg font-bold text-white">Satu Input Formulir Menghasilkan 6 Dokumen Lengkap</h3>
                 <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
-                    Setiap SPJ otomatis membuat: <strong>Surat Perintah Tugas (SPT Kadis/Staf)</strong>, <strong>Daftar Pengeluaran Riil</strong>, <strong>Kwitansi Pembayaran</strong>, <strong>Rincian Biaya Perjadin</strong>, dan <strong>Laporan Hasil Perjadin</strong>.
+                    Setiap SPJ otomatis membuat: <strong>Surat Perintah Tugas (SPT)</strong>, <strong>Surat Perjalanan Dinas (SPD per orang)</strong>, <strong>Daftar Pengeluaran Riil</strong>, <strong>Kwitansi Pembayaran</strong>, <strong>Rincian Biaya Perjadin</strong>, dan <strong>Laporan Hasil Perjadin</strong>.
                 </p>
             </div>
             <div class="flex flex-wrap gap-1.5 sm:gap-2">
                 <span class="bg-slate-800/80 border border-slate-700 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
                     <i class="ph-bold ph-check text-emerald-400"></i> SPT (Kadis/Staf)
+                </span>
+                <span class="bg-slate-800/80 border border-slate-700 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
+                    <i class="ph-bold ph-check text-emerald-400"></i> SPD (Per Orang)
                 </span>
                 <span class="bg-slate-800/80 border border-slate-700 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
                     <i class="ph-bold ph-check text-emerald-400"></i> Pengeluaran Riil
@@ -104,6 +111,8 @@
                     <i class="ph-bold ph-check text-emerald-400"></i> Rincian Biaya
                 </span>
                 <span class="bg-slate-800/80 border border-slate-700 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
+                    <i class="ph-bold ph-check text-emerald-400"></i> Laporan
+                </span>
                     <i class="ph-bold ph-check text-emerald-400"></i> Laporan
                 </span>
             </div>

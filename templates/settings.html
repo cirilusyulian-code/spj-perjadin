@@ -8,8 +8,11 @@
     <!-- Header -->
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Pengaturan Template SPJ</h1>
-            <p class="text-xs text-slate-500 mt-1">Sesuaikan kop dinas, pejabat penandatangan, format 2 tipe SPT, dan 4 dokumen pendukung</p>
+            <div class="flex items-center gap-2">
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Pengaturan Template SPJ</h1>
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-100 text-blue-800 border border-blue-200">v{{ APP_VERSION }}</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">Sesuaikan kop dinas, pejabat penandatangan, format 2 tipe SPT, dan dokumen pendukung • Rilis: {{ APP_RELEASE_DATE }}</p>
         </div>
         <div>
             <button type="submit" form="settingsForm" id="topSaveBtn" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 active:bg-blue-800 transition shadow-md shadow-blue-500/20">

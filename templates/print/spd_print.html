@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Surat Perjalanan Dinas (SPD) - {{ spj.nomor_sppd }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}?v={{ APP_VERSION }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        @page {
+            size: 215mm 330mm;
+            margin: 1.2cm 1.5cm 1.2cm 1.5cm;
+        }
+        .bundel-separator {
+            page-break-after: always;
+            break-after: page;
+        }
+        .tabel-spd {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10.5pt;
+            line-height: 1.35;
+            margin-bottom: 12px;
+            border: 1px solid #000;
+        }
+        .tabel-spd td {
+            vertical-align: top;
+            padding: 4px 6px;
+        }
+        .b-top { border-top: 1px solid #000; }
+        .b-bottom { border-bottom: 1px solid #000; }
+        .b-right { border-right: 1px solid #000; }
+        .b-left { border-left: 1px solid #000; }
+    </style>
+</head>
+<body class="bg-slate-100 py-6">
+
+    <!-- Print Control Bar -->
+    <div class="no-print max-w-4xl mx-3 sm:mx-auto mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-xl shadow border border-slate-200">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-700">
+            <a href="{{ url_for('spj_detail', spj_id=spj.id) }}" class="text-blue-600 hover:underline flex items-center gap-1">
+                <i class="ph ph-arrow-left"></i> Kembali ke Detail SPJ
+            </a>
+            <span>•</span>
+            <span class="text-slate-500">Pratinjau Cetak: Surat Perjalanan Dinas (SPD)</span>
+            <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11px] font-bold border border-blue-200">Ukuran F4 / Folio</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+            {% if peserta|length > 1 %}
+            <!-- Filter Pelaksana -->
+            <div class="flex items-center gap-1.5 text-xs">
+                <label class="text-slate-600 font-medium">Pelaksana:</label>
+                <select onchange="window.location.href=this.value" class="px-2.5 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-800 bg-slate-50 focus:ring-2 focus:ring-blue-500">
+                    <option value="{{ url_for('cetak_spd', spj_id=spj.id) }}" {% if not selected_peserta_id %}selected{% endif %}>
+                        Semua Pelaksana ({{ peserta|length }} Lembar)
+                    </option>
+                    {% for p_opt in peserta %}
+                    <option value="{{ url_for('cetak_spd', spj_id=spj.id, peserta_id=p_opt.id) }}" {% if selected_peserta_id == p_opt.id %}selected{% endif %}>
+                        {{ loop.index }}. {{ p_opt.nama }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+
+            <button onclick="window.print()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow flex items-center justify-center gap-1.5">
+                <i class="ph-bold ph-printer text-base"></i>
+                <span>Cetak / Simpan PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Printable Paper Sheets (Per Orang) -->
+    {% for p in peserta_to_print %}
+    <div class="printable-sheet naskah-dinas {% if not loop.last %}bundel-separator{% endif %}" style="margin-bottom: 25px;">
+
+        <!-- Kop Surat -->
+        {% set force_kop = None %}
+        {% include 'print/_kop_surat.html' %}
+
+        <!-- Judul Dokumen -->
+        <div class="judul-dokumen" style="text-decoration: none !important; font-size: 13pt; margin-top: 4px; margin-bottom: 2px; font-weight: bold; letter-spacing: 0.5px;">
+            SURAT PERJALANAN DINAS (SPD)
+        </div>
+        <div class="nomor-dokumen" style="font-size: 11pt; margin-bottom: 12px;">
+            Nomor : {{ spj.nomor_sppd | format_nomor_spasi }}
+        </div>
+
+        <!-- Tabel SPD (Format 10 Poin Resmi) -->
+        <table class="tabel-spd">
+            <!-- 1. Pengguna Anggaran -->
+            <tr class="b-top b-bottom">
+                <td style="width: 28px; text-align: center;" class="b-right">1.</td>
+                <td colspan="3" style="width: 290px;" class="b-right">
+                    Pengguna Anggaran/ Kuasa Pengguna Anggaran
+                </td>
+                <td colspan="6">
+                    {{ s.pejabat_kadis_jabatan }} {{ s.instansi_nama }} {{ s.instansi_nama_induk }}
+                </td>
+            </tr>
+
+            <!-- 2. Nama / NIP Pegawai -->
+            <tr class="b-bottom">
+                <td style="text-align: center;" class="b-right">2.</td>
+                <td colspan="3" class="b-right">
+                    Nama / NIP Pegawai yang Melaksanakan Perjalanan Dinas
+                </td>
+                <td colspan="6" style="font-weight: bold;">
+                    {{ p.nama }} / {{ p.nip or '-' }}
+                </td>
+            </tr>
+
+            <!-- 3. Pangkat, Jabatan, Tingkat Biaya -->
+            <tr>
+                <td rowspan="3" style="text-align: center;" class="b-right">3.</td>
+                <td style="width: 20px;">a.</td>
+                <td colspan="2" class="b-right">Pangkat dan Golongan</td>
+                <td style="width: 20px;">a.</td>
+                <td colspan="5">{{ p.pangkat_golongan or '-' }}</td>
+            </tr>
+            <tr>
+                <td>b.</td>
+                <td colspan="2" class="b-right">Jabatan / Instansi</td>
+                <td>b.</td>
+                <td colspan="5">{{ p.jabatan or '-' }}</td>
+            </tr>
+            <tr class="b-bottom">
+                <td>c.</td>
+                <td colspan="2" class="b-right">Tingkat Biaya Perjalanan Dinas</td>
+                <td>c.</td>
+                <td colspan="5">-</td>
+            </tr>
+
+            <!-- 4. Maksud Perjalanan Dinas -->
+            <tr class="b-bottom">
+                <td style="text-align: center;" class="b-right">4.</td>
+                <td colspan="3" class="b-right">
+                    Maksud Perjalanan Dinas
+                </td>
+                <td colspan="6" style="text-align: justify;">
+                    {{ spj.maksud }}
+                </td>
+            </tr>
+
+            <!-- 5. Alat Angkutan -->
+            <tr class="b-bottom">
+                <td style="text-align: center;" class="b-right">5.</td>
+                <td colspan="3" class="b-right">
+                    Alat angkutan yang dipergunakan
+                </td>
+                <td colspan="6">
+                    {{ spj.angkutan }}
+                </td>
+            </tr>
+
+            <!-- 6. Tempat Berangkat & Tujuan -->
+            <tr>
+                <td rowspan="2" style="text-align: center;" class="b-right">6.</td>
+                <td style="width: 20px;">a.</td>
+                <td colspan="2" class="b-right">Tempat Berangkat</td>
+                <td style="width: 20px;">a.</td>
+                <td colspan="5">{{ spj.tempat_berangkat or s.kop_kadis_kota or s.instansi_kota or 'Kepahiang' }}</td>
+            </tr>
+            <tr class="b-bottom">
+                <td>b.</td>
+                <td colspan="2" class="b-right">Tempat Tujuan</td>
+                <td>b.</td>
+                <td colspan="5">{{ spj.tujuan }}</td>
+            </tr>
+
+            <!-- 7. Waktu Pelaksanaan -->
+            <tr>
+                <td rowspan="3" style="text-align: center;" class="b-right">7.</td>
+                <td style="width: 20px;">a.</td>
+                <td colspan="2" class="b-right">Lama Perjalanan Dinas</td>
+                <td style="width: 20px;">a.</td>
+                <td colspan="5">{{ spj.lama_hari }} ( {{ spj.lama_hari | terbilang_kata }} ) hari</td>
+            </tr>
+            <tr>
+                <td>b.</td>
+                <td colspan="2" class="b-right">Tanggal Berangkat</td>
+                <td>b.</td>
+                <td colspan="5">{{ format_tanggal(spj.tanggal_berangkat) }}</td>
+            </tr>
+            <tr class="b-bottom">
+                <td>c.</td>
+                <td colspan="2" class="b-right">Tanggal Harus Kembali/tiba ditempat baru</td>
+                <td>c.</td>
+                <td colspan="5">{{ format_tanggal(spj.tanggal_pulang) }}</td>
+            </tr>
+
+            <!-- 8. Pengikut (Rekan Perjalanan / Baris Kosong) -->
+            {% set pengikut_list = [] %}
+            {% for r in peserta %}
+                {% if r.id != p.id %}
+                    {% set _ = pengikut_list.append(r) %}
+                {% endif %}
+            {% endfor %}
+            <tr class="b-bottom">
+                <td rowspan="5" style="text-align: center;" class="b-right">8.</td>
+                <td colspan="3" class="b-right">
+                    Pengikut : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nama :
+                </td>
+                <td colspan="4" class="b-right" style="text-align: center;">Tanggal Lahir</td>
+                <td colspan="2" style="text-align: center;">Keterangan</td>
+            </tr>
+            {% for i in range(4) %}
+            <tr style="{% if loop.last %}border-bottom: 1px solid #000;{% endif %} height: 21px;">
+                <td style="width: 20px;">{{ loop.index }}.</td>
+                <td colspan="2" class="b-right">
+                    {% if i < pengikut_list|length %}{{ pengikut_list[i].nama }}{% endif %}
+                </td>
+                <td colspan="4" class="b-right" style="text-align: center;">-</td>
+                <td colspan="2" style="text-align: center;">
+                    {% if i < pengikut_list|length %}{{ pengikut_list[i].jabatan or '-' }}{% else %}-{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+
+            <!-- 9. Pembebanan Anggaran -->
+            <tr>
+                <td rowspan="3" style="text-align: center;" class="b-right">9.</td>
+                <td colspan="3" class="b-right">Pembebanan Anggaran</td>
+                <td colspan="6"></td>
+            </tr>
+            <tr>
+                <td style="width: 20px;">a.</td>
+                <td colspan="2" class="b-right">Instansi</td>
+                <td style="width: 20px;">a.</td>
+                <td colspan="5">{{ s.instansi_nama }}</td>
+            </tr>
+            <tr class="b-bottom">
+                <td>b.</td>
+                <td colspan="2" class="b-right">Mata Anggaran</td>
+                <td>b.</td>
+                <td colspan="5">{{ spj.mata_anggaran }}</td>
+            </tr>
+
+            <!-- 10. Keterangan Lain - lain -->
+            <tr>
+                <td style="text-align: center;" class="b-right">10.</td>
+                <td colspan="3" class="b-right">Keterangan Lain - lain</td>
+                <td colspan="6">-</td>
+            </tr>
+        </table>
+
+        <!-- Tanda Tangan Pengguna Anggaran -->
+        <div class="ttd-box" style="margin-top: 15px;">
+            <div class="ttd-kanan text-center" style="width: 50%;">
+                <div>Dikeluarkan di : {{ s.kop_kadis_kota or s.instansi_kota or 'Kepahiang' }}</div>
+                <div>Pada Tanggal : {{ format_tanggal(spj.tanggal_spt or spj.tanggal_berangkat) }}</div>
+
+                {% if spj.jenis_spt == 'kadis' and spj.spt_penandatangan_nama %}
+                    {% set ttd_an = spj.spt_penandatangan_an if (spj.spt_penandatangan_an is not none and spj.spt_penandatangan_an != '') else s.pejabat_ttd_kadis_an %}
+                    {% set ttd_jabatan = spj.spt_penandatangan_jabatan or s.pejabat_ttd_kadis_jabatan or 'Sekretaris Daerah' %}
+                    {% set ttd_nama = spj.spt_penandatangan_nama or s.pejabat_ttd_kadis_nama or s.pejabat_kadis_nama %}
+                    {% set ttd_pangkat = spj.spt_penandatangan_pangkat or s.pejabat_ttd_kadis_pangkat or s.pejabat_kadis_pangkat %}
+                    {% set ttd_nip = spj.spt_penandatangan_nip or s.pejabat_ttd_kadis_nip or s.pejabat_kadis_nip %}
+                    <div style="margin-top: 6px; font-weight: bold; line-height: 1.3;">
+                        {% if ttd_an %}<div>{{ ttd_an }}</div>{% endif %}
+                        <div>{{ ttd_jabatan }}</div>
+                    </div>
+                    <div class="ttd-space" style="height: 60px;"></div>
+                    <div class="ttd-nama">{{ ttd_nama }}</div>
+                    {% if ttd_pangkat %}<div class="ttd-nip">{{ ttd_pangkat }}</div>{% endif %}
+                    {% if ttd_nip %}<div class="ttd-nip">NIP. {{ ttd_nip }}</div>{% endif %}
+                {% else %}
+                    <div style="margin-top: 6px; font-weight: bold; line-height: 1.3;">
+                        Pengguna Anggaran<br>/ Kuasa Pengguna Anggaran
+                    </div>
+                    <div class="ttd-space" style="height: 60px;"></div>
+                    <div class="ttd-nama">{{ s.pejabat_kadis_nama }}</div>
+                    {% if s.pejabat_kadis_pangkat %}<div class="ttd-nip">{{ s.pejabat_kadis_pangkat }}</div>{% endif %}
+                    {% if s.pejabat_kadis_nip %}<div class="ttd-nip">NIP. {{ s.pejabat_kadis_nip }}</div>{% endif %}
+                {% endif %}
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+
+    </div>
+    {% endfor %}
+
+</body>
+</html>
+

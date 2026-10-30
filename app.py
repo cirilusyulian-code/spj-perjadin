@@ -2,13 +2,15 @@ import os
 import json
 import time
 import datetime
+import shutil
 from functools import wraps
-from flask import Flask, render_template, request, redirect, url_for, session, flash, abort, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, flash, abort, jsonify, send_file
 from werkzeug.utils import secure_filename
 
 from database import (init_db, get_db, get_settings, update_settings, verify_user, create_sample_data, 
                       get_pegawai_list, get_pegawai_by_id, add_pegawai, update_pegawai, delete_pegawai)
-from helpers import format_rupiah, terbilang, format_tanggal, hitung_hari, angka_murni, clean_uraian, format_nomor_spasi
+from helpers import format_rupiah, terbilang, terbilang_kata, format_tanggal, hitung_hari, angka_murni, clean_uraian, format_nomor_spasi
+from version import APP_VERSION, APP_RELEASE_DATE, APP_NAME
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'spj-secret-key-super-secure-2026-vps')
@@ -49,12 +51,14 @@ def get_kop(s, jenis_spt='staf'):
 # Register custom Jinja filters & globals
 app.jinja_env.filters['format_rupiah'] = format_rupiah
 app.jinja_env.filters['terbilang'] = terbilang
+app.jinja_env.filters['terbilang_kata'] = terbilang_kata
 app.jinja_env.filters['format_tanggal'] = format_tanggal
 app.jinja_env.filters['clean_uraian'] = clean_uraian
 app.jinja_env.filters['format_nomor_spasi'] = format_nomor_spasi
 app.jinja_env.globals.update(
     format_rupiah=format_rupiah,
     terbilang=terbilang,
+    terbilang_kata=terbilang_kata,
     format_tanggal=format_tanggal,
     angka_murni=angka_murni,
     get_kop=get_kop,
@@ -63,8 +67,15 @@ app.jinja_env.globals.update(
 )
 
 @app.context_processor
-def inject_pegawai_list():
-    return dict(pegawai_list=get_pegawai_list())
+def inject_global_vars():
+    return dict(
+        APP_VERSION=APP_VERSION,
+        APP_RELEASE_DATE=APP_RELEASE_DATE,
+        APP_NAME=APP_NAME,
+        pegawai_list=get_pegawai_list()
+    )
+
+
 
 # Login requirement decorator
 def login_required(f):
@@ -518,6 +529,33 @@ def cetak_spt(spj_id):
     s = get_settings()
     return render_template('print/spt_print.html', spj=spj, peserta=peserta, s=s)
 
+@app.route('/spj/<int:spj_id>/cetak/spd')
+@login_required
+def cetak_spd(spj_id):
+    conn = get_db()
+    spj = conn.execute('SELECT * FROM spj WHERE id = ?', (spj_id,)).fetchone()
+    if not spj:
+        conn.close()
+        abort(404)
+    peserta = conn.execute('SELECT * FROM spj_peserta WHERE spj_id = ? ORDER BY urutan ASC', (spj_id,)).fetchall()
+    conn.close()
+    s = get_settings()
+
+    peserta_id = request.args.get('peserta_id', type=int)
+    if peserta_id:
+        selected = [p for p in peserta if p['id'] == peserta_id]
+        peserta_to_print = selected if selected else peserta
+    else:
+        peserta_to_print = peserta
+
+    return render_template('print/spd_print.html',
+        spj=spj,
+        peserta=peserta,
+        peserta_to_print=peserta_to_print,
+        selected_peserta_id=peserta_id,
+        s=s
+    )
+
 @app.route('/spj/<int:spj_id>/cetak/pengeluaran-riil')
 @login_required
 def cetak_pengeluaran_riil(spj_id):
@@ -601,6 +639,38 @@ def cetak_semua(spj_id):
         laporan_defaults=laporan_defaults,
         total_biaya=total_biaya
     )
+
+# ----------------- BLANKO SPPD (PRINT PDF) -----------------
+@app.route('/blanko-sppd')
+@login_required
+def blanko_sppd():
+    source_path = r"d:\CAPIL\BENDAHARA\SPPD kosong.pdf"
+    local_dir = os.path.join(app.root_path, 'static', 'docs')
+    local_path = os.path.join(local_dir, 'SPPD_kosong.pdf')
+
+    file_to_send = None
+    if os.path.exists(source_path):
+        file_to_send = source_path
+        # Otomatis sinkronisasi salinan ke static/docs
+        try:
+            os.makedirs(local_dir, exist_ok=True)
+            if not os.path.exists(local_path) or os.path.getmtime(source_path) > os.path.getmtime(local_path):
+                shutil.copy2(source_path, local_path)
+        except Exception as e:
+            print(f"[WARN] Failed to sync blanko SPPD: {e}")
+    elif os.path.exists(local_path):
+        file_to_send = local_path
+
+    if file_to_send and os.path.exists(file_to_send):
+        return send_file(
+            file_to_send,
+            mimetype='application/pdf',
+            as_attachment=False,
+            download_name='SPPD_kosong.pdf'
+        )
+    else:
+        flash('File blanko SPPD ("d:\\CAPIL\\BENDAHARA\\SPPD kosong.pdf") tidak ditemukan di sistem.', 'danger')
+        return redirect(url_for('dashboard'))
 
 # ----------------- SETTINGS & TEMPLATES -----------------
 @app.route('/settings', methods=['GET', 'POST'])
@@ -734,6 +804,18 @@ def pegawai_delete(pegawai_id):
 # ----------------- INIT & RUN -----------------
 init_db()
 create_sample_data()
+
+# Sinkronisasi file Blanko SPPD dari D:\CAPIL\BENDAHARA jika tersedia
+try:
+    source_blanko = r"d:\CAPIL\BENDAHARA\SPPD kosong.pdf"
+    target_blanko = os.path.join(app.root_path, 'static', 'docs', 'SPPD_kosong.pdf')
+    if os.path.exists(source_blanko):
+        os.makedirs(os.path.join(app.root_path, 'static', 'docs'), exist_ok=True)
+        if not os.path.exists(target_blanko) or os.path.getmtime(source_blanko) > os.path.getmtime(target_blanko):
+            shutil.copy2(source_blanko, target_blanko)
+            print(f"[INFO] Blanko SPPD berhasil disinkronkan ke static/docs/SPPD_kosong.pdf")
+except Exception as e:
+    print(f"[WARN] Inisialisasi Blanko SPPD: {e}")
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

@@ -101,21 +101,25 @@
                 <i class="ph-bold ph-file-text"></i>
                 <span>1. SPT ({% if spj.jenis_spt == 'kadis' %}Kadis{% else %}Staf{% endif %})</span>
             </button>
+            <button onclick="loadDoc('{{ url_for('cetak_spd', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
+                <i class="ph-bold ph-identification-badge"></i>
+                <span>2. SPD (Surat Perjalanan Dinas)</span>
+            </button>
             <button onclick="loadDoc('{{ url_for('cetak_pengeluaran_riil', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-receipt"></i>
-                <span>2. Pengeluaran Riil</span>
+                <span>3. Pengeluaran Riil</span>
             </button>
             <button onclick="loadDoc('{{ url_for('cetak_kwitansi', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-money"></i>
-                <span>3. Kwitansi</span>
+                <span>4. Kwitansi</span>
             </button>
             <button onclick="loadDoc('{{ url_for('cetak_rincian_biaya', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-table"></i>
-                <span>4. Rincian Biaya</span>
+                <span>5. Rincian Biaya</span>
             </button>
             <button onclick="loadDoc('{{ url_for('cetak_laporan', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-newspaper-clipping"></i>
-                <span>5. Laporan Perjadin</span>
+                <span>6. Laporan Perjadin</span>
             </button>
         </div>
 

@@ -25,6 +25,18 @@ def angka_murni(val):
     except Exception:
         return "0"
 
+def terbilang_kata(val):
+    try:
+        n = int(round(float(val or 0)))
+        if n == 0:
+            return "Nol"
+        if num2words:
+            return num2words(n, lang='id').title()
+        else:
+            return _terbilang_manual(n).strip()
+    except Exception:
+        return str(val)
+
 def terbilang(val):
     try:
         n = int(round(float(val or 0)))

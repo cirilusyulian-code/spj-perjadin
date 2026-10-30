@@ -28,7 +28,7 @@
             }
         }
     </script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}?v=2.4">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}?v={{ APP_VERSION }}">
     <!-- Phosphor Icons for crisp modern UI icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
@@ -48,7 +48,7 @@
                         <div>
                             <div class="font-bold text-sm sm:text-base tracking-wide flex items-center gap-1.5 sm:gap-2">
                                 <span>e-SPJ Dinas</span>
-                                <span class="bg-blue-500/20 text-blue-300 text-[10px] sm:text-xs px-1.5 py-0.5 rounded font-mono border border-blue-500/30">v2.0</span>
+                                <span class="bg-blue-500/20 text-blue-300 text-[10px] sm:text-xs px-1.5 py-0.5 rounded font-mono border border-blue-500/30">v{{ APP_VERSION }}</span>
                             </div>
                             <div class="text-[10px] sm:text-xs text-slate-400 hidden xs:block truncate max-w-[200px] sm:max-w-none">Sistem Dokumen SPJ Perjadin</div>
                         </div>
@@ -210,7 +210,7 @@
             <div class="flex items-center gap-3 text-slate-400">
                 <span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Server Aktif</span>
                 <span>•</span>
-                <span>Ubuntu VPS Ready</span>
+                <span>v{{ APP_VERSION }} • Rilis {{ APP_RELEASE_DATE }}</span>
             </div>
         </div>
     </footer>

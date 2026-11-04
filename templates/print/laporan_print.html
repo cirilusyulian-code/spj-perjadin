@@ -125,27 +125,27 @@
             <div style="float: right; width: 48%;">
                 <table style="width: 100%; border-collapse: collapse; border: none;">
                     <tr>
-                        <td colspan="2" style="text-align: center; font-weight: bold; padding-bottom: 12px; font-size: 11pt;">
+                        <td colspan="2" style="text-align: center; font-weight: bold; padding-bottom: 12px; font-size: 12pt;">
                             Yang Melaporkan,
                         </td>
                     </tr>
                     {% if peserta %}
                         {% for p in peserta %}
                         <tr style="height: 55px;">
-                            <td style="width: 25px; vertical-align: top; text-align: left; padding-top: 2px; font-size: 11pt;">
+                            <td style="width: 25px; vertical-align: top; text-align: left; padding-top: 2px; font-size: 12pt;">
                                 {{ loop.index }}.
                             </td>
-                            <td style="vertical-align: top; text-align: left; padding-top: 2px; font-size: 11pt;">
+                            <td style="vertical-align: top; text-align: left; padding-top: 2px; font-size: 12pt;">
                                 <div style="font-weight: 500;">{{ p.nama }}</div>
                             </td>
                         </tr>
                         {% endfor %}
                     {% else %}
                         <tr style="height: 55px;">
-                            <td style="width: 25px; vertical-align: top; text-align: left; padding-top: 2px; font-size: 11pt;">
+                            <td style="width: 25px; vertical-align: top; text-align: left; padding-top: 2px; font-size: 12pt;">
                                 1.
                             </td>
-                            <td style="vertical-align: top; text-align: left; padding-top: 2px; font-size: 11pt;">
+                            <td style="vertical-align: top; text-align: left; padding-top: 2px; font-size: 12pt;">
                                 <div style="font-weight: 500;">{{ s.pejabat_kadis_nama }}</div>
                             </td>
                         </tr>

@@ -124,8 +124,13 @@
                 <td style="width: 80px; vertical-align: top; font-weight: bold; padding-top: 10px;">Untuk</td>
                 <td style="width: 15px; vertical-align: top; padding-top: 10px;">:</td>
                 <td style="vertical-align: top; text-align: justify; padding-top: 10px;">
-                    {{ spj.maksud }} yang bertempat di <strong>{{ spj.tujuan }}</strong>{% if spj.instansi_tujuan %} ({{
-                    spj.instansi_tujuan }}){% endif %}.
+                    {% if spj.instansi_tujuan and spj.instansi_tujuan.strip() != spj.tujuan.strip() %}
+                    {{ spj.maksud.rstrip('. ') }} yang bertempat di {{ spj.instansi_tujuan.rstrip('. ') }} di {{ spj.tujuan.rstrip('. ') }}.
+                    {% elif spj.instansi_tujuan %}
+                    {{ spj.maksud.rstrip('. ') }} yang bertempat di {{ spj.instansi_tujuan.rstrip('. ') }}.
+                    {% else %}
+                    {{ spj.maksud.rstrip('. ') }} yang bertempat di {{ spj.tujuan.rstrip('. ') }}.
+                    {% endif %}
                 </td>
             </tr>
             <tr>

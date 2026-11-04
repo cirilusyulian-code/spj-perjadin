@@ -9,7 +9,7 @@
     <style>
         @page {
             size: 215mm 330mm;
-            margin: 1.2cm 1.5cm 1.2cm 1.5cm;
+            margin: 2cm 2cm 2cm 3cm;
         }
         .bundel-separator {
             page-break-after: always;
@@ -18,7 +18,8 @@
         .tabel-spd {
             width: 100%;
             border-collapse: collapse;
-            font-size: 10.5pt;
+            font-family: Arial, Helvetica, sans-serif !important;
+            font-size: 11pt;
             line-height: 1.35;
             margin-bottom: 12px;
             border: 1px solid #000;
@@ -26,6 +27,7 @@
         .tabel-spd td {
             vertical-align: top;
             padding: 4px 6px;
+            font-size: 11pt;
         }
         .b-top { border-top: 1px solid #000; }
         .b-bottom { border-bottom: 1px solid #000; }
@@ -80,10 +82,10 @@
         {% include 'print/_kop_surat.html' %}
 
         <!-- Judul Dokumen -->
-        <div class="judul-dokumen" style="text-decoration: none !important; font-size: 13pt; margin-top: 4px; margin-bottom: 2px; font-weight: bold; letter-spacing: 0.5px;">
+        <div class="judul-dokumen" style="text-decoration: none !important; font-size: 12pt !important; margin-top: 4px; margin-bottom: 2px; font-weight: bold; letter-spacing: 0.5px;">
             SURAT PERJALANAN DINAS (SPD)
         </div>
-        <div class="nomor-dokumen" style="font-size: 11pt; margin-bottom: 12px;">
+        <div class="nomor-dokumen" style="font-size: 12pt !important; margin-bottom: 16px;">
             Nomor : {{ spj.nomor_sppd | format_nomor_spasi }}
         </div>
 
@@ -96,7 +98,7 @@
                     Pengguna Anggaran/ Kuasa Pengguna Anggaran
                 </td>
                 <td colspan="6">
-                    {{ s.pejabat_kadis_jabatan }} {{ s.instansi_nama }} {{ s.instansi_nama_induk }}
+                    KEPALA {{ s.instansi_nama }} {{ s.instansi_nama_induk }}
                 </td>
             </tr>
 
@@ -160,13 +162,21 @@
                 <td style="width: 20px;">a.</td>
                 <td colspan="2" class="b-right">Tempat Berangkat</td>
                 <td style="width: 20px;">a.</td>
-                <td colspan="5">{{ spj.tempat_berangkat or s.kop_kadis_kota or s.instansi_kota or 'Kepahiang' }}</td>
+                <td colspan="5">Kepahiang</td>
             </tr>
             <tr class="b-bottom">
                 <td>b.</td>
                 <td colspan="2" class="b-right">Tempat Tujuan</td>
                 <td>b.</td>
-                <td colspan="5">{{ spj.tujuan }}</td>
+                <td colspan="5">
+                    {% if spj.instansi_tujuan and spj.instansi_tujuan.strip() != spj.tujuan.strip() %}
+                    {{ spj.instansi_tujuan.rstrip('. ') }} di {{ spj.tujuan.rstrip('. ') }}
+                    {% elif spj.instansi_tujuan %}
+                    {{ spj.instansi_tujuan.rstrip('. ') }}
+                    {% else %}
+                    {{ spj.tujuan.rstrip('. ') }}
+                    {% endif %}
+                </td>
             </tr>
 
             <!-- 7. Waktu Pelaksanaan -->
@@ -190,13 +200,7 @@
                 <td colspan="5">{{ format_tanggal(spj.tanggal_pulang) }}</td>
             </tr>
 
-            <!-- 8. Pengikut (Rekan Perjalanan / Baris Kosong) -->
-            {% set pengikut_list = [] %}
-            {% for r in peserta %}
-                {% if r.id != p.id %}
-                    {% set _ = pengikut_list.append(r) %}
-                {% endif %}
-            {% endfor %}
+            <!-- 8. Pengikut -->
             <tr class="b-bottom">
                 <td rowspan="5" style="text-align: center;" class="b-right">8.</td>
                 <td colspan="3" class="b-right">
@@ -205,18 +209,30 @@
                 <td colspan="4" class="b-right" style="text-align: center;">Tanggal Lahir</td>
                 <td colspan="2" style="text-align: center;">Keterangan</td>
             </tr>
-            {% for i in range(4) %}
-            <tr style="{% if loop.last %}border-bottom: 1px solid #000;{% endif %} height: 21px;">
-                <td style="width: 20px;">{{ loop.index }}.</td>
-                <td colspan="2" class="b-right">
-                    {% if i < pengikut_list|length %}{{ pengikut_list[i].nama }}{% endif %}
-                </td>
+            <tr style="height: 21px;">
+                <td style="width: 20px;">1.</td>
+                <td colspan="2" class="b-right" style="text-align: center;">-</td>
                 <td colspan="4" class="b-right" style="text-align: center;">-</td>
-                <td colspan="2" style="text-align: center;">
-                    {% if i < pengikut_list|length %}{{ pengikut_list[i].jabatan or '-' }}{% else %}-{% endif %}
-                </td>
+                <td colspan="2" style="text-align: center;">-</td>
             </tr>
-            {% endfor %}
+            <tr style="height: 21px;">
+                <td style="width: 20px;">2.</td>
+                <td colspan="2" class="b-right" style="text-align: center;">-</td>
+                <td colspan="4" class="b-right" style="text-align: center;">-</td>
+                <td colspan="2" style="text-align: center;">-</td>
+            </tr>
+            <tr style="height: 21px;">
+                <td style="width: 20px;">3.</td>
+                <td colspan="2" class="b-right" style="text-align: center;">-</td>
+                <td colspan="4" class="b-right" style="text-align: center;">-</td>
+                <td colspan="2" style="text-align: center;">-</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #000; height: 21px;">
+                <td style="width: 20px;">4.</td>
+                <td colspan="2" class="b-right" style="text-align: center;">-</td>
+                <td colspan="4" class="b-right" style="text-align: center;">-</td>
+                <td colspan="2" style="text-align: center;">-</td>
+            </tr>
 
             <!-- 9. Pembebanan Anggaran -->
             <tr>

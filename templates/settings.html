@@ -131,7 +131,7 @@
                             <label class="block text-xs font-semibold text-slate-700">Nama Pemerintah / Instansi Induk (Baris 1)</label>
                             <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-lg shadow-2xs">
                                 <span class="text-[10px] text-slate-500 font-semibold"><i class="ph-bold ph-text-aa text-blue-600 mr-0.5"></i> Ukuran:</span>
-                                {% set cur_size_kadis_induk = s.kop_kadis_size_induk or '11.5pt' %}
+                                {% set cur_size_kadis_induk = s.kop_kadis_size_induk or '14pt' %}
                                 <select name="kop_kadis_size_induk" id="input_kadis_size_induk" onchange="updateKopSimulasi('kadis')"
                                     class="text-xs font-bold text-blue-700 bg-transparent focus:outline-none cursor-pointer">
                                     {% for sz in ['8pt', '8.5pt', '9pt', '9.5pt', '10pt', '10.5pt', '11pt', '11.5pt', '12pt', '12.5pt', '13pt', '13.5pt', '14pt', '15pt', '16pt', '18pt', '20pt'] %}
@@ -154,7 +154,7 @@
                             <label class="block text-xs font-semibold text-slate-700">Nama Satuan Kerja / Jabatan (Baris 2 Utama)</label>
                             <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-lg shadow-2xs">
                                 <span class="text-[10px] text-slate-500 font-semibold"><i class="ph-bold ph-text-aa text-blue-600 mr-0.5"></i> Ukuran:</span>
-                                {% set cur_size_kadis_nama = s.kop_kadis_size_nama or '12pt' %}
+                                {% set cur_size_kadis_nama = s.kop_kadis_size_nama or '18pt' %}
                                 <select name="kop_kadis_size_nama" id="input_kadis_size_nama" onchange="updateKopSimulasi('kadis')"
                                     class="text-xs font-bold text-blue-700 bg-transparent focus:outline-none cursor-pointer">
                                     {% for sz in ['8pt', '8.5pt', '9pt', '9.5pt', '10pt', '10.5pt', '11pt', '11.5pt', '12pt', '12.5pt', '13pt', '13.5pt', '14pt', '15pt', '16pt', '18pt', '20pt'] %}
@@ -214,10 +214,10 @@
 
                                 <!-- Kolom Teks Kop (Tengah) -->
                                 <td style="text-align: center; vertical-align: middle; padding: 0 4px;">
-                                    <div id="simulasi_kadis_induk" style="font-size: {{ s.kop_kadis_size_induk or '11.5pt' }};" class="font-bold tracking-wider uppercase text-slate-900 leading-tight">
+                                    <div id="simulasi_kadis_induk" style="font-size: {{ s.kop_kadis_size_induk or '14pt' }};" class="font-bold tracking-wider uppercase text-slate-900 leading-tight">
                                         {{ s.kop_kadis_instansi_induk or s.instansi_nama_induk }}
                                     </div>
-                                    <div id="simulasi_kadis_nama" style="font-size: {{ s.kop_kadis_size_nama or '12pt' }};" class="font-extrabold tracking-wide uppercase text-slate-950 mt-0.5 leading-tight">
+                                    <div id="simulasi_kadis_nama" style="font-size: {{ s.kop_kadis_size_nama or '18pt' }};" class="font-extrabold tracking-wide uppercase text-slate-950 mt-0.5 leading-tight">
                                         {{ s.kop_kadis_instansi_nama or s.instansi_nama }}
                                     </div>
                                     <div id="simulasi_kadis_alamat" class="text-[11px] text-slate-700 mt-1 leading-snug">
@@ -304,7 +304,7 @@
                             <label class="block text-xs font-semibold text-slate-700">Nama Pemerintah / Instansi Induk (Baris 1)</label>
                             <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-lg shadow-2xs">
                                 <span class="text-[10px] text-slate-500 font-semibold"><i class="ph-bold ph-text-aa text-blue-600 mr-0.5"></i> Ukuran:</span>
-                                {% set cur_size_staf_induk = s.kop_staf_size_induk or '11.5pt' %}
+                                {% set cur_size_staf_induk = s.kop_staf_size_induk or '14pt' %}
                                 <select name="kop_staf_size_induk" id="input_staf_size_induk" onchange="updateKopSimulasi('staf')"
                                     class="text-xs font-bold text-blue-700 bg-transparent focus:outline-none cursor-pointer">
                                     {% for sz in ['8pt', '8.5pt', '9pt', '9.5pt', '10pt', '10.5pt', '11pt', '11.5pt', '12pt', '12.5pt', '13pt', '13.5pt', '14pt', '15pt', '16pt', '18pt', '20pt'] %}
@@ -327,7 +327,7 @@
                             <label class="block text-xs font-semibold text-slate-700">Nama Satuan Kerja / Dinas (Baris 2 Utama)</label>
                             <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-lg shadow-2xs">
                                 <span class="text-[10px] text-slate-500 font-semibold"><i class="ph-bold ph-text-aa text-blue-600 mr-0.5"></i> Ukuran:</span>
-                                {% set cur_size_staf_nama = s.kop_staf_size_nama or '12pt' %}
+                                {% set cur_size_staf_nama = s.kop_staf_size_nama or '18pt' %}
                                 <select name="kop_staf_size_nama" id="input_staf_size_nama" onchange="updateKopSimulasi('staf')"
                                     class="text-xs font-bold text-blue-700 bg-transparent focus:outline-none cursor-pointer">
                                     {% for sz in ['8pt', '8.5pt', '9pt', '9.5pt', '10pt', '10.5pt', '11pt', '11.5pt', '12pt', '12.5pt', '13pt', '13.5pt', '14pt', '15pt', '16pt', '18pt', '20pt'] %}
@@ -387,10 +387,10 @@
 
                                 <!-- Kolom Teks Kop (Tengah) -->
                                 <td style="text-align: center; vertical-align: middle; padding: 0 4px;">
-                                    <div id="simulasi_staf_induk" style="font-size: {{ s.kop_staf_size_induk or '11.5pt' }};" class="font-bold tracking-wider uppercase text-slate-900 leading-tight">
+                                    <div id="simulasi_staf_induk" style="font-size: {{ s.kop_staf_size_induk or '14pt' }};" class="font-bold tracking-wider uppercase text-slate-900 leading-tight">
                                         {{ s.kop_staf_instansi_induk or s.instansi_nama_induk }}
                                     </div>
-                                    <div id="simulasi_staf_nama" style="font-size: {{ s.kop_staf_size_nama or '12pt' }};" class="font-extrabold tracking-wide uppercase text-slate-950 mt-0.5 leading-tight">
+                                    <div id="simulasi_staf_nama" style="font-size: {{ s.kop_staf_size_nama or '18pt' }};" class="font-extrabold tracking-wide uppercase text-slate-950 mt-0.5 leading-tight">
                                         {{ s.kop_staf_instansi_nama or s.instansi_nama }}
                                     </div>
                                     <div id="simulasi_staf_alamat" class="text-[11px] text-slate-700 mt-1 leading-snug">

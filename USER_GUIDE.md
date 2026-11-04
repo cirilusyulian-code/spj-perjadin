@@ -212,9 +212,9 @@ Setelah disimpan, Anda akan diarahkan ke halaman **Detail & Cetak Dokumen SPJ** 
 | 1 | **Surat Tugas (SPT)** | Surat resmi penugasan dinas luar dengan format kop resmi (Kadis/Staf), dasar penugasan, daftar nama pelaksana, dan tanda tangan pejabat berwenang. |
 | 2 | **Surat Perjalanan Dinas (SPD)** | Dokumen resmi format 10 poin sesuai template perbup yang diterbitkan per orang pelaksana perjalanan dinas. |
 | 3 | **Daftar Pengeluaran Riil** | Bukti pertanggungjawaban pengeluaran yang tidak diperoleh bukti resminya sesuai ketentuan perundang-undangan. |
-| 3 | **Kwitansi Pembayaran** | Tanda bukti penerimaan uang dinas dari Bendahara Pengeluaran ke pelaksana tugas, disetujui PPTK/PPK. |
-| 4 | **Rincian Biaya Perjalanan Dinas** | Rincian tabel seluruh komponen belanja (uang saku, transport, penginapan) yang telah dibayarkan per orang. |
-| 5 | **Laporan Perjalanan Dinas** | Laporan pertanggungjawaban pelaksanaan kegiatan teknis berformat 6 bab lengkap dengan tanda tangan pelaksana. |
+| 4 | **Kwitansi Pembayaran** | Tanda bukti penerimaan uang dinas dari Bendahara Pengeluaran ke pelaksana tugas, disetujui PPTK/PPK. |
+| 5 | **Rincian Biaya Perjalanan Dinas** | Rincian tabel seluruh komponen belanja (uang saku, transport, penginapan) yang telah dibayarkan per orang. |
+| 6 | **Laporan Perjalanan Dinas** | Laporan pertanggungjawaban pelaksanaan kegiatan teknis berformat 6 bab lengkap dengan tanda tangan pelaksana. |
 
 ### 7.2 Cetak Per Lembar vs Cetak 1 Bundel Lengkap
 - **Cetak 1 Lembar Spesifik:** Klik tombol salah satu dokumen pada tab, lalu klik tombol **"Cetak"** atau **"Layar Penuh"**.
@@ -228,10 +228,30 @@ Untuk hasil cetak yang rapi, pas, dan tidak terpotong, atur pengaturan cetak di 
 | **Destination / Printer** | Pilih Printer Fisik Anda atau **Save as PDF** |
 | **Paper Size (Ukuran Kertas)** | **Folio / F4** (atau *Legal / Custom 215 x 330 mm*) |
 | **Orientation (Arah Kertas)** | **Portrait** (Tegak) |
-| **Margins** | **Default** atau **None / Minimum** (CSS aplikasi sudah mengatur margin standar 1.2 cm - 1.5 cm) |
+| **Margins** | **Default** atau **None / Minimum** (CSS aplikasi sudah mengatur margin standar resmi F4: Top 2 cm, Right 2 cm, Bottom 2 cm, Left 3 cm) |
 | **Scale (Skala)** | **100%** (atau *Fit to Printable Area*) |
 | **Options > Background Graphics** | **Centang / Aktifkan** (Agar garis tabel dan warna kop tercetak sempurna) |
 | **Options > Headers and footers** | **Nonaktifkan / Uncheck** (Agar tanggal browser dan URL tidak muncul di cetakan) |
+
+---
+
+### 7.4 Standar Tipografi & Pias Margin Naskah Dinas (Kertas F4)
+Sesuai standar tata naskah dinas resmi:
+- **Font Family Utama:** Arial di seluruh lembar naskah dinas.
+- **Kop Surat Instansi:**
+  * Nama Pemerintah Daerah: Arial 14, Bold, Kapital.
+  * Nama Satuan Kerja / Dinas: Arial 18, Bold, Kapital.
+  * Alamat & Kontak: Arial 11, Normal (Tidak Bold).
+- **Judul Surat (SPT / SPD):** Arial 12, Bold, Kapital, Center (diikuti garis bawah untuk SPT).
+- **Nomor Surat:** Arial 12, tepat di bawah judul teks.
+- **Batang Tubuh (Konsiderans, Maksud, Diktum):** Arial 12, Normal.
+- **Tabel Rincian (Lembar SPD / Rincian Biaya / Pengeluaran Riil):** Arial 11 (dapat menyesuaikan ke 10 jika memuat banyak item belanja agar rapi).
+- **Bagian Penandatanganan (Tempat, Tanggal, Jabatan, Nama, NIP):** Arial 12. Nama Pejabat dicetak Bold tanpa garis bawah.
+- **Standar Pias Margin Kertas F4 (215 x 330 mm):**
+  * Pias Atas (Top Margin): 2 cm (atau 3 cm jika lembar lanjutan tanpa kop surat).
+  * Pias Bawah (Bottom Margin): 2 cm.
+  * Pias Kiri (Left Margin): 3 cm.
+  * Pias Kanan (Right Margin): 2 cm.
 
 ---
 

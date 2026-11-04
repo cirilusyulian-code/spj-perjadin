@@ -5,6 +5,17 @@ Format penomoran versi mengikuti standar **Semantic Versioning (MAJOR.MINOR.PATC
 
 ---
 
+## [v2.2.1] - 2026-11-04
+### Changed (Pembaruan & Penyesuaian Tata Naskah Dinas)
+- **Standar Tipografi & Margin Dokumen F4:** Penyeragaman margin F4/Folio (Atas 2cm, Bawah 2cm, Kanan 2cm, Kiri 3cm) serta standar font Arial (Kop Pemda 14pt Bold, Dinas 18pt Bold, Kontak 11pt, Judul/Nomor/Batang Tubuh 12pt, Tabel Rincian 11pt) di seluruh dokumen cetak (`spt_print.html`, `spd_print.html`, `kwitansi_print.html`, `pengeluaran_riil_print.html`, `rincian_biaya_print.html`, `laporan_print.html`, `semua_print.html`).
+- **Format Diktum "Untuk" pada SPT:** Mengikuti susunan `[maksud] yang bertempat di [instansi_tujuan] di [tujuan]`.
+- **Tombol Reset Format Baku Dasar Hukum:** Menambahkan tombol reset pada input & edit SPJ untuk mengembalikan teks konsiderans dasar hukum ke format baku pengaturan (Kadis atau Staf).
+- **Format Cetak SPD 10 Poin:** Poin 1 (Pengguna Anggaran) menggunakan `KEPALA [instansi_nama] [instansi_nama_induk]`, Tempat Berangkat baku `Kepahiang`, Tempat Tujuan `[instansi_tujuan] di [tujuan]`, dan Tabel Pengikut (Poin 8) dikosongkan dengan strip (`-`).
+- **Format Cetak Kwitansi:** Nomor Kuitansi mengikuti register penomoran SPPD `800/      /SPPD/Dukcapil-Kph/2026`, dan klausul Untuk Pengeluaran mendahulukan instansi tujuan sebelum kota tujuan.
+- **Deteksi Otomatis `jalankan.bat`:** Pengecekan cerdas executable Python yang memuat Flask pada peluncur lokal Windows.
+
+---
+
 ## [v2.2.0] - 2026-10-30
 ### Added (Penambahan Fitur)
 - **Surat Perjalanan Dinas (SPD per orang):** Integrasi format naskah dinas 10 poin resmi sesuai template Excel (`template spd.xlsx`), otomatis dicetak mandiri per pelaksana perjalanan dinas.
@@ -34,4 +45,3 @@ Format penomoran versi mengikuti standar **Semantic Versioning (MAJOR.MINOR.PATC
 - Master database 19 ASN Dukcapil dengan auto-fill Nama, NIP, Pangkat/Golongan, dan Jabatan.
 - Preservasi spasi register penomoran surat non-breaking space.
 - Dashboard ringkasan total SPJ, total realisasi anggaran, dan rincian penugasan terbaru.
-

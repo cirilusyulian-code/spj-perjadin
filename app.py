@@ -676,6 +676,106 @@ def blanko_sppd():
         flash('File blanko SPPD ("d:\\CAPIL\\BENDAHARA\\SPPD kosong.pdf") tidak ditemukan di sistem.', 'danger')
         return redirect(url_for('dashboard'))
 
+# ----------------- EXPORT DOKUMEN WORD (.DOCX) & EXCEL (.XLSX) -----------------
+from export_service import (
+    export_spt_word,
+    export_spd_word,
+    export_spd_excel,
+    export_kwitansi_word,
+    export_pengeluaran_riil_word,
+    export_rincian_biaya_excel,
+    export_rekap_excel,
+    export_laporan_word,
+    export_bundel_zip
+)
+
+def _get_export_bundle_data(spj_id):
+    conn = get_db()
+    spj = conn.execute('SELECT * FROM spj WHERE id = ?', (spj_id,)).fetchone()
+    if not spj:
+        conn.close()
+        abort(404)
+    peserta = conn.execute('SELECT * FROM spj_peserta WHERE spj_id = ? ORDER BY urutan ASC', (spj_id,)).fetchall()
+    biaya = conn.execute('SELECT * FROM spj_biaya WHERE spj_id = ? ORDER BY id ASC', (spj_id,)).fetchall()
+    laporan = conn.execute('SELECT * FROM spj_laporan WHERE spj_id = ?', (spj_id,)).fetchone()
+    conn.close()
+    s = get_settings()
+    clean_no = "".join([c for c in (spj['nomor_spt'] or f'SPJ_{spj_id}') if c.isalnum() or c in '-_'])
+    return spj, peserta, biaya, laporan, s, clean_no
+
+@app.route('/spj/<int:spj_id>/export/word/spt')
+@login_required
+def export_word_spt(spj_id):
+    spj, peserta, biaya, laporan, s, clean_no = _get_export_bundle_data(spj_id)
+    buf = export_spt_word(spj, peserta, s, root_path=app.root_path)
+    return send_file(buf, as_attachment=True, download_name=f"01_SPT_{clean_no}.docx",
+                     mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
+@app.route('/spj/<int:spj_id>/export/word/spd')
+@login_required
+def export_word_spd(spj_id):
+    spj, peserta, biaya, laporan, s, clean_no = _get_export_bundle_data(spj_id)
+    buf = export_spd_word(spj, peserta, s, root_path=app.root_path)
+    return send_file(buf, as_attachment=True, download_name=f"02_SPD_{clean_no}.docx",
+                     mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
+@app.route('/spj/<int:spj_id>/export/excel/spd')
+@login_required
+def export_excel_spd(spj_id):
+    spj, peserta, biaya, laporan, s, clean_no = _get_export_bundle_data(spj_id)
+    tpl_path = os.path.join(app.root_path, 'template spj', 'template spd.xlsx')
+    buf = export_spd_excel(spj, peserta, s, tpl_path=tpl_path)
+    return send_file(buf, as_attachment=True, download_name=f"02_SPD_{clean_no}.xlsx",
+                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+@app.route('/spj/<int:spj_id>/export/word/pengeluaran-riil')
+@login_required
+def export_word_pengeluaran_riil(spj_id):
+    spj, peserta, biaya, laporan, s, clean_no = _get_export_bundle_data(spj_id)
+    buf = export_pengeluaran_riil_word(spj, peserta, biaya, s, root_path=app.root_path)
+    return send_file(buf, as_attachment=True, download_name=f"03_Pengeluaran_Riil_{clean_no}.docx",
+                     mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
+@app.route('/spj/<int:spj_id>/export/word/kwitansi')
+@login_required
+def export_word_kwitansi(spj_id):
+    spj, peserta, biaya, laporan, s, clean_no = _get_export_bundle_data(spj_id)
+    buf = export_kwitansi_word(spj, peserta, biaya, s, root_path=app.root_path)
+    return send_file(buf, as_attachment=True, download_name=f"04_Kwitansi_{clean_no}.docx",
+                     mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
+@app.route('/spj/<int:spj_id>/export/excel/rincian-biaya')
+@login_required
+def export_excel_rincian_biaya(spj_id):
+    spj, peserta, biaya, laporan, s, clean_no = _get_export_bundle_data(spj_id)
+    buf = export_rincian_biaya_excel(spj, peserta, biaya, s)
+    return send_file(buf, as_attachment=True, download_name=f"05_Rincian_Biaya_{clean_no}.xlsx",
+                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+@app.route('/spj/<int:spj_id>/export/excel/rekap')
+@login_required
+def export_excel_rekap(spj_id):
+    spj, peserta, biaya, laporan, s, clean_no = _get_export_bundle_data(spj_id)
+    buf = export_rekap_excel(spj, peserta, biaya, s)
+    return send_file(buf, as_attachment=True, download_name=f"05_Rekapitulasi_Biaya_{clean_no}.xlsx",
+                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+@app.route('/spj/<int:spj_id>/export/word/laporan')
+@login_required
+def export_word_laporan(spj_id):
+    spj, peserta, biaya, laporan, s, clean_no = _get_export_bundle_data(spj_id)
+    buf = export_laporan_word(spj, laporan, peserta, s, root_path=app.root_path)
+    return send_file(buf, as_attachment=True, download_name=f"06_Laporan_Hasil_{clean_no}.docx",
+                     mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
+@app.route('/spj/<int:spj_id>/export/zip')
+@login_required
+def export_zip_bundel(spj_id):
+    spj, peserta, biaya, laporan, s, clean_no = _get_export_bundle_data(spj_id)
+    buf = export_bundel_zip(spj, peserta, biaya, laporan, s, root_path=app.root_path)
+    return send_file(buf, as_attachment=True, download_name=f"Bundel_SPJ_{clean_no}.zip",
+                     mimetype='application/zip')
+
 # ----------------- SETTINGS & TEMPLATES -----------------
 @app.route('/settings', methods=['GET', 'POST'])
 @login_required

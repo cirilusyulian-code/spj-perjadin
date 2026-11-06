@@ -25,6 +25,10 @@
             <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11px] font-bold border border-blue-200">Ukuran F4 / Folio</span>
         </div>
         <div class="flex items-center gap-2">
+                        <a href="{{ url_for('export_word_spt', spj_id=spj.id) }}" class="px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition">
+                <i class="ph-bold ph-file-doc text-base"></i>
+                <span>Unduh Word (.docx)</span>
+            </a>
             <button onclick="window.print()"
                 class="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow flex items-center justify-center gap-1.5">
                 <i class="ph-bold ph-printer text-base"></i>

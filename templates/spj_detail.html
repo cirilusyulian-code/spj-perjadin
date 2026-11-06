@@ -39,6 +39,10 @@
                 <i class="ph-bold ph-pencil-simple text-sm"></i>
                 <span>Edit SPJ</span>
             </a>
+            <a href="{{ url_for('export_zip_bundel', spj_id=spj.id) }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm" title="Unduh seluruh dokumen Word & Excel dalam 1 file ZIP">
+                <i class="ph-bold ph-file-zip text-base"></i>
+                <span>Unduh Bundel Word & Excel (.zip)</span>
+            </a>
             <a href="{{ url_for('cetak_semua', spj_id=spj.id) }}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 text-xs font-bold shadow-md shadow-blue-500/20 transition">
                 <i class="ph-bold ph-printer text-base"></i>
                 <span>Cetak 1 Bundel Lengkap</span>
@@ -83,7 +87,15 @@
                 </h3>
                 <p class="text-[10px] sm:text-[11px] text-slate-500">Pilih dokumen di bawah untuk memuat tampilan cetak</p>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+                <a id="btnExportWord" href="{{ url_for('export_word_spt', spj_id=spj.id) }}" class="px-3 py-1.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-bold flex items-center gap-1.5 transition shadow-xs" title="Unduh dokumen aktif dalam format Microsoft Word (.docx)">
+                    <i class="ph-bold ph-file-doc text-sm text-blue-600"></i>
+                    <span id="btnExportWordText">Word (.docx)</span>
+                </a>
+                <a id="btnExportExcel" href="{{ url_for('export_excel_spd', spj_id=spj.id) }}" style="display: none;" class="px-3 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-bold flex items-center gap-1.5 transition shadow-xs" title="Unduh dokumen aktif dalam format Microsoft Excel (.xlsx)">
+                    <i class="ph-bold ph-file-xls text-sm text-emerald-600"></i>
+                    <span id="btnExportExcelText">Excel (.xlsx)</span>
+                </a>
                 <a id="btnOpenNewTab" href="{{ url_for('cetak_spt', spj_id=spj.id) }}" target="_blank" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold flex items-center gap-1.5 transition shadow-xs" title="Buka pratinjau lembar ini di tab baru layar penuh">
                     <i class="ph-bold ph-arrow-square-out text-sm"></i>
                     <span>Layar Penuh</span>
@@ -97,27 +109,27 @@
 
         <!-- Document Tab Buttons (Horizontally Scrollable on Mobile) -->
         <div class="p-2 sm:p-3 bg-white border-b border-slate-100 flex overflow-x-auto no-scrollbar gap-2">
-            <button onclick="loadDoc('{{ url_for('cetak_spt', spj_id=spj.id) }}', this)" class="doc-tab-btn active px-3 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white flex items-center gap-1.5 transition shadow-sm whitespace-nowrap flex-shrink-0">
+            <button onclick="loadDoc('{{ url_for('cetak_spt', spj_id=spj.id) }}', this, 'spt')" class="doc-tab-btn active px-3 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white flex items-center gap-1.5 transition shadow-sm whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-file-text"></i>
                 <span>1. SPT ({% if spj.jenis_spt == 'kadis' %}Kadis{% else %}Staf{% endif %})</span>
             </button>
-            <button onclick="loadDoc('{{ url_for('cetak_spd', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
+            <button onclick="loadDoc('{{ url_for('cetak_spd', spj_id=spj.id) }}', this, 'spd')" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-identification-badge"></i>
                 <span>2. SPD (Surat Perjalanan Dinas)</span>
             </button>
-            <button onclick="loadDoc('{{ url_for('cetak_pengeluaran_riil', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
+            <button onclick="loadDoc('{{ url_for('cetak_pengeluaran_riil', spj_id=spj.id) }}', this, 'pengeluaran_riil')" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-receipt"></i>
                 <span>3. Pengeluaran Riil</span>
             </button>
-            <button onclick="loadDoc('{{ url_for('cetak_kwitansi', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
+            <button onclick="loadDoc('{{ url_for('cetak_kwitansi', spj_id=spj.id) }}', this, 'kwitansi')" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-money"></i>
                 <span>4. Kwitansi</span>
             </button>
-            <button onclick="loadDoc('{{ url_for('cetak_rincian_biaya', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
+            <button onclick="loadDoc('{{ url_for('cetak_rincian_biaya', spj_id=spj.id) }}', this, 'rincian_biaya')" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-table"></i>
                 <span>5. Rincian Biaya</span>
             </button>
-            <button onclick="loadDoc('{{ url_for('cetak_laporan', spj_id=spj.id) }}', this)" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
+            <button onclick="loadDoc('{{ url_for('cetak_laporan', spj_id=spj.id) }}', this, 'laporan')" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-newspaper-clipping"></i>
                 <span>6. Laporan Perjadin</span>
             </button>
@@ -164,7 +176,36 @@
 </div>
 
 <script>
-function loadDoc(url, btn) {
+const EXPORT_ROUTES = {
+    spt: {
+        word: "{{ url_for('export_word_spt', spj_id=spj.id) }}",
+        excel: null
+    },
+    spd: {
+        word: "{{ url_for('export_word_spd', spj_id=spj.id) }}",
+        excel: "{{ url_for('export_excel_spd', spj_id=spj.id) }}",
+        excelText: "SPD Excel (.xlsx)"
+    },
+    pengeluaran_riil: {
+        word: "{{ url_for('export_word_pengeluaran_riil', spj_id=spj.id) }}",
+        excel: null
+    },
+    kwitansi: {
+        word: "{{ url_for('export_word_kwitansi', spj_id=spj.id) }}",
+        excel: null
+    },
+    rincian_biaya: {
+        word: null,
+        excel: "{{ url_for('export_excel_rincian_biaya', spj_id=spj.id) }}",
+        excelText: "Rincian Biaya (.xlsx)"
+    },
+    laporan: {
+        word: "{{ url_for('export_word_laporan', spj_id=spj.id) }}",
+        excel: null
+    }
+};
+
+function loadDoc(url, btn, docType) {
     document.getElementById('docFrame').src = url;
     const btnNewTab = document.getElementById('btnOpenNewTab');
     if (btnNewTab) btnNewTab.href = url;
@@ -174,6 +215,31 @@ function loadDoc(url, btn) {
     });
     btn.classList.remove('bg-slate-100', 'text-slate-700');
     btn.classList.add('bg-blue-600', 'text-white');
+
+    // Update Export Buttons
+    const route = EXPORT_ROUTES[docType] || EXPORT_ROUTES.spt;
+    const btnWord = document.getElementById('btnExportWord');
+    const btnExcel = document.getElementById('btnExportExcel');
+    const txtExcel = document.getElementById('btnExportExcelText');
+
+    if (btnWord) {
+        if (route.word) {
+            btnWord.style.display = 'inline-flex';
+            btnWord.href = route.word;
+        } else {
+            btnWord.style.display = 'none';
+        }
+    }
+
+    if (btnExcel) {
+        if (route.excel) {
+            btnExcel.style.display = 'inline-flex';
+            btnExcel.href = route.excel;
+            if (txtExcel && route.excelText) txtExcel.textContent = route.excelText;
+        } else {
+            btnExcel.style.display = 'none';
+        }
+    }
 }
 
 function printCurrentTab() {

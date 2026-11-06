@@ -10,12 +10,12 @@ Aturan Pembaruan:
 """
 
 VERSION_MAJOR = 2
-VERSION_MINOR = 2
-VERSION_PATCH = 1
+VERSION_MINOR = 3
+VERSION_PATCH = 0
 
 __version__ = f"{VERSION_MAJOR}.{VERSION_MINOR}.{VERSION_PATCH}"
 APP_VERSION = __version__
-APP_RELEASE_DATE = "04 November 2026"
+APP_RELEASE_DATE = "06 November 2026"
 APP_NAME = "e-SPJ Dinas"
 
 def get_version_info():

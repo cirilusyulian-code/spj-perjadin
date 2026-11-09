@@ -74,7 +74,6 @@ def _terbilang_manual(n):
     else:
         return _terbilang_manual(n // 1000000000000) + " Triliun " + _terbilang_manual(n % 1000000000000)
 
-
 def format_nomor_spasi(nomor):
     """
     Format nomor penomoran dengan spasi non-breaking (&nbsp;)
@@ -91,12 +90,74 @@ def format_nomor_spasi(nomor):
     s = s.replace('\u00a0', '&nbsp;').replace(' ', '&nbsp;')
     return Markup(s)
 
+def format_tanggal_dmy(val):
+    """
+    Format tanggal ke format dd/mm/yyyy.
+    Contoh: '2026-11-25' -> '25/11/2026'
+    """
+    if not val:
+        return ""
+    try:
+        if isinstance(val, str):
+            val_clean = val.strip()
+            # Jika sudah format dd/mm/yyyy
+            if '/' in val_clean:
+                parts = val_clean.split('/')
+                if len(parts) == 3 and len(parts[0]) <= 2:
+                    return val_clean
+            dt = None
+            for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y"):
+                try:
+                    dt = datetime.datetime.strptime(val_clean, fmt)
+                    break
+                except ValueError:
+                    pass
+            if not dt:
+                return val_clean
+        else:
+            dt = val
+        return dt.strftime("%d/%m/%Y")
+    except Exception:
+        return str(val)
+
+def parse_date_dmy_or_ymd(val):
+    """
+    Konversi input tanggal dari format dd/mm/yyyy atau yyyy-mm-dd menjadi string ISO yyyy-mm-dd
+    agar selalu konsisten disimpan di database SQLite.
+    """
+    if not val:
+        return ""
+    val_clean = str(val).strip()
+    # Coba YYYY-MM-DD
+    try:
+        dt = datetime.datetime.strptime(val_clean, "%Y-%m-%d")
+        return dt.strftime("%Y-%m-%d")
+    except ValueError:
+        pass
+    # Coba DD/MM/YYYY atau DD-MM-YYYY
+    for fmt in ("%d/%m/%Y", "%d-%m-%Y"):
+        try:
+            dt = datetime.datetime.strptime(val_clean, fmt)
+            return dt.strftime("%Y-%m-%d")
+        except ValueError:
+            pass
+    return val_clean
+
 def format_tanggal(val):
     if not val:
         return "-"
     try:
         if isinstance(val, str):
-            dt = datetime.datetime.strptime(val.strip(), "%Y-%m-%d")
+            val_clean = val.strip()
+            dt = None
+            for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y"):
+                try:
+                    dt = datetime.datetime.strptime(val_clean, fmt)
+                    break
+                except ValueError:
+                    pass
+            if not dt:
+                return str(val)
         else:
             dt = val
         return f"{dt.day} {BULAN_INDONESIA.get(dt.month, '')} {dt.year}"
@@ -104,11 +165,26 @@ def format_tanggal(val):
         return str(val)
 
 def hitung_hari(tgl_mulai, tgl_selesai):
+    if not tgl_mulai or not tgl_selesai:
+        return 1
     try:
-        d1 = datetime.datetime.strptime(tgl_mulai.strip(), "%Y-%m-%d")
-        d2 = datetime.datetime.strptime(tgl_selesai.strip(), "%Y-%m-%d")
-        delta = (d2 - d1).days + 1
-        return max(1, delta)
+        d1 = None
+        d2 = None
+        for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y"):
+            try:
+                if not d1:
+                    d1 = datetime.datetime.strptime(str(tgl_mulai).strip(), fmt)
+            except Exception:
+                pass
+            try:
+                if not d2:
+                    d2 = datetime.datetime.strptime(str(tgl_selesai).strip(), fmt)
+            except Exception:
+                pass
+        if d1 and d2:
+            delta = (d2 - d1).days + 1
+            return max(1, delta)
+        return 1
     except Exception:
         return 1
 

@@ -9,7 +9,8 @@ from werkzeug.utils import secure_filename
 
 from database import (init_db, get_db, get_settings, update_settings, verify_user, create_sample_data, 
                       get_pegawai_list, get_pegawai_by_id, add_pegawai, update_pegawai, delete_pegawai)
-from helpers import format_rupiah, terbilang, terbilang_kata, format_tanggal, hitung_hari, angka_murni, clean_uraian, format_nomor_spasi
+from helpers import (format_rupiah, terbilang, terbilang_kata, format_tanggal, format_tanggal_dmy, 
+                     parse_date_dmy_or_ymd, hitung_hari, angka_murni, clean_uraian, format_nomor_spasi)
 from version import APP_VERSION, APP_RELEASE_DATE, APP_NAME
 
 app = Flask(__name__)
@@ -53,6 +54,7 @@ app.jinja_env.filters['format_rupiah'] = format_rupiah
 app.jinja_env.filters['terbilang'] = terbilang
 app.jinja_env.filters['terbilang_kata'] = terbilang_kata
 app.jinja_env.filters['format_tanggal'] = format_tanggal
+app.jinja_env.filters['format_tanggal_dmy'] = format_tanggal_dmy
 app.jinja_env.filters['clean_uraian'] = clean_uraian
 app.jinja_env.filters['format_nomor_spasi'] = format_nomor_spasi
 app.jinja_env.globals.update(
@@ -60,6 +62,8 @@ app.jinja_env.globals.update(
     terbilang=terbilang,
     terbilang_kata=terbilang_kata,
     format_tanggal=format_tanggal,
+    format_tanggal_dmy=format_tanggal_dmy,
+    parse_date_dmy_or_ymd=parse_date_dmy_or_ymd,
     angka_murni=angka_murni,
     get_kop=get_kop,
     clean_uraian=clean_uraian,
@@ -205,9 +209,9 @@ def spj_create():
         instansi_tujuan = request.form.get('instansi_tujuan', '').strip()
         maksud = request.form.get('maksud', '').strip()
         dasar_hukum = request.form.get('dasar_hukum', '').strip()
-        tanggal_berangkat = request.form.get('tanggal_berangkat', today_str).strip()
-        tanggal_pulang = request.form.get('tanggal_pulang', today_str).strip()
-        tanggal_spt = request.form.get('tanggal_spt', '').strip() or tanggal_berangkat
+        tanggal_berangkat = parse_date_dmy_or_ymd(request.form.get('tanggal_berangkat', today_str))
+        tanggal_pulang = parse_date_dmy_or_ymd(request.form.get('tanggal_pulang', today_str))
+        tanggal_spt = parse_date_dmy_or_ymd(request.form.get('tanggal_spt', '')) or tanggal_berangkat
         lama_hari = int(request.form.get('lama_hari', 1))
         angkutan = request.form.get('angkutan', 'Kendaraan Dinas / Mobil').strip()
         mata_anggaran = request.form.get('mata_anggaran', '').strip()
@@ -347,9 +351,9 @@ def spj_edit(spj_id):
         instansi_tujuan = request.form.get('instansi_tujuan', '').strip()
         maksud = request.form.get('maksud', '').strip()
         dasar_hukum = request.form.get('dasar_hukum', '').strip()
-        tanggal_berangkat = request.form.get('tanggal_berangkat', '').strip()
-        tanggal_pulang = request.form.get('tanggal_pulang', '').strip()
-        tanggal_spt = request.form.get('tanggal_spt', '').strip() or tanggal_berangkat
+        tanggal_berangkat = parse_date_dmy_or_ymd(request.form.get('tanggal_berangkat', ''))
+        tanggal_pulang = parse_date_dmy_or_ymd(request.form.get('tanggal_pulang', ''))
+        tanggal_spt = parse_date_dmy_or_ymd(request.form.get('tanggal_spt', '')) or tanggal_berangkat
         lama_hari = int(request.form.get('lama_hari', 1))
         angkutan = request.form.get('angkutan', 'Kendaraan Dinas / Mobil').strip()
         mata_anggaran = request.form.get('mata_anggaran', '').strip()

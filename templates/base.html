@@ -31,6 +31,45 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}?v={{ APP_VERSION }}">
     <!-- Phosphor Icons for crisp modern UI icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Flatpickr Datepicker (Lokal & CDN fallback) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/flatpickr.min.css') }}">
+    <script src="{{ url_for('static', filename='js/flatpickr.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/flatpickr-id.js') }}"></script>
+    <style>
+        /* Modern Flatpickr styling matching e-SPJ Dinas Tailwind theme */
+        .flatpickr-calendar {
+            font-family: inherit !important;
+            border-radius: 0.875rem !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+            border: 1px solid #e2e8f0 !important;
+            padding: 6px !important;
+        }
+        .flatpickr-months {
+            padding-top: 4px;
+            border-top-left-radius: 0.875rem;
+            border-top-right-radius: 0.875rem;
+        }
+        .flatpickr-current-month {
+            font-size: 0.875rem !important;
+            font-weight: 700 !important;
+        }
+        .flatpickr-day {
+            border-radius: 0.5rem !important;
+            font-size: 0.8rem !important;
+        }
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
+            background: #2563eb !important;
+            border-color: #2563eb !important;
+            color: #ffffff !important;
+            font-weight: 700 !important;
+        }
+        .flatpickr-day.today {
+            border-color: #2563eb !important;
+        }
+        .flatpickr-day:hover {
+            background: #eff6ff !important;
+        }
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col font-sans">
 

@@ -1,9 +1,5 @@
 import datetime
 from markupsafe import Markup
-try:
-    from num2words import num2words
-except ImportError:
-    num2words = None
 
 BULAN_INDONESIA = {
     1: 'Januari', 2: 'Februari', 3: 'Maret', 4: 'April',
@@ -30,10 +26,9 @@ def terbilang_kata(val):
         n = int(round(float(val or 0)))
         if n == 0:
             return "Nol"
-        if num2words:
-            return num2words(n, lang='id').title()
-        else:
-            return _terbilang_manual(n).strip()
+        if n < 0:
+            return "Minus " + terbilang_kata(abs(n))
+        return ' '.join(_terbilang_manual(n).split())
     except Exception:
         return str(val)
 
@@ -42,37 +37,39 @@ def terbilang(val):
         n = int(round(float(val or 0)))
         if n == 0:
             return "Nol Rupiah"
-        if num2words:
-            kata = num2words(n, lang='id').title()
-            return f"{kata} Rupiah"
-        else:
-            # Fallback indonesian terbilang
-            return _terbilang_manual(n) + " Rupiah"
-    except Exception as e:
+        if n < 0:
+            return f"Minus {terbilang_kata(abs(n))} Rupiah"
+        kata = ' '.join(_terbilang_manual(n).split())
+        return f"{kata} Rupiah"
+    except Exception:
         return f"{val} Rupiah"
 
 def _terbilang_manual(n):
+    if n <= 0:
+        return ""
     satuan = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"]
     if n < 12:
         return satuan[n]
     elif n < 20:
         return _terbilang_manual(n - 10) + " Belas"
     elif n < 100:
-        return _terbilang_manual(n // 10) + " Puluh " + _terbilang_manual(n % 10)
+        return (_terbilang_manual(n // 10) + " Puluh " + _terbilang_manual(n % 10)).strip()
     elif n < 200:
-        return "Seratus " + _terbilang_manual(n - 100)
+        return ("Seratus " + _terbilang_manual(n - 100)).strip()
     elif n < 1000:
-        return _terbilang_manual(n // 100) + " Ratus " + _terbilang_manual(n % 100)
+        return (_terbilang_manual(n // 100) + " Ratus " + _terbilang_manual(n % 100)).strip()
     elif n < 2000:
-        return "Seribu " + _terbilang_manual(n - 1000)
+        return ("Seribu " + _terbilang_manual(n - 1000)).strip()
     elif n < 1000000:
-        return _terbilang_manual(n // 1000) + " Ribu " + _terbilang_manual(n % 1000)
+        return (_terbilang_manual(n // 1000) + " Ribu " + _terbilang_manual(n % 1000)).strip()
     elif n < 1000000000:
-        return _terbilang_manual(n // 1000000) + " Juta " + _terbilang_manual(n % 1000000)
+        return (_terbilang_manual(n // 1000000) + " Juta " + _terbilang_manual(n % 1000000)).strip()
     elif n < 1000000000000:
-        return _terbilang_manual(n // 1000000000) + " Miliar " + _terbilang_manual(n % 1000000000)
+        return (_terbilang_manual(n // 1000000000) + " Miliar " + _terbilang_manual(n % 1000000000)).strip()
+    elif n < 1000000000000000:
+        return (_terbilang_manual(n // 1000000000000) + " Triliun " + _terbilang_manual(n % 1000000000000)).strip()
     else:
-        return _terbilang_manual(n // 1000000000000) + " Triliun " + _terbilang_manual(n % 1000000000000)
+        return (_terbilang_manual(n // 1000000000000000) + " Kuadriliun " + _terbilang_manual(n % 1000000000000000)).strip()
 
 def format_nomor_spasi(nomor):
     """

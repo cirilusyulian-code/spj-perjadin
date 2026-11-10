@@ -1585,7 +1585,7 @@ def export_laporan_word(spj, laporan, peserta_list, s, root_path=''):
         ("II. MAKSUD DAN TUJUAN",
          f"{spj.get('maksud')} yang berlokasi di {spj.get('tujuan')}{instansi_tujuan_paren}."),
         ("III. WAKTU DAN TEMPAT PELAKSANAAN",
-         f"Kegiatan dinas ini dilaksanakan selama {spj.get('lama_hari')} ({spj.get('lama_hari')}) hari, terhitung mulai tanggal {tgl_brgkt_str} sampai dengan {tgl_plng_str} bertempat di {spj.get('tujuan')} dengan menggunakan sarana transportasi {spj.get('angkutan')}."),
+         f"Kegiatan dinas ini dilaksanakan selama {spj.get('lama_hari')} ({terbilang_kata(spj.get('lama_hari')).lower()}) hari, terhitung mulai tanggal {tgl_brgkt_str} sampai dengan {tgl_plng_str} bertempat di {spj.get('tujuan')} dengan menggunakan sarana transportasi {spj.get('angkutan')}."),
         ("IV. KEGIATAN YANG DILAKSANAKAN", kegiatan),
         ("V. HASIL YANG DICAPAI", hasil),
         ("VI. KESIMPULAN DAN REKOMENDASI", kesimpulan)

@@ -90,7 +90,7 @@
             <div>
                 <div style="font-weight: bold;">III. WAKTU DAN TEMPAT PELAKSANAAN</div>
                 <div style="padding-left: 18px;">
-                    Kegiatan dinas ini dilaksanakan selama <strong>{{ spj.lama_hari }} ({{ spj.lama_hari }}) hari</strong>, terhitung mulai tanggal <strong>{{ format_tanggal(spj.tanggal_berangkat) }}</strong> sampai dengan <strong>{{ format_tanggal(spj.tanggal_pulang) }}</strong> bertempat di {{ spj.tujuan }} dengan menggunakan sarana transportasi {{ spj.angkutan }}.
+                    Kegiatan dinas ini dilaksanakan selama <strong>{{ spj.lama_hari }} ({{ spj.lama_hari | terbilang_kata | lower }}) hari</strong>, terhitung mulai tanggal <strong>{{ format_tanggal(spj.tanggal_berangkat) }}</strong> sampai dengan <strong>{{ format_tanggal(spj.tanggal_pulang) }}</strong> bertempat di {{ spj.tujuan }} dengan menggunakan sarana transportasi {{ spj.angkutan }}.
                 </div>
             </div>
 

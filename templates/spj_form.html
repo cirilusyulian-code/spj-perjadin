@@ -1158,31 +1158,41 @@ function recalculateAllBiaya() {
             cardTotal += (qty * tarif);
         });
         const subtotalEl = card.querySelector('.card-subtotal');
-        if (subtotalEl) subtotalEl.innerText = 'Rp ' + cardTotal.toLocaleString('id-ID');
+        if (subtotalEl) subtotalEl.innerText = 'Rp ' + Math.round(cardTotal).toLocaleString('id-ID');
         grandTotal += cardTotal;
     });
 
+    const roundedTotal = Math.round(grandTotal);
     const grandTotalEl = document.getElementById('grandTotalDisplay');
-    if (grandTotalEl) grandTotalEl.innerText = 'Rp ' + grandTotal.toLocaleString('id-ID');
+    if (grandTotalEl) grandTotalEl.innerText = 'Rp ' + roundedTotal.toLocaleString('id-ID');
     const terbilangEl = document.getElementById('terbilangDisplay');
-    if (terbilangEl) terbilangEl.innerText = angkaKeTerbilang(grandTotal) + ' Rupiah';
+    if (terbilangEl) terbilangEl.innerText = angkaKeTerbilang(roundedTotal) + ' Rupiah';
 }
 
-// Client-side Indonesian number to words
+// Client-side Indonesian number to words (sesuai EYD / KBBI)
 function angkaKeTerbilang(nilai) {
-    nilai = Math.floor(Math.abs(nilai));
+    const num = Math.round(Number(nilai) || 0);
+    if (num === 0) return "Nol";
+    if (num < 0) return "Minus " + angkaKeTerbilang(Math.abs(num));
+
     const satuan = ["", "Satu", "Dua", "Tiga", "Empat", "Lima", "Enam", "Tujuh", "Delapan", "Sembilan", "Sepuluh", "Sebelas"];
-    if (nilai === 0) return "Nol";
-    if (nilai < 12) return satuan[nilai];
-    if (nilai < 20) return angkaKeTerbilang(nilai - 10) + " Belas";
-    if (nilai < 100) return angkaKeTerbilang(Math.floor(nilai / 10)) + " Puluh " + angkaKeTerbilang(nilai % 10);
-    if (nilai < 200) return "Seratus " + angkaKeTerbilang(nilai - 100);
-    if (nilai < 1000) return angkaKeTerbilang(Math.floor(nilai / 100)) + " Ratus " + angkaKeTerbilang(nilai % 100);
-    if (nilai < 2000) return "Seribu " + angkaKeTerbilang(nilai - 1000);
-    if (nilai < 1000000) return angkaKeTerbilang(Math.floor(nilai / 1000)) + " Ribu " + angkaKeTerbilang(nilai % 1000);
-    if (nilai < 1000000000) return angkaKeTerbilang(Math.floor(nilai / 1000000)) + " Juta " + angkaKeTerbilang(nilai % 1000000);
-    if (nilai < 1000000000000) return angkaKeTerbilang(Math.floor(nilai / 1000000000)) + " Miliar " + angkaKeTerbilang(nilai % 1000000000);
-    return "";
+
+    function rec(n) {
+        if (n <= 0) return "";
+        if (n < 12) return satuan[n];
+        if (n < 20) return rec(n - 10) + " Belas";
+        if (n < 100) return (rec(Math.floor(n / 10)) + " Puluh " + rec(n % 10)).trim();
+        if (n < 200) return ("Seratus " + rec(n - 100)).trim();
+        if (n < 1000) return (rec(Math.floor(n / 100)) + " Ratus " + rec(n % 100)).trim();
+        if (n < 2000) return ("Seribu " + rec(n - 1000)).trim();
+        if (n < 1000000) return (rec(Math.floor(n / 1000)) + " Ribu " + rec(n % 1000)).trim();
+        if (n < 1000000000) return (rec(Math.floor(n / 1000000)) + " Juta " + rec(n % 1000000)).trim();
+        if (n < 1000000000000) return (rec(Math.floor(n / 1000000000)) + " Miliar " + rec(n % 1000000000)).trim();
+        if (n < 1000000000000000) return (rec(Math.floor(n / 1000000000000)) + " Triliun " + rec(n % 1000000000000)).trim();
+        return (rec(Math.floor(n / 1000000000000000)) + " Kuadriliun " + rec(n % 1000000000000000)).trim();
+    }
+
+    return rec(num).replace(/\s+/g, " ").trim();
 }
 
 const DEFAULT_TTD_KADIS = {

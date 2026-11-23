@@ -1,76 +1,79 @@
 {% extends "base.html" %}
 
-{% block title %}Masuk Sistem - Aplikasi SPJ Perjalanan Dinas{% endblock %}
+{% block title %}Masuk Sistem - e-SPJ Perjalanan Dinas{% endblock %}
 
 {% block content %}
-<div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8 bg-white p-8 sm:p-10 rounded-2xl shadow-xl border border-slate-100">
+<div class="min-h-[75vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-6 bg-white p-8 sm:p-10 rounded-2xl shadow-xs border border-slate-200">
         <!-- Logo & Header -->
         <div class="text-center">
-            <div class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-700 to-indigo-500 flex items-center justify-center text-white text-3xl shadow-lg shadow-blue-500/30 mb-4">
-                <i class="ph-bold ph-airplane-takeoff"></i>
+            <div class="mx-auto w-14 h-14 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-center text-amber-400 text-2xl shadow-xs mb-4">
+                <i class="ph-bold ph-identification-badge"></i>
             </div>
-            <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200 mb-2">
+                <span>Portal Administrasi Keuangan</span>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-950 tracking-tight">
                 Sistem Informasi SPJ
             </h2>
-            <p class="mt-1 text-sm text-slate-500">
-                Penyusunan & Pengelolaan Dokumen Perjalanan Dinas
+            <p class="mt-1 text-xs text-slate-500">
+                Penyusunan & Pengelolaan Dokumen Perjalanan Dinas Kedinasan
             </p>
         </div>
 
         <!-- Login Form -->
-        <form class="mt-8 space-y-5" action="{{ url_for('login') }}" method="POST">
+        <form class="mt-6 space-y-4" action="{{ url_for('login') }}" method="POST">
             <div>
-                <label for="username" class="block text-xs font-semibold uppercase text-slate-700 tracking-wider mb-1">
+                <label for="username" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                     Username
                 </label>
-                <div class="relative rounded-xl shadow-sm">
+                <div class="relative rounded-xl">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <i class="ph ph-user text-lg"></i>
+                        <i class="ph ph-user text-base"></i>
                     </div>
                     <input id="username" name="username" type="text" required value="admin"
-                        class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition"
+                        class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 text-xs transition min-h-[44px]"
                         placeholder="Masukkan username">
                 </div>
             </div>
 
             <div>
-                <label for="password" class="block text-xs font-semibold uppercase text-slate-700 tracking-wider mb-1">
+                <label for="password" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                     Password
                 </label>
-                <div class="relative rounded-xl shadow-sm">
+                <div class="relative rounded-xl">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                        <i class="ph ph-lock-key text-lg"></i>
+                        <i class="ph ph-lock-key text-base"></i>
                     </div>
                     <input id="password" name="password" type="password" required value="admin123"
-                        class="block w-full pl-10 pr-10 py-2.5 border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition"
+                        class="block w-full pl-10 pr-10 py-2.5 border border-slate-300 rounded-xl text-slate-950 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 text-xs transition min-h-[44px]"
                         placeholder="Masukkan password">
-                    <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
-                        <i id="eye-icon" class="ph ph-eye text-lg"></i>
+                    <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 min-w-[44px] min-h-[44px] justify-center">
+                        <i id="eye-icon" class="ph ph-eye text-base"></i>
                     </button>
                 </div>
             </div>
 
-            <div class="p-3 bg-blue-50 rounded-xl border border-blue-100 text-xs text-blue-800 flex items-start gap-2.5">
-                <i class="ph-fill ph-info text-blue-600 text-base mt-0.5 flex-shrink-0"></i>
+            <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 flex items-start gap-2.5">
+                <i class="ph-fill ph-info text-slate-600 text-base mt-0.5 flex-shrink-0"></i>
                 <div>
-                    <span class="font-bold">Akun Default:</span> Username: <code class="bg-blue-100 px-1 py-0.5 rounded text-blue-900 font-mono">admin</code>, Password: <code class="bg-blue-100 px-1 py-0.5 rounded text-blue-900 font-mono">admin123</code>
+                    <span class="font-bold">Kredensial Default:</span> Username: <code class="bg-slate-200/80 px-1.5 py-0.5 rounded text-slate-900 font-mono text-[11px]">admin</code>, Password: <code class="bg-slate-200/80 px-1.5 py-0.5 rounded text-slate-900 font-mono text-[11px]">admin123</code>
                 </div>
             </div>
 
-            <div>
+            <div class="pt-2">
                 <button type="submit"
-                    class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-xl text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-md shadow-blue-500/20 transition">
+                    class="group relative w-full flex justify-center items-center py-2.5 px-4 border border-slate-900 text-xs font-bold rounded-xl text-white bg-slate-950 hover:bg-slate-900 active:bg-black focus:outline-none focus:ring-1 focus:ring-slate-900 shadow-xs transition min-h-[44px]">
                     <span class="flex items-center gap-2">
                         <span>Masuk ke Dashboard</span>
-                        <i class="ph-bold ph-arrow-right text-base group-hover:translate-x-1 transition-transform"></i>
+                        <i class="ph-bold ph-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
                     </span>
                 </button>
             </div>
         </form>
 
         <div class="pt-4 border-t border-slate-100 text-center text-xs text-slate-400">
-            Dapat dijalankan di Localhost & Ubuntu VPS
+            Dinas Kependudukan dan Pencatatan Sipil
         </div>
     </div>
 </div>

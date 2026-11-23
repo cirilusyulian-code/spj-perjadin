@@ -10,7 +10,8 @@ from werkzeug.utils import secure_filename
 from database import (init_db, get_db, get_settings, update_settings, verify_user, create_sample_data, 
                       get_pegawai_list, get_pegawai_by_id, add_pegawai, update_pegawai, delete_pegawai)
 from helpers import (format_rupiah, terbilang, terbilang_kata, format_tanggal, format_tanggal_dmy, 
-                     parse_date_dmy_or_ymd, hitung_hari, angka_murni, clean_uraian, format_nomor_spasi)
+                     parse_date_dmy_or_ymd, hitung_hari, angka_murni, clean_uraian, format_nomor_spasi,
+                     format_rentang_tanggal)
 from version import APP_VERSION, APP_RELEASE_DATE, APP_NAME
 
 app = Flask(__name__)
@@ -55,6 +56,7 @@ app.jinja_env.filters['terbilang'] = terbilang
 app.jinja_env.filters['terbilang_kata'] = terbilang_kata
 app.jinja_env.filters['format_tanggal'] = format_tanggal
 app.jinja_env.filters['format_tanggal_dmy'] = format_tanggal_dmy
+app.jinja_env.filters['format_rentang_tanggal'] = format_rentang_tanggal
 app.jinja_env.filters['clean_uraian'] = clean_uraian
 app.jinja_env.filters['format_nomor_spasi'] = format_nomor_spasi
 app.jinja_env.globals.update(
@@ -63,6 +65,7 @@ app.jinja_env.globals.update(
     terbilang_kata=terbilang_kata,
     format_tanggal=format_tanggal,
     format_tanggal_dmy=format_tanggal_dmy,
+    format_rentang_tanggal=format_rentang_tanggal,
     parse_date_dmy_or_ymd=parse_date_dmy_or_ymd,
     angka_murni=angka_murni,
     get_kop=get_kop,
@@ -622,6 +625,21 @@ def cetak_laporan(spj_id):
     laporan_defaults = json.loads(s.get('template_laporan', '{}'))
     return render_template('print/laporan_print.html', spj=spj, peserta=peserta, laporan=laporan, s=s, laporan_defaults=laporan_defaults)
 
+@app.route('/spj/<int:spj_id>/cetak/opd-payment')
+@login_required
+def cetak_opd_payment(spj_id):
+    conn = get_db()
+    spj = conn.execute('SELECT * FROM spj WHERE id = ?', (spj_id,)).fetchone()
+    if not spj:
+        conn.close()
+        abort(404)
+    peserta = conn.execute('SELECT * FROM spj_peserta WHERE spj_id = ? ORDER BY urutan ASC', (spj_id,)).fetchall()
+    biaya = conn.execute('SELECT * FROM spj_biaya WHERE spj_id = ? ORDER BY id ASC', (spj_id,)).fetchall()
+    conn.close()
+    s = get_settings()
+    enriched_peserta = _enrich_peserta_rekening(peserta)
+    return render_template('print/opd_payment_print.html', spj=spj, peserta=enriched_peserta, biaya=biaya, s=s)
+
 @app.route('/spj/<int:spj_id>/cetak/semua')
 @login_required
 def cetak_semua(spj_id):
@@ -637,10 +655,11 @@ def cetak_semua(spj_id):
     s = get_settings()
     laporan_defaults = json.loads(s.get('template_laporan', '{}'))
     total_biaya = sum(b['total'] for b in biaya)
+    enriched_peserta = _enrich_peserta_rekening(peserta)
 
     return render_template('print/semua_print.html',
         spj=spj,
-        peserta=peserta,
+        peserta=enriched_peserta,
         biaya=biaya,
         laporan=laporan,
         s=s,
@@ -690,8 +709,47 @@ from export_service import (
     export_rincian_biaya_excel,
     export_rekap_excel,
     export_laporan_word,
+    export_opd_payment_excel,
     export_bundel_zip
 )
+
+def _enrich_peserta_rekening(peserta_list):
+    conn = get_db()
+    pegawai_rows = conn.execute('SELECT nama, nip, nomor_rekening, nama_bank FROM pegawai').fetchall()
+    conn.close()
+
+    peg_map_nip = {}
+    peg_map_nama = {}
+    for peg in pegawai_rows:
+        if peg['nip']:
+            clean_nip = str(peg['nip']).strip().replace(' ', '')
+            peg_map_nip[clean_nip] = peg
+        if peg['nama']:
+            clean_nama = str(peg['nama']).strip().lower()
+            peg_map_nama[clean_nama] = peg
+
+    enriched = []
+    for p in peserta_list:
+        p_dict = dict(p) if not isinstance(p, dict) else p.copy()
+        rek = p_dict.get('nomor_rekening')
+        bank = p_dict.get('nama_bank')
+        if not rek:
+            clean_p_nip = str(p_dict.get('nip') or '').strip().replace(' ', '')
+            clean_p_nama = str(p_dict.get('nama') or '').strip().lower()
+            match_peg = peg_map_nip.get(clean_p_nip) or peg_map_nama.get(clean_p_nama)
+            if match_peg:
+                rek = match_peg['nomor_rekening']
+                bank = match_peg['nama_bank']
+            else:
+                for peg_n, peg_obj in peg_map_nama.items():
+                    if clean_p_nama in peg_n or peg_n in clean_p_nama:
+                        rek = peg_obj['nomor_rekening']
+                        bank = peg_obj['nama_bank']
+                        break
+        p_dict['nomor_rekening'] = rek or ''
+        p_dict['nama_bank'] = bank or 'BANK BENGKULU'
+        enriched.append(p_dict)
+    return enriched
 
 def _get_export_bundle_data(spj_id):
     conn = get_db()
@@ -705,7 +763,8 @@ def _get_export_bundle_data(spj_id):
     conn.close()
     s = get_settings()
     clean_no = "".join([c for c in (spj['nomor_spt'] or f'SPJ_{spj_id}') if c.isalnum() or c in '-_'])
-    return spj, peserta, biaya, laporan, s, clean_no
+    enriched_peserta = _enrich_peserta_rekening(peserta)
+    return spj, enriched_peserta, biaya, laporan, s, clean_no
 
 @app.route('/spj/<int:spj_id>/export/word/spt')
 @login_required
@@ -771,6 +830,14 @@ def export_word_laporan(spj_id):
     buf = export_laporan_word(spj, laporan, peserta, s, root_path=app.root_path)
     return send_file(buf, as_attachment=True, download_name=f"06_Laporan_Hasil_{clean_no}.docx",
                      mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
+@app.route('/spj/<int:spj_id>/export/excel/opd-payment')
+@login_required
+def export_excel_opd_payment(spj_id):
+    spj, peserta, biaya, laporan, s, clean_no = _get_export_bundle_data(spj_id)
+    buf = export_opd_payment_excel(spj, peserta, biaya, s)
+    return send_file(buf, as_attachment=True, download_name=f"07_OPD_Payment_{clean_no}.xlsx",
+                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 @app.route('/spj/<int:spj_id>/export/zip')
 @login_required
@@ -874,12 +941,14 @@ def pegawai_add():
     nik = request.form.get('nik', '').strip()
     pangkat = request.form.get('pangkat', '').strip()
     jabatan = request.form.get('jabatan', '').strip()
+    nomor_rekening = request.form.get('nomor_rekening', '').strip()
+    nama_bank = request.form.get('nama_bank', 'BANK BENGKULU').strip() or 'BANK BENGKULU'
 
     if not nama:
         flash('Nama pegawai wajib diisi!', 'danger')
         return redirect(url_for('settings_view', tab='pegawai'))
 
-    add_pegawai(nama, nip, nik, pangkat, jabatan)
+    add_pegawai(nama, nip, nik, pangkat, jabatan, nomor_rekening, nama_bank)
     flash(f'Pegawai "{nama}" berhasil ditambahkan ke daftar master!', 'success')
     return redirect(url_for('settings_view', tab='pegawai'))
 
@@ -891,12 +960,14 @@ def pegawai_edit(pegawai_id):
     nik = request.form.get('nik', '').strip()
     pangkat = request.form.get('pangkat', '').strip()
     jabatan = request.form.get('jabatan', '').strip()
+    nomor_rekening = request.form.get('nomor_rekening', '').strip()
+    nama_bank = request.form.get('nama_bank', 'BANK BENGKULU').strip() or 'BANK BENGKULU'
 
     if not nama:
         flash('Nama pegawai wajib diisi!', 'danger')
         return redirect(url_for('settings_view', tab='pegawai'))
 
-    update_pegawai(pegawai_id, nama, nip, nik, pangkat, jabatan)
+    update_pegawai(pegawai_id, nama, nip, nik, pangkat, jabatan, nomor_rekening, nama_bank)
     flash(f'Data pegawai "{nama}" berhasil diperbarui!', 'success')
     return redirect(url_for('settings_view', tab='pegawai'))
 

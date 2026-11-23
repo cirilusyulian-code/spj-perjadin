@@ -9,14 +9,14 @@
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <div class="flex items-center gap-2">
-                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Pengaturan Template SPJ</h1>
-                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-100 text-blue-800 border border-blue-200">v{{ APP_VERSION }}</span>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-950 tracking-tight">Pengaturan Template SPJ</h1>
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-slate-100 text-slate-800 border border-slate-200">v{{ APP_VERSION }}</span>
             </div>
             <p class="text-xs text-slate-500 mt-1">Sesuaikan kop dinas, pejabat penandatangan, format 2 tipe SPT, dan dokumen pendukung • Rilis: {{ APP_RELEASE_DATE }}</p>
         </div>
         <div>
-            <button type="submit" form="settingsForm" id="topSaveBtn" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 active:bg-blue-800 transition shadow-md shadow-blue-500/20">
-                <i class="ph-bold ph-floppy-disk text-base"></i>
+            <button type="submit" form="settingsForm" id="topSaveBtn" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-slate-950 text-white text-xs font-bold hover:bg-slate-800 active:bg-slate-900 transition shadow-xs border border-slate-900 min-h-[44px]">
+                <i class="ph-bold ph-floppy-disk text-base text-amber-300"></i>
                 <span>Simpan Pengaturan</span>
             </button>
         </div>
@@ -24,26 +24,26 @@
 
     <!-- Navigation Tabs (Horizontally Scrollable without scrollbar) -->
     <div class="flex border-b border-slate-200 mb-6 overflow-x-auto no-scrollbar space-x-2 text-xs font-semibold py-1" id="tabsHeader">
-        <button type="button" onclick="switchTab('kop')" id="tab-btn-kop" class="tab-btn px-4 py-2.5 border-b-2 border-blue-600 text-blue-600 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
+        <button type="button" onclick="switchTab('kop')" id="tab-btn-kop" class="tab-btn px-4 py-2.5 border-b-2 border-slate-950 text-slate-950 font-bold flex items-center gap-2 whitespace-nowrap flex-shrink-0">
             <i class="ph-bold ph-buildings text-base"></i>
             <span>Instansi & Kop Surat</span>
         </button>
-        <button type="button" onclick="switchTab('pejabat')" id="tab-btn-pejabat" class="tab-btn px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
+        <button type="button" onclick="switchTab('pejabat')" id="tab-btn-pejabat" class="tab-btn px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
             <i class="ph-bold ph-identification-card text-base"></i>
             <span>Pejabat Penandatangan</span>
         </button>
-        <button type="button" onclick="switchTab('spt')" id="tab-btn-spt" class="tab-btn px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
+        <button type="button" onclick="switchTab('spt')" id="tab-btn-spt" class="tab-btn px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
             <i class="ph-bold ph-file-text text-base"></i>
             <span>Template SPT (Kadis & Staf)</span>
         </button>
-        <button type="button" onclick="switchTab('lainnya')" id="tab-btn-lainnya" class="tab-btn px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
+        <button type="button" onclick="switchTab('lainnya')" id="tab-btn-lainnya" class="tab-btn px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
             <i class="ph-bold ph-stamp text-base"></i>
             <span>Template Riil, Kwitansi, Rincian, Laporan</span>
         </button>
-        <button type="button" onclick="switchTab('pegawai')" id="tab-btn-pegawai" class="tab-btn px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
+        <button type="button" onclick="switchTab('pegawai')" id="tab-btn-pegawai" class="tab-btn px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
             <i class="ph-bold ph-users text-base"></i>
             <span>Master Pegawai</span>
-            <span class="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700" id="badgeTotalPegawai">{{ pegawai_list|length }}</span>
+            <span class="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-200 text-slate-800" id="badgeTotalPegawai">{{ pegawai_list|length }}</span>
         </button>
     </div>
 
@@ -53,21 +53,21 @@
         <div id="tab-content-kop" class="tab-pane space-y-6">
 
             <!-- Sub-tab Switcher: Kop Kadis vs Kop Staf -->
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200/80 shadow-xs">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs">
                 <div class="flex items-center gap-2">
                     <button type="button" onclick="switchKopType('kadis')" id="kop-type-btn-kadis"
-                        class="kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-blue-600 text-white shadow-sm shadow-blue-500/20">
+                        class="kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-950 text-white shadow-2xs border border-slate-900">
                         <i class="ph-bold ph-crown text-amber-300 text-sm"></i>
                         <span>Kop Surat Kepala Dinas</span>
                     </button>
                     <button type="button" onclick="switchKopType('staf')" id="kop-type-btn-staf"
-                        class="kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-600">
-                        <i class="ph-bold ph-users text-blue-600 text-sm"></i>
+                        class="kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700">
+                        <i class="ph-bold ph-users text-slate-700 text-sm"></i>
                         <span>Kop Surat Staf & Pelaksana</span>
                     </button>
                 </div>
                 <div class="text-[11px] text-slate-500 flex items-center gap-1.5 px-2">
-                    <i class="ph-bold ph-info text-blue-500 text-xs"></i>
+                    <i class="ph-bold ph-info text-slate-600 text-xs"></i>
                     <span>Kop surat otomatis disesuaikan berdasarkan jenis SPT/SPJ saat cetak dokumen.</span>
                 </div>
             </div>
@@ -674,12 +674,12 @@
         </div>
 
         <!-- Sticky Footer Save -->
-        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
             <div class="text-xs text-slate-500">
                 Semua perubahan template akan langsung berlaku pada pembuatan dan pencetakan dokumen SPJ.
             </div>
-            <button type="submit" class="px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 active:bg-blue-800 transition shadow-md shadow-blue-500/20 flex items-center gap-2">
-                <i class="ph-bold ph-floppy-disk text-base"></i>
+            <button type="submit" class="px-6 py-2.5 rounded-xl bg-slate-950 text-white text-xs font-bold hover:bg-slate-800 active:bg-slate-900 transition shadow-xs border border-slate-900 flex items-center gap-2 min-h-[44px]">
+                <i class="ph-bold ph-floppy-disk text-base text-amber-300"></i>
                 <span>Simpan Pengaturan</span>
             </button>
         </div>
@@ -687,11 +687,11 @@
 
     <!-- TAB 5: KELOLA MASTER DATA PEGAWAI (TAMBAH, EDIT, HAPUS) -->
     <div id="tab-content-pegawai" class="tab-pane hidden space-y-6">
-        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-5">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-5">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-4">
                 <div>
-                    <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-                        <i class="ph-bold ph-users text-blue-600 text-base"></i>
+                    <h2 class="text-sm font-bold text-slate-950 flex items-center gap-2">
+                        <i class="ph-bold ph-users text-slate-700 text-base"></i>
                         <span>Master Data Pegawai ASN</span>
                     </h2>
                     <p class="text-[11px] text-slate-500 mt-0.5">Kelola daftar pegawai ASN untuk pilihan pelaksana perjalanan dinas pada formulir SPJ.</p>
@@ -700,11 +700,11 @@
                     <div class="relative">
                         <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                         <input type="text" id="pegawaiSearchInput" onkeyup="filterPegawaiTable()" placeholder="Cari nama, NIP, jabatan..."
-                            class="pl-8 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none w-56 sm:w-64 bg-slate-50/50">
+                            class="pl-8 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:outline-none w-56 sm:w-64 bg-slate-50/50 min-h-[40px]">
                     </div>
                     <button type="button" onclick="openTambahPegawaiModal()"
-                        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-sm shadow-blue-500/20 cursor-pointer">
-                        <i class="ph-bold ph-user-plus text-sm"></i>
+                        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition shadow-2xs border border-slate-900 cursor-pointer min-h-[40px]">
+                        <i class="ph-bold ph-user-plus text-sm text-amber-300"></i>
                         <span>Tambah Pegawai</span>
                     </button>
                 </div>
@@ -718,6 +718,7 @@
                             <th class="py-3 px-3.5 text-center w-12">No</th>
                             <th class="py-3 px-4">Nama Lengkap & Gelar</th>
                             <th class="py-3 px-4">NIP / NIK</th>
+                            <th class="py-3 px-4">No. Rekening / Bank</th>
                             <th class="py-3 px-4">Pangkat / Golongan</th>
                             <th class="py-3 px-4">Jabatan</th>
                             <th class="py-3 px-4 text-center w-28">Aksi</th>
@@ -725,7 +726,7 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100" id="pegawaiTableBody">
                         {% for peg in pegawai_list %}
-                        <tr class="pegawai-row hover:bg-slate-50/80 transition" data-search="{{ (peg.nama ~ ' ' ~ (peg.nip or '') ~ ' ' ~ (peg.nik or '') ~ ' ' ~ (peg.pangkat or '') ~ ' ' ~ (peg.jabatan or ''))|lower }}">
+                        <tr class="pegawai-row hover:bg-slate-50/80 transition" data-search="{{ (peg.nama ~ ' ' ~ (peg.nip or '') ~ ' ' ~ (peg.nik or '') ~ ' ' ~ (peg.nomor_rekening or '') ~ ' ' ~ (peg.nama_bank or '') ~ ' ' ~ (peg.pangkat or '') ~ ' ' ~ (peg.jabatan or ''))|lower }}">
                             <td class="py-3 px-3.5 text-center text-slate-400 font-bold row-index">
                                 {{ loop.index }}
                             </td>
@@ -744,6 +745,10 @@
                                 {% if peg.nik %}
                                 <div class="text-[10px] text-slate-400">NIK: {{ peg.nik }}</div>
                                 {% endif %}
+                            </td>
+                            <td class="py-3 px-4 text-slate-700">
+                                <div class="font-mono font-medium text-slate-800">{{ peg.nomor_rekening or '-' }}</div>
+                                <div class="text-[10px] text-slate-500 font-semibold">{{ peg.nama_bank or 'BANK BENGKULU' }}</div>
                             </td>
                             <td class="py-3 px-4 text-slate-600">
                                 {% if peg.pangkat %}
@@ -766,6 +771,8 @@
                                         data-nik="{{ peg.nik or '' }}"
                                         data-pangkat="{{ peg.pangkat or '' }}"
                                         data-jabatan="{{ peg.jabatan or '' }}"
+                                        data-rekening="{{ peg.nomor_rekening or '' }}"
+                                        data-bank="{{ peg.nama_bank or 'BANK BENGKULU' }}"
                                         onclick="btnEditPegawaiClick(this)"
                                         class="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition" title="Edit Data Pegawai">
                                         <i class="ph-bold ph-pencil-simple text-sm"></i>
@@ -830,11 +837,21 @@
                     <input type="text" name="jabatan" placeholder="Kepala Bidang / Analis / Staf" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 </div>
             </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Bank</label>
+                    <input type="text" name="nama_bank" value="BANK BENGKULU" placeholder="BANK BENGKULU" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Rekening Bank</label>
+                    <input type="text" name="nomor_rekening" placeholder="Contoh: 2010206036635" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+            </div>
             <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button type="button" onclick="closeTambahPegawaiModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold transition">
+                <button type="button" onclick="closeTambahPegawaiModal()" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition min-h-[40px]">
                     Batal
                 </button>
-                <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-sm shadow-blue-500/20">
+                <button type="submit" class="px-5 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition shadow-xs border border-slate-900 min-h-[40px]">
                     Simpan Pegawai
                 </button>
             </div>
@@ -879,11 +896,21 @@
                     <input type="text" name="jabatan" id="edit_pegawai_jabatan" placeholder="Jabatan" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
                 </div>
             </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Bank</label>
+                    <input type="text" name="nama_bank" id="edit_pegawai_nama_bank" placeholder="BANK BENGKULU" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Rekening Bank</label>
+                    <input type="text" name="nomor_rekening" id="edit_pegawai_nomor_rekening" placeholder="Nomor Rekening" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+            </div>
             <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button type="button" onclick="closeEditPegawaiModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold transition">
+                <button type="button" onclick="closeEditPegawaiModal()" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition min-h-[40px]">
                     Batal
                 </button>
-                <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-sm shadow-blue-500/20">
+                <button type="submit" class="px-5 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition shadow-xs border border-slate-900 min-h-[40px]">
                     Perbarui Data Pegawai
                 </button>
             </div>
@@ -937,7 +964,7 @@ function switchTab(tabId) {
     document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
     // Reset all tab button styles
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('border-blue-600', 'text-blue-600');
+        btn.classList.remove('border-slate-950', 'text-slate-950', 'font-bold');
         btn.classList.add('border-transparent', 'text-slate-500');
     });
 
@@ -947,7 +974,7 @@ function switchTab(tabId) {
     const activeBtn = document.getElementById('tab-btn-' + tabId);
     if (activeBtn) {
         activeBtn.classList.remove('border-transparent', 'text-slate-500');
-        activeBtn.classList.add('border-blue-600', 'text-blue-600');
+        activeBtn.classList.add('border-slate-950', 'text-slate-950', 'font-bold');
     }
 
     // Toggle top save button visibility (hide on pegawai tab since it has its own CRUD)
@@ -978,13 +1005,13 @@ function switchKopType(type) {
     if (type === 'kadis') {
         sectionKadis.classList.remove('hidden');
         sectionStaf.classList.add('hidden');
-        btnKadis.className = 'kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-blue-600 text-white shadow-sm shadow-blue-500/20';
-        btnStaf.className = 'kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-600';
+        btnKadis.className = 'kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-950 text-white shadow-2xs border border-slate-900';
+        btnStaf.className = 'kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700';
     } else {
         sectionKadis.classList.add('hidden');
         sectionStaf.classList.remove('hidden');
-        btnStaf.className = 'kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-blue-600 text-white shadow-sm shadow-blue-500/20';
-        btnKadis.className = 'kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-600';
+        btnStaf.className = 'kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-950 text-white shadow-2xs border border-slate-900';
+        btnKadis.className = 'kop-subtab-btn px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700';
     }
 }
 
@@ -1141,16 +1168,20 @@ function btnEditPegawaiClick(btn) {
     const nik = btn.getAttribute('data-nik');
     const pangkat = btn.getAttribute('data-pangkat');
     const jabatan = btn.getAttribute('data-jabatan');
-    openEditPegawaiModal(id, nama, nip, nik, pangkat, jabatan);
+    const rekening = btn.getAttribute('data-rekening') || '';
+    const bank = btn.getAttribute('data-bank') || 'BANK BENGKULU';
+    openEditPegawaiModal(id, nama, nip, nik, pangkat, jabatan, rekening, bank);
 }
 
-function openEditPegawaiModal(id, nama, nip, nik, pangkat, jabatan) {
+function openEditPegawaiModal(id, nama, nip, nik, pangkat, jabatan, rekening, bank) {
     document.getElementById('formEditPegawai').action = '/pegawai/' + id + '/edit';
     document.getElementById('edit_pegawai_nama').value = nama;
     document.getElementById('edit_pegawai_nip').value = nip;
     document.getElementById('edit_pegawai_nik').value = nik;
     document.getElementById('edit_pegawai_pangkat').value = pangkat;
     document.getElementById('edit_pegawai_jabatan').value = jabatan;
+    document.getElementById('edit_pegawai_nomor_rekening').value = rekening || '';
+    document.getElementById('edit_pegawai_nama_bank').value = bank || 'BANK BENGKULU';
     document.getElementById('modalEditPegawai').classList.remove('hidden');
 }
 function closeEditPegawaiModal() {

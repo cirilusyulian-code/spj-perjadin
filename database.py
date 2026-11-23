@@ -137,9 +137,61 @@ def init_db():
         nip TEXT,
         nik TEXT,
         pangkat TEXT,
-        jabatan TEXT
+        jabatan TEXT,
+        nomor_rekening TEXT,
+        nama_bank TEXT DEFAULT 'BANK BENGKULU'
     )
     ''')
+
+    # Ensure migration columns for pegawai exist
+    cursor.execute("PRAGMA table_info(pegawai)")
+    pegawai_cols = [c[1] for c in cursor.fetchall()]
+    if 'nomor_rekening' not in pegawai_cols:
+        cursor.execute("ALTER TABLE pegawai ADD COLUMN nomor_rekening TEXT")
+    if 'nama_bank' not in pegawai_cols:
+        cursor.execute("ALTER TABLE pegawai ADD COLUMN nama_bank TEXT DEFAULT 'BANK BENGKULU'")
+
+    # Sinkronisasi / Migrasi data nomor rekening dari file Excel Gaji Agustus 2026
+    rekening_map = {
+        '197209202005021001': ('2010206036635', 'BANK BENGKULU'),
+        '197411102010012002': ('2010206008766', 'BANK BENGKULU'),
+        '198408242009042001': ('2010206024253', 'BANK BENGKULU'),
+        '198003192002122001': ('2010206018369', 'BANK BENGKULU'),
+        '197304012005022004': ('2010206018281', 'BANK BENGKULU'),
+        '197208262006041002': ('2010206021627', 'BANK BENGKULU'),
+        '197101201997031004': ('2010206007724', 'BANK BENGKULU'),
+        '197505201996031002': ('2010206009708', 'BANK BENGKULU'),
+        '197904062007012022': ('2010206005233', 'BANK BENGKULU'),
+        '199212222022031010': ('2010206043241', 'BANK BENGKULU'),
+        '198612192006042002': ('2010206036090', 'BANK BENGKULU'),
+        '198112132009041001': ('2010204030575', 'BANK BENGKULU'),
+        '198208102002122003': ('2010206005568', 'BANK BENGKULU'),
+        '199607132022031010': ('2010206043716', 'BANK BENGKULU'),
+        '198411292009041001': ('2010204036396', 'BANK BENGKULU'),
+        '197407172006042027': ('2010206018395', 'BANK BENGKULU'),
+        '198203252009042001': ('2010206016611', 'BANK BENGKULU'),
+        '197609022006041016': ('2010206022413', 'BANK BENGKULU'),
+        '198609222014102001': ('2010206036333', 'BANK BENGKULU'),
+    }
+
+    excel_gaji_path = r"D:\CAPIL\BENDAHARA 2026\GAJI PNS\8. Agustus\Gaji Dinas Dukcapil Bulan Agustus 2026.xlsx"
+    if os.path.exists(excel_gaji_path):
+        try:
+            import openpyxl
+            wb_gaji = openpyxl.load_workbook(excel_gaji_path, data_only=True)
+            ws_gaji = wb_gaji.active
+            for r in range(2, ws_gaji.max_row + 1):
+                nip_cell = ws_gaji.cell(r, 1).value
+                bank_cell = ws_gaji.cell(r, 20).value
+                rek_cell = ws_gaji.cell(r, 21).value
+                if nip_cell and rek_cell:
+                    clean_nip = str(nip_cell).strip().replace(' ', '')
+                    rekening_map[clean_nip] = (str(rek_cell).strip(), str(bank_cell or 'BANK BENGKULU').strip())
+        except Exception as e:
+            print(f"[WARN] Baca Excel Gaji: {e}")
+
+    for nip, (rek, bank) in rekening_map.items():
+        cursor.execute("UPDATE pegawai SET nomor_rekening = ?, nama_bank = ? WHERE REPLACE(nip, ' ', '') = ? AND (nomor_rekening IS NULL OR nomor_rekening = '')", (rek, bank, nip))
 
     # Migration: Pastikan nomor_spt dan nomor_sppd menggunakan spasi non-breaking
     cursor.execute("SELECT id, nomor_spt, nomor_sppd FROM spj WHERE nomor_spt LIKE '% %' OR nomor_sppd LIKE '% %'")
@@ -263,25 +315,42 @@ def get_pegawai_by_id(pegawai_id):
     conn.close()
     return row
 
-def add_pegawai(nama, nip='', nik='', pangkat='', jabatan=''):
+def add_pegawai(nama, nip='', nik='', pangkat='', jabatan='', nomor_rekening='', nama_bank='BANK BENGKULU'):
     conn = get_db()
     cursor = conn.cursor()
     cursor.execute('''
-    INSERT INTO pegawai (nama, nip, nik, pangkat, jabatan)
-    VALUES (?, ?, ?, ?, ?)
-    ''', (nama.strip(), (nip or '').strip(), (nik or '').strip(), (pangkat or '').strip(), (jabatan or '').strip()))
+    INSERT INTO pegawai (nama, nip, nik, pangkat, jabatan, nomor_rekening, nama_bank)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', (
+        nama.strip(),
+        (nip or '').strip(),
+        (nik or '').strip(),
+        (pangkat or '').strip(),
+        (jabatan or '').strip(),
+        (nomor_rekening or '').strip(),
+        (nama_bank or 'BANK BENGKULU').strip()
+    ))
     new_id = cursor.lastrowid
     conn.commit()
     conn.close()
     return new_id
 
-def update_pegawai(pegawai_id, nama, nip='', nik='', pangkat='', jabatan=''):
+def update_pegawai(pegawai_id, nama, nip='', nik='', pangkat='', jabatan='', nomor_rekening='', nama_bank='BANK BENGKULU'):
     conn = get_db()
     conn.execute('''
     UPDATE pegawai
-    SET nama = ?, nip = ?, nik = ?, pangkat = ?, jabatan = ?
+    SET nama = ?, nip = ?, nik = ?, pangkat = ?, jabatan = ?, nomor_rekening = ?, nama_bank = ?
     WHERE id = ?
-    ''', (nama.strip(), (nip or '').strip(), (nik or '').strip(), (pangkat or '').strip(), (jabatan or '').strip(), pegawai_id))
+    ''', (
+        nama.strip(),
+        (nip or '').strip(),
+        (nik or '').strip(),
+        (pangkat or '').strip(),
+        (jabatan or '').strip(),
+        (nomor_rekening or '').strip(),
+        (nama_bank or 'BANK BENGKULU').strip(),
+        pegawai_id
+    ))
     conn.commit()
     conn.close()
 

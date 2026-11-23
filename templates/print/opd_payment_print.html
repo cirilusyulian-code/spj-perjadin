@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>OPD Payment - {{ spj.nomor_spt }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}?v={{ APP_VERSION }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        @page {
+            size: 330mm 215mm;
+            margin: 1.2cm 1.2cm 1.2cm 1.2cm;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            font-family: Calibri, Arial, sans-serif;
+            color: #000;
+        }
+
+        .sheet-landscape {
+            width: 330mm;
+            min-height: 215mm;
+            padding: 1.2cm;
+            background: #fff;
+            margin: 20px auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            box-sizing: border-box;
+        }
+
+        .tabel-opd {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9pt;
+            border: 1px solid #000;
+        }
+
+        .tabel-opd th,
+        .tabel-opd td {
+            border: 1px solid #000;
+            padding: 4px 5px;
+            vertical-align: middle;
+        }
+
+        .tabel-opd th {
+            font-weight: bold;
+            text-align: center;
+            background-color: #fff;
+            font-size: 9pt;
+            text-transform: uppercase;
+        }
+
+        .ttd-box-opd {
+            width: 100%;
+            margin-top: 35px;
+            page-break-inside: avoid !important;
+        }
+
+        .ttd-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: none;
+        }
+
+        .ttd-table td {
+            border: none;
+            text-align: center;
+            vertical-align: top;
+            padding: 0;
+            font-size: 10pt;
+            line-height: 1.4;
+        }
+
+        @media print {
+            @page {
+                size: 330mm 215mm;
+                margin: 1.2cm;
+            }
+
+            body {
+                background: #fff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .sheet-landscape {
+                width: 100% !important;
+                min-height: auto !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="py-6">
+
+    <!-- Control Bar (No Print) -->
+    <div
+        class="no-print max-w-5xl mx-3 sm:mx-auto mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-xl shadow border border-slate-200">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-700">
+            <a href="{{ url_for('spj_detail', spj_id=spj.id) }}"
+                class="text-blue-600 hover:underline flex items-center gap-1">
+                <i class="ph ph-arrow-left"></i> Kembali ke Detail SPJ
+            </a>
+            <span>•</span>
+            <span class="text-slate-500">Pratinjau Cetak: OPD Payment (Format Bank Bengkulu)</span>
+            <span
+                class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-[11px] font-bold border border-blue-200">Ukuran
+                F4 / Folio Landscape</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <a href="{{ url_for('export_excel_opd_payment', spj_id=spj.id) }}"
+                class="px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition">
+                <i class="ph-bold ph-file-xls text-base"></i>
+                <span>Unduh Excel (.xlsx)</span>
+            </a>
+            <button onclick="window.print()"
+                class="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow flex items-center justify-center gap-1.5">
+                <i class="ph-bold ph-printer text-base"></i>
+                <span>Cetak / Simpan PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sheet F4 Landscape -->
+    <div class="sheet-landscape">
+        {% set tujuan_str = spj.instansi_tujuan or spj.tujuan or 'Dinas' %}
+        {% set tgl_rentang = format_rentang_tanggal(spj.tanggal_berangkat, spj.tanggal_pulang) %}
+        {% set keterangan_def = "SPPD ke " ~ tujuan_str ~ " " ~ tgl_rentang %}
+        {% set target_peserta = peserta if peserta else [{'nama': s.pejabat_kadis_nama, 'nip': s.pejabat_kadis_nip,
+        'nomor_rekening': ''}] %}
+
+        <table class="tabel-opd">
+            <thead>
+                <tr>
+                    <th style="width: 28px;">NO</th>
+                    <th style="width: 130px;">NO. REKENING TUJUAN</th>
+                    <th style="width: 170px;">NAMA REKENING TUJUAN</th>
+                    <th>KETERANGAN</th>
+                    <th style="width: 80px;">ID_BILLING</th>
+                    <th style="width: 90px;">BRUTO</th>
+                    <th style="width: 90px;">NETTO</th>
+                    <th style="width: 48px;">PPD</th>
+                    <th style="width: 48px;">PPN</th>
+                    <th style="width: 58px;">PPH 21</th>
+                    <th style="width: 58px;">PPH 22</th>
+                    <th style="width: 52px;">PPH23</th>
+                    <th style="width: 50px;">PPH4</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set ns = namespace(total_bruto=0, total_netto=0) %}
+                {% for p in target_peserta %}
+                {% set ns_sub = namespace(total=0) %}
+                {% for b in biaya %}
+                {% if b.peserta_nama == p.nama or not b.peserta_nama or target_peserta|length == 1 %}
+                {% set ns_sub.total = ns_sub.total + (b.total or 0) %}
+                {% endif %}
+                {% endfor %}
+                {% set ns.total_bruto = ns.total_bruto + ns_sub.total %}
+                {% set ns.total_netto = ns.total_netto + ns_sub.total %}
+                <tr>
+                    <td style="text-align: center;">{{ loop.index }}</td>
+                    <td style="text-align: center; font-family: Arial, monospace; font-size: 8.5pt;">{{ p.nomor_rekening
+                        or '-' }}</td>
+                    <td style="text-align: left; font-weight: 500;">{{ p.nama }}</td>
+                    <td style="text-align: left;">{{ keterangan_def }}</td>
+                    <td style="text-align: center; color: #888;">-</td>
+                    <td style="text-align: right;">{{ format_rupiah(ns_sub.total) }}</td>
+                    <td style="text-align: right;">{{ format_rupiah(ns_sub.total) }}</td>
+                    <td style="text-align: right; color: #888;">-</td>
+                    <td style="text-align: right; color: #888;">-</td>
+                    <td style="text-align: right; color: #888;">-</td>
+                    <td style="text-align: right; color: #888;">-</td>
+                    <td style="text-align: right; color: #888;">-</td>
+                    <td style="text-align: right; color: #888;">-</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Tanda Tangan: 3 Kolom Sesuai Excel OPD Payment -->
+        <div class="ttd-box-opd">
+            <table class="ttd-table">
+                <tr>
+                    <td style="width: 33%;">
+                        <div>Kepala Dinas</div>
+                        <div style="height: 65px;"></div>
+                        <div style="font-weight: bold;">{{ s.pejabat_kadis_nama | upper }}</div>
+                        <div>NIP {{ s.pejabat_kadis_nip }}</div>
+                    </td>
+                    <td style="width: 34%;">
+                        <div>Pejabat Pemeriksa Keuangan</div>
+                        <div style="height: 65px;"></div>
+                        <div style="font-weight: bold;">{{ (s.pejabat_pptk_nama or s.pejabat_ppk_nama) | upper }}</div>
+                        <div>NIP {{ s.pejabat_pptk_nip or s.pejabat_ppk_nip }}</div>
+                    </td>
+                    <td style="width: 33%;">
+                        <div>Bendahara Pengeluaran</div>
+                        <div style="height: 65px;"></div>
+                        <div style="font-weight: bold;">{{ s.pejabat_bendahara_nama | upper }}</div>
+                        <div>NIP {{ s.pejabat_bendahara_nip }}</div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</body>
+
+</html>

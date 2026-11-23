@@ -8,112 +8,114 @@
     <!-- Top Greeting & Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 sm:mb-8">
         <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
                 <span>Dashboard SPJ Perjalanan Dinas</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200">2026</span>
             </h1>
             <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                Kelola Surat Perintah Tugas (SPT), SPPD, dan Dokumen Pertanggungjawaban Keuangan.
+                Penyusunan Surat Tugas, SPPD, dan Berkas Pertanggungjawaban Keuangan.
             </p>
         </div>
-        <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
-            <a href="{{ url_for('blanko_sppd') }}" target="_blank" class="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-700 text-xs sm:text-sm font-medium hover:bg-slate-50 hover:text-blue-600 transition shadow-sm text-center flex-1 sm:flex-initial" title="Cetak / Buka Blanko SPPD Kosong (PDF)">
-                <i class="ph-bold ph-printer text-sm sm:text-base text-blue-600"></i>
+        <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5 w-full sm:w-auto">
+            <a href="{{ url_for('blanko_sppd') }}" target="_blank" class="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-300/80 bg-white text-slate-700 text-xs font-semibold hover:bg-slate-50 hover:text-slate-900 transition shadow-xs flex-1 sm:flex-initial" title="Cetak / Buka Blanko SPPD Kosong (PDF)">
+                <i class="ph-bold ph-printer text-base text-slate-500"></i>
                 <span>Blanko SPPD</span>
             </a>
-            <a href="{{ url_for('settings_view') }}" class="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-700 text-xs sm:text-sm font-medium hover:bg-slate-50 transition shadow-sm text-center flex-1 sm:flex-initial">
-                <i class="ph ph-sliders text-sm sm:text-base text-slate-500"></i>
+            <a href="{{ url_for('settings_view') }}" class="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-300/80 bg-white text-slate-700 text-xs font-semibold hover:bg-slate-50 hover:text-slate-900 transition shadow-xs flex-1 sm:flex-initial">
+                <i class="ph ph-sliders text-base text-slate-500"></i>
                 <span>Pengaturan</span>
             </a>
-            <a href="{{ url_for('spj_create') }}" class="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-blue-600 text-white text-xs sm:text-sm font-semibold hover:bg-blue-700 active:bg-blue-800 transition shadow-md shadow-blue-500/20 text-center w-full sm:w-auto">
-                <i class="ph-bold ph-plus text-sm sm:text-base"></i>
-                <span>Buat SPJ</span>
+            <a href="{{ url_for('spj_create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 active:bg-slate-950 transition shadow-sm border border-slate-800 text-center w-full sm:w-auto">
+                <i class="ph-bold ph-plus text-base text-emerald-400"></i>
+                <span>Buat SPJ Baru</span>
             </a>
         </div>
     </div>
 
     <!-- Statistics Cards (2 Cols on Phone, 4 on Desktop) -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-6 sm:mb-8">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         <!-- Total SPJ -->
-        <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between sm:flex-row sm:items-center">
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between sm:flex-row sm:items-center">
             <div>
-                <div class="text-[10px] sm:text-xs font-semibold uppercase text-slate-500 tracking-wider">Total SPJ</div>
-                <div class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-0.5 sm:mt-1">{{ total_spj }}</div>
-                <div class="text-[10px] sm:text-xs text-slate-400 mt-0.5">Penugasan</div>
+                <div class="text-[10px] sm:text-[11px] font-bold uppercase text-slate-500 tracking-wider">Total Penugasan</div>
+                <div class="text-xl sm:text-2xl font-bold font-mono text-slate-900 mt-1 tabular-nums">{{ total_spj }}</div>
+                <div class="text-[10px] sm:text-xs text-slate-400 mt-0.5">Surat Tugas SPJ</div>
             </div>
-            <div class="w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg sm:text-2xl mt-2 sm:mt-0 self-end sm:self-auto">
+            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center text-xl mt-2 sm:mt-0 self-end sm:self-auto">
                 <i class="ph-bold ph-files"></i>
             </div>
         </div>
 
         <!-- Total Anggaran -->
-        <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between sm:flex-row sm:items-center">
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between sm:flex-row sm:items-center">
             <div>
-                <div class="text-[10px] sm:text-xs font-semibold uppercase text-slate-500 tracking-wider">Total Realisasi</div>
-                <div class="text-sm sm:text-xl font-extrabold text-emerald-600 mt-0.5 sm:mt-1 truncate max-w-[130px] sm:max-w-none">{{ format_rupiah(total_biaya) }}</div>
-                <div class="text-[10px] sm:text-xs text-slate-400 mt-0.5">Akumulasi biaya</div>
+                <div class="text-[10px] sm:text-[11px] font-bold uppercase text-slate-500 tracking-wider">Total Realisasi</div>
+                <div class="text-sm sm:text-lg font-bold font-mono text-emerald-700 mt-1 truncate max-w-[130px] sm:max-w-none tabular-nums">{{ format_rupiah(total_biaya) }}</div>
+                <div class="text-[10px] sm:text-xs text-slate-400 mt-0.5">Akumulasi Biaya Riil</div>
             </div>
-            <div class="w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg sm:text-2xl mt-2 sm:mt-0 self-end sm:self-auto">
+            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center text-xl mt-2 sm:mt-0 self-end sm:self-auto">
                 <i class="ph-bold ph-money"></i>
             </div>
         </div>
 
         <!-- SPT Kepala Dinas -->
-        <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between sm:flex-row sm:items-center">
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between sm:flex-row sm:items-center">
             <div>
-                <div class="text-[10px] sm:text-xs font-semibold uppercase text-slate-500 tracking-wider">SPT Kadis</div>
-                <div class="text-xl sm:text-2xl font-extrabold text-indigo-700 mt-0.5 sm:mt-1">{{ spj_kadis }}</div>
-                <div class="text-[10px] sm:text-xs text-slate-400 mt-0.5">Format Kadis</div>
+                <div class="text-[10px] sm:text-[11px] font-bold uppercase text-slate-500 tracking-wider">Format Kadis</div>
+                <div class="text-xl sm:text-2xl font-bold font-mono text-indigo-700 mt-1 tabular-nums">{{ spj_kadis }}</div>
+                <div class="text-[10px] sm:text-xs text-slate-400 mt-0.5">SPT Kepala Dinas</div>
             </div>
-            <div class="w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg sm:text-2xl mt-2 sm:mt-0 self-end sm:self-auto">
-                <i class="ph-bold ph-user-circle-gear"></i>
+            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center text-xl mt-2 sm:mt-0 self-end sm:self-auto">
+                <i class="ph-bold ph-crown"></i>
             </div>
         </div>
 
         <!-- SPT Staf -->
-        <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between sm:flex-row sm:items-center">
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between sm:flex-row sm:items-center">
             <div>
-                <div class="text-[10px] sm:text-xs font-semibold uppercase text-slate-500 tracking-wider">SPT Staf</div>
-                <div class="text-xl sm:text-2xl font-extrabold text-amber-600 mt-0.5 sm:mt-1">{{ spj_staf }}</div>
-                <div class="text-[10px] sm:text-xs text-slate-400 mt-0.5">Format Staf/Tim</div>
+                <div class="text-[10px] sm:text-[11px] font-bold uppercase text-slate-500 tracking-wider">Format Staf</div>
+                <div class="text-xl sm:text-2xl font-bold font-mono text-amber-700 mt-1 tabular-nums">{{ spj_staf }}</div>
+                <div class="text-[10px] sm:text-xs text-slate-400 mt-0.5">SPT Staf & Pelaksana</div>
             </div>
-            <div class="w-8 h-8 sm:w-12 sm:h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg sm:text-2xl mt-2 sm:mt-0 self-end sm:self-auto">
-                <i class="ph-bold ph-users-three"></i>
+            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center text-xl mt-2 sm:mt-0 self-end sm:self-auto">
+                <i class="ph-bold ph-users"></i>
             </div>
         </div>
     </div>
 
     <!-- Template Support Overview Banner -->
-    <div class="bg-gradient-to-r from-slate-900 to-blue-950 text-white rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8 shadow-lg border border-slate-800">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6">
+    <div class="bg-slate-950 text-white rounded-2xl p-5 sm:p-6 mb-6 sm:mb-8 shadow-xs border border-slate-800">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 sm:gap-6">
             <div class="space-y-1.5 sm:space-y-2">
-                <div class="inline-flex items-center gap-1.5 bg-blue-500/20 text-blue-300 text-[11px] px-2.5 py-0.5 rounded-full border border-blue-400/30">
-                    <i class="ph-fill ph-file-doc"></i> Template Dokumen Siap Cetak
+                <div class="inline-flex items-center gap-1.5 bg-slate-800 text-slate-200 text-[10px] font-semibold px-2.5 py-0.5 rounded-md border border-slate-700">
+                    <i class="ph-fill ph-file-text text-amber-400"></i> Otomatisasi Terpadu
                 </div>
-                <h3 class="text-base sm:text-lg font-bold text-white">Satu Input Formulir Menghasilkan 6 Dokumen Lengkap</h3>
-                <p class="text-xs text-slate-300 max-w-2xl leading-relaxed">
-                    Setiap SPJ otomatis membuat: <strong>Surat Perintah Tugas (SPT)</strong>, <strong>Surat Perjalanan Dinas (SPD per orang)</strong>, <strong>Daftar Pengeluaran Riil</strong>, <strong>Kwitansi Pembayaran</strong>, <strong>Rincian Biaya Perjadin</strong>, dan <strong>Laporan Hasil Perjadin</strong>.
+                <h3 class="text-base sm:text-lg font-bold text-white tracking-tight">Satu Input Formulir Menghasilkan 7 Dokumen SPJ Lengkap</h3>
+                <p class="text-xs text-slate-400 max-w-2xl leading-relaxed">
+                    Setiap SPJ otomatis membuat: Surat Tugas (SPT), SPD Per Orang, Daftar Pengeluaran Riil, Kwitansi Resmi, Rincian Biaya, Laporan Hasil, dan Dokumen Transfer <strong>OPD Payment Bank Bengkulu</strong>.
                 </p>
             </div>
             <div class="flex flex-wrap gap-1.5 sm:gap-2">
-                <span class="bg-slate-800/80 border border-slate-700 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
-                    <i class="ph-bold ph-check text-emerald-400"></i> SPT (Kadis/Staf)
+                <span class="bg-slate-900 border border-slate-800 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
+                    <i class="ph-bold ph-check text-emerald-400"></i> 1. SPT
                 </span>
-                <span class="bg-slate-800/80 border border-slate-700 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
-                    <i class="ph-bold ph-check text-emerald-400"></i> SPD (Per Orang)
+                <span class="bg-slate-900 border border-slate-800 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
+                    <i class="ph-bold ph-check text-emerald-400"></i> 2. SPD
                 </span>
-                <span class="bg-slate-800/80 border border-slate-700 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
-                    <i class="ph-bold ph-check text-emerald-400"></i> Pengeluaran Riil
+                <span class="bg-slate-900 border border-slate-800 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
+                    <i class="ph-bold ph-check text-emerald-400"></i> 3. Riil
                 </span>
-                <span class="bg-slate-800/80 border border-slate-700 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
-                    <i class="ph-bold ph-check text-emerald-400"></i> Kwitansi Resmi
+                <span class="bg-slate-900 border border-slate-800 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
+                    <i class="ph-bold ph-check text-emerald-400"></i> 4. Kwitansi
                 </span>
-                <span class="bg-slate-800/80 border border-slate-700 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
-                    <i class="ph-bold ph-check text-emerald-400"></i> Rincian Biaya
+                <span class="bg-slate-900 border border-slate-800 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
+                    <i class="ph-bold ph-check text-emerald-400"></i> 5. Rincian
                 </span>
-                <span class="bg-slate-800/80 border border-slate-700 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
-                    <i class="ph-bold ph-check text-emerald-400"></i> Laporan
+                <span class="bg-slate-900 border border-slate-800 text-slate-200 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1">
+                    <i class="ph-bold ph-check text-emerald-400"></i> 6. Laporan
                 </span>
-                    <i class="ph-bold ph-check text-emerald-400"></i> Laporan
+                <span class="bg-slate-900 border border-slate-800 text-emerald-300 text-[11px] px-2.5 py-1 rounded-lg flex items-center gap-1 font-semibold">
+                    <i class="ph-bold ph-check text-emerald-400"></i> 7. OPD Payment
                 </span>
             </div>
         </div>

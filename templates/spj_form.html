@@ -8,12 +8,12 @@
     <!-- Header -->
     <div class="mb-6 flex items-center justify-between">
         <div>
-            <div class="flex items-center gap-2 text-xs text-blue-600 font-semibold uppercase tracking-wider mb-1">
-                <a href="{{ url_for('spj_list') }}" class="hover:underline flex items-center gap-1">
+            <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider mb-1">
+                <a href="{{ url_for('spj_list') }}" class="text-slate-500 hover:text-slate-900 flex items-center gap-1 transition">
                     <i class="ph ph-arrow-left"></i> Kembali ke Daftar
                 </a>
             </div>
-            <h1 class="text-2xl font-bold text-slate-900 tracking-tight">
+            <h1 class="text-2xl font-bold text-slate-950 tracking-tight">
                 {% if spj %}Edit Dokumen SPJ Perjalanan Dinas{% else %}Formulir Pembuatan SPJ Perjalanan Dinas{% endif %}
             </h1>
             <p class="text-xs text-slate-500 mt-1">Lengkapi informasi dasar, pelaksana, dan rincian biaya penugasan.</p>
@@ -22,48 +22,54 @@
 
     <form method="POST" id="spjForm" class="space-y-8">
         <!-- 1. Tipe SPT & Administrasi -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
-            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
-                <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">1</span>
-                Tipe Surat Perintah Tugas (SPT) & Nomor Surat
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-md bg-slate-950 text-white flex items-center justify-center text-xs font-mono font-bold">1</span>
+                <span>Tipe Surat Perintah Tugas (SPT) & Nomor Surat</span>
             </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Radio Tipe SPT -->
                 <div class="col-span-1 md:col-span-2">
-                    <label class="block text-xs font-semibold text-slate-700 mb-2">Pilih Tipe Template SPT:</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Tipe Template SPT:</label>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <label class="relative flex items-center p-3.5 rounded-xl border border-slate-300 cursor-pointer hover:bg-slate-50 transition has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50/50 has-[:checked]:ring-1 has-[:checked]:ring-blue-600">
-                            <input type="radio" name="jenis_spt" value="kadis" {% if (spj and spj.jenis_spt == 'kadis') or (not spj and request.args.get('jenis') == 'kadis') %}checked{% endif %} class="text-blue-600 focus:ring-blue-500">
+                        <label class="relative flex items-center p-3.5 rounded-xl border border-slate-300 cursor-pointer hover:bg-slate-50/80 transition has-[:checked]:border-slate-950 has-[:checked]:bg-slate-50 has-[:checked]:ring-1 has-[:checked]:ring-slate-950">
+                            <input type="radio" name="jenis_spt" value="kadis" {% if (spj and spj.jenis_spt == 'kadis') or (not spj and request.args.get('jenis') == 'kadis') %}checked{% endif %} class="text-slate-950 focus:ring-slate-950">
                             <div class="ml-3">
-                                <div class="text-xs font-bold text-slate-900">SPT Kepala Dinas</div>
-                                <div class="text-[11px] text-slate-500">Penugasan mandiri / disposisi pimpinan daerah untuk Kepala Dinas</div>
+                                <div class="text-xs font-bold text-slate-950 flex items-center gap-1.5">
+                                    <span>SPT Kepala Dinas</span>
+                                    <span class="text-[10px] font-bold px-1.5 py-0.2 rounded bg-slate-900 text-amber-300">Kadis</span>
+                                </div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">Penugasan mandiri / disposisi pimpinan daerah untuk Kepala Dinas</div>
                             </div>
                         </label>
-                        <label class="relative flex items-center p-3.5 rounded-xl border border-slate-300 cursor-pointer hover:bg-slate-50 transition has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50/50 has-[:checked]:ring-1 has-[:checked]:ring-blue-600">
-                            <input type="radio" name="jenis_spt" value="staf" {% if (spj and spj.jenis_spt == 'staf') or (not spj and request.args.get('jenis') != 'kadis') %}checked{% endif %} class="text-blue-600 focus:ring-blue-500">
+                        <label class="relative flex items-center p-3.5 rounded-xl border border-slate-300 cursor-pointer hover:bg-slate-50/80 transition has-[:checked]:border-slate-950 has-[:checked]:bg-slate-50 has-[:checked]:ring-1 has-[:checked]:ring-slate-950">
+                            <input type="radio" name="jenis_spt" value="staf" {% if (spj and spj.jenis_spt == 'staf') or (not spj and request.args.get('jenis') != 'kadis') %}checked{% endif %} class="text-slate-950 focus:ring-slate-950">
                             <div class="ml-3">
-                                <div class="text-xs font-bold text-slate-900">SPT Staf / Pejabat di Bawah Kadis</div>
-                                <div class="text-[11px] text-slate-500">Surat tugas ditandatangani oleh Kepala Dinas untuk staf/tim pelaksana</div>
+                                <div class="text-xs font-bold text-slate-950 flex items-center gap-1.5">
+                                    <span>SPT Staf / Pejabat di Bawah Kadis</span>
+                                    <span class="text-[10px] font-semibold px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 border border-slate-200">Staf</span>
+                                </div>
+                                <div class="text-[11px] text-slate-500 mt-0.5">Surat tugas ditandatangani oleh Kepala Dinas untuk staf/tim pelaksana</div>
                             </div>
                         </label>
                     </div>
                 </div>
 
                 <!-- Input Khusus Penandatangan SPT Kepala Dinas -->
-                <div id="sectionPenandatanganKadis" class="col-span-1 md:col-span-2 p-4 bg-indigo-50/70 border border-indigo-200 rounded-xl space-y-3 transition-all" style="display: none;">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-indigo-100 pb-2">
+                <div id="sectionPenandatanganKadis" class="col-span-1 md:col-span-2 p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3 transition-all" style="display: none;">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-2">
                         <div class="flex items-center gap-2">
-                            <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs shadow-xs">
-                                <i class="ph-bold ph-pen-nib"></i>
+                            <span class="w-6 h-6 rounded-md bg-slate-950 text-white flex items-center justify-center text-xs shadow-2xs">
+                                <i class="ph-bold ph-pen-nib text-amber-300"></i>
                             </span>
-                            <span class="text-xs font-bold text-indigo-950 uppercase tracking-wider">Pejabat Penandatangan SPT Kepala Dinas</span>
+                            <span class="text-xs font-bold text-slate-950 uppercase tracking-wider">Pejabat Penandatangan SPT Kepala Dinas</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span class="text-[10px] font-semibold bg-indigo-100/80 text-indigo-700 px-2.5 py-0.5 rounded-full border border-indigo-200">
+                            <span class="text-[10px] font-semibold bg-slate-200 text-slate-800 px-2.5 py-0.5 rounded-md border border-slate-300">
                                 Ditandatangani oleh Atasan (Bupati / Sekda)
                             </span>
-                            <button type="button" onclick="resetTtdKadisDefault()" class="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 underline">
+                            <button type="button" onclick="resetTtdKadisDefault()" class="text-[11px] font-semibold text-slate-700 hover:text-slate-950 underline">
                                 Reset ke Default Pengaturan
                             </button>
                         </div>
@@ -76,32 +82,32 @@
                             <label class="block text-[11px] font-semibold text-slate-700 mb-1">Atas Nama (a.n.)</label>
                             <input type="text" id="ttd_an" name="spt_penandatangan_an" value="{{ spj.spt_penandatangan_an if (spj and spj.spt_penandatangan_an is not none) else default_ttd_kadis_an }}"
                                 placeholder="Contoh: a.n. Bupati Kepahiang"
-                                class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
+                                class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-white">
                             <span class="text-[10px] text-slate-400">Kosongkan jika Bupati langsung</span>
                         </div>
                         <div>
                             <label class="block text-[11px] font-semibold text-slate-700 mb-1">Jabatan Resmi *</label>
                             <input type="text" id="ttd_jabatan" name="spt_penandatangan_jabatan" value="{{ spj.spt_penandatangan_jabatan if spj and spj.spt_penandatangan_jabatan else default_ttd_kadis_jabatan }}"
                                 placeholder="Contoh: Sekretaris Daerah"
-                                class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
+                                class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-white">
                         </div>
                         <div>
                             <label class="block text-[11px] font-semibold text-slate-700 mb-1">Nama Lengkap & Gelar *</label>
                             <input type="text" id="ttd_nama" name="spt_penandatangan_nama" value="{{ spj.spt_penandatangan_nama if spj and spj.spt_penandatangan_nama else default_ttd_kadis_nama }}"
                                 placeholder="Nama Pejabat"
-                                class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
+                                class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-white">
                         </div>
                         <div>
                             <label class="block text-[11px] font-semibold text-slate-700 mb-1">Pangkat / Golongan</label>
                             <input type="text" id="ttd_pangkat" name="spt_penandatangan_pangkat" value="{{ spj.spt_penandatangan_pangkat if spj and spj.spt_penandatangan_pangkat else default_ttd_kadis_pangkat }}"
                                 placeholder="Contoh: Pembina Utama Madya (IV/d)"
-                                class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
+                                class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-white">
                         </div>
                         <div>
                             <label class="block text-[11px] font-semibold text-slate-700 mb-1">NIP Penandatangan</label>
                             <input type="text" id="ttd_nip" name="spt_penandatangan_nip" value="{{ spj.spt_penandatangan_nip if spj and spj.spt_penandatangan_nip else default_ttd_kadis_nip }}"
                                 placeholder="19XXXXXXXX XXXXXX X XXX"
-                                class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white">
+                                class="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-white">
                         </div>
                     </div>
                 </div>
@@ -110,10 +116,10 @@
                 <div>
                     <div class="flex items-center justify-between mb-1">
                         <label class="block text-xs font-semibold text-slate-700">Nomor Surat Perintah Tugas (SPT) *</label>
-                        <button type="button" onclick="document.getElementById('nomor_spt').value='800/      /Dukcapil-Kph/2026'" class="text-[11px] text-blue-600 hover:text-blue-800 font-medium">Reset ke Format Baku</button>
+                        <button type="button" onclick="document.getElementById('nomor_spt').value='800/      /Dukcapil-Kph/2026'" class="text-[11px] text-slate-600 hover:text-slate-950 font-medium underline">Reset ke Format Baku</button>
                     </div>
                     <input type="text" id="nomor_spt" name="nomor_spt" required value="{{ spj.nomor_spt if spj else default_nomor_spt }}"
-                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:outline-none"
                         placeholder="Contoh: 800/      /Dukcapil-Kph/2026">
                     <p class="text-[10px] text-slate-400 mt-1">Format baku Dukcapil: <code>800/      /Dukcapil-Kph/2026</code> (spasi non-breaking dipertahankan saat dicetak)</p>
                 </div>
@@ -122,13 +128,13 @@
                 <div>
                     <div class="flex items-center justify-between mb-1">
                         <label class="block text-xs font-semibold text-slate-700">Tanggal SPT Dikeluarkan *</label>
-                        <button type="button" onclick="setTanggalSptHariIni()" class="text-[11px] text-blue-600 hover:text-blue-800 font-medium">Set Hari Ini</button>
+                        <button type="button" onclick="setTanggalSptHariIni()" class="text-[11px] text-slate-600 hover:text-slate-950 font-medium underline">Set Hari Ini</button>
                     </div>
                     <div class="relative">
                         <input type="text" id="tanggal_spt" name="tanggal_spt" required
                             value="{{ spj.tanggal_spt if (spj and spj.tanggal_spt) else (spj.tanggal_berangkat if spj else today_date) }}"
                             placeholder="dd/mm/yyyy"
-                            class="datepicker-dmy w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-medium text-slate-800 cursor-pointer">
+                            class="datepicker-dmy w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:outline-none bg-white font-medium text-slate-800 cursor-pointer">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                             <i class="ph-bold ph-calendar text-sm"></i>
                         </div>
@@ -140,10 +146,10 @@
                 <div class="col-span-1 md:col-span-2">
                     <div class="flex items-center justify-between mb-1">
                         <label class="block text-xs font-semibold text-slate-700">Nomor Surat Perintah Perjalanan Dinas (SPPD) *</label>
-                        <button type="button" onclick="document.getElementById('nomor_sppd').value='800/      /SPPD/Dukcapil-Kph/2026'" class="text-[11px] text-blue-600 hover:text-blue-800 font-medium">Reset ke Format Baku</button>
+                        <button type="button" onclick="document.getElementById('nomor_sppd').value='800/      /SPPD/Dukcapil-Kph/2026'" class="text-[11px] text-slate-600 hover:text-slate-950 font-medium underline">Reset ke Format Baku</button>
                     </div>
                     <input type="text" id="nomor_sppd" name="nomor_sppd" required value="{{ spj.nomor_sppd if spj else default_nomor_sppd }}"
-                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:outline-none"
                         placeholder="Contoh: 800/      /SPPD/Dukcapil-Kph/2026">
                     <p class="text-[10px] text-slate-400 mt-1">Format baku: <code>800/      /SPPD/Dukcapil-Kph/2026</code> (spasi non-breaking dipertahankan saat dicetak)</p>
                 </div>
@@ -151,10 +157,10 @@
         </div>
 
         <!-- 2. Tujuan & Maksud Perjalanan Dinas -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
-            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
-                <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">2</span>
-                Tujuan & Maksud Perjalanan Dinas
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-md bg-slate-950 text-white flex items-center justify-center text-xs font-mono font-bold">2</span>
+                <span>Tujuan & Maksud Perjalanan Dinas</span>
             </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -162,7 +168,7 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Kota / Daerah Tujuan *</label>
                     <input type="text" name="tujuan" required value="{{ spj.tujuan if spj else '' }}"
-                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:outline-none"
                         placeholder="Contoh: Jakarta Pusat / Surabaya / Bandung">
                 </div>
 
@@ -170,7 +176,7 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Instansi / Lokasi yang Dituju</label>
                     <input type="text" name="instansi_tujuan" value="{{ spj.instansi_tujuan if spj else '' }}"
-                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:outline-none"
                         placeholder="Contoh: Kementerian Dalam Negeri RI / Hotel Mercure">
                 </div>
 
@@ -178,7 +184,7 @@
                 <div class="col-span-1 md:col-span-2">
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Maksud Perjalanan Dinas (Keperluan Penugasan) *</label>
                     <textarea name="maksud" rows="2" required
-                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:outline-none"
                         placeholder="Uraikan maksud perjalanan dinas secara lengkap...">{{ spj.maksud if spj else '' }}</textarea>
                 </div>
 
@@ -186,12 +192,12 @@
                 <div class="col-span-1 md:col-span-2">
                     <div class="flex items-center justify-between mb-1">
                         <label class="block text-xs font-semibold text-slate-700">Dasar Hukum / Surat Undangan Penugasan</label>
-                        <button type="button" onclick="resetDasarHukumDefault()" class="text-[11px] text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
+                        <button type="button" onclick="resetDasarHukumDefault()" class="text-[11px] text-slate-600 hover:text-slate-950 font-medium flex items-center gap-1 underline">
                             <i class="ph-bold ph-arrow-counter-clockwise"></i> Reset ke Format Baku
                         </button>
                     </div>
                     <textarea id="dasar_hukum" name="dasar_hukum" rows="2"
-                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:outline-none"
                         placeholder="Contoh: Surat Undangan Sekjen Kemendagri No: 005/123/SJ tanggal 10 Oktober 2026...">{{ spj.dasar_hukum if spj else default_dasar_hukum }}</textarea>
                     <p class="text-[10px] text-slate-400 mt-1">Mengikuti format klausul dasar pertimbangan SPT di menu Pengaturan</p>
                 </div>
@@ -199,10 +205,10 @@
         </div>
 
         <!-- 3. Jadwal Waktu & Transportasi -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
-            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
-                <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">3</span>
-                Waktu Pelaksanaan & Moda Transportasi
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-md bg-slate-950 text-white flex items-center justify-center text-xs font-mono font-bold">3</span>
+                <span>Waktu Pelaksanaan & Moda Transportasi</span>
             </h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -213,7 +219,7 @@
                         <input type="text" id="tgl_berangkat" name="tanggal_berangkat" required
                             value="{{ spj.tanggal_berangkat if spj else today_date }}"
                             placeholder="dd/mm/yyyy"
-                            class="datepicker-dmy w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-medium text-slate-800 cursor-pointer">
+                            class="datepicker-dmy w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:outline-none bg-white font-medium text-slate-800 cursor-pointer">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                             <i class="ph-bold ph-calendar text-sm"></i>
                         </div>
@@ -228,7 +234,7 @@
                         <input type="text" id="tgl_pulang" name="tanggal_pulang" required
                             value="{{ spj.tanggal_pulang if spj else today_date }}"
                             placeholder="dd/mm/yyyy"
-                            class="datepicker-dmy w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white font-medium text-slate-800 cursor-pointer">
+                            class="datepicker-dmy w-full pl-9 pr-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:outline-none bg-white font-medium text-slate-800 cursor-pointer">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                             <i class="ph-bold ph-calendar text-sm"></i>
                         </div>
@@ -241,7 +247,7 @@
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Lama Perjalanan (Hari)</label>
                     <div class="relative">
                         <input type="number" id="lama_hari" name="lama_hari" min="1" required value="{{ spj.lama_hari if spj else 1 }}"
-                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-slate-50 font-bold text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl bg-slate-50 font-bold font-mono text-slate-900 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:outline-none">
                         <span class="absolute right-3 top-2 text-xs text-slate-400">Hari</span>
                     </div>
                 </div>
@@ -250,7 +256,7 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Alat Angkutan</label>
                     {% set cur_angkutan = spj.angkutan if spj else 'Kendaraan Dinas / Mobil' %}
-                    <select name="angkutan" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                    <select name="angkutan" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:outline-none bg-white">
                         <option value="Kendaraan Dinas / Mobil" {% if cur_angkutan in ['Kendaraan Dinas / Mobil', 'Kendaraan Dinas', 'Mobil'] %}selected{% endif %}>Kendaraan Dinas / Mobil</option>
                         <option value="Pesawat Udara" {% if cur_angkutan == 'Pesawat Udara' %}selected{% endif %}>Pesawat Udara</option>
                         <option value="Kapal Laut" {% if cur_angkutan == 'Kapal Laut' %}selected{% endif %}>Kapal Laut</option>
@@ -263,7 +269,7 @@
                 <div class="col-span-1 sm:grid-cols-2 md:col-span-4">
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Mata Anggaran / Kode Rekening Belanja</label>
                     {% set cur_mata_anggaran = spj.mata_anggaran if spj else '5.1.02.04.001.00001 - Belanja Perjalanan Dinas Biasa' %}
-                    <select name="mata_anggaran" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                    <select name="mata_anggaran" class="w-full px-3 py-2 text-xs font-mono border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:outline-none bg-white">
                         <option value="5.1.02.04.001.00001 - Belanja Perjalanan Dinas Biasa" {% if cur_mata_anggaran in ['5.1.02.04.001.00001 - Belanja Perjalanan Dinas Biasa', '5.1.02.04.01.0001 - Belanja Perjalanan Dinas Biasa', '5.1.02.04.01.0001 (Belanja Perjalanan Dinas Biasa)'] %}selected{% endif %}>5.1.02.04.001.00001 - Belanja Perjalanan Dinas Biasa</option>
                         <option value="5.1.02.04.001.00003 - Belanja Perjalanan Dinas Dalam Kota" {% if cur_mata_anggaran in ['5.1.02.04.001.00003 - Belanja Perjalanan Dinas Dalam Kota', '5.1.02.04.01.0003 - Belanja Perjalanan Dinas Dalam Kota'] %}selected{% endif %}>5.1.02.04.001.00003 - Belanja Perjalanan Dinas Dalam Kota</option>
                         {% if cur_mata_anggaran and cur_mata_anggaran not in ['5.1.02.04.001.00001 - Belanja Perjalanan Dinas Biasa', '5.1.02.04.01.0001 - Belanja Perjalanan Dinas Biasa', '5.1.02.04.01.0001 (Belanja Perjalanan Dinas Biasa)', '5.1.02.04.001.00003 - Belanja Perjalanan Dinas Dalam Kota', '5.1.02.04.01.0003 - Belanja Perjalanan Dinas Dalam Kota'] %}
@@ -275,20 +281,20 @@
         </div>
 
         <!-- 4. Daftar Nama-Nama yang Melakukan Perjalanan Dinas -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-3">
                 <div>
-                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">4</span>
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-md bg-slate-950 text-white flex items-center justify-center text-xs font-mono font-bold">4</span>
                         <span>Nama-Nama yang Melakukan Perjalanan Dinas</span>
                     </h2>
-                    <p class="text-[11px] text-slate-400 mt-0.5">Pilih dari database 19 ASN Pegawai atau ketik manual</p>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Pilih dari database 19 ASN Pegawai atau ketik manual</p>
                 </div>
                 <div class="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
                     <!-- Dropdown Tambah Pelaksana dari Spreadsheet -->
                     <div class="relative w-full sm:w-auto">
                         <select id="quickSelectPegawai" onchange="tambahPesertaDariDropdown(this)"
-                            class="w-full sm:w-auto px-3.5 py-1.5 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition cursor-pointer focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-xs">
+                            class="w-full sm:w-auto px-3.5 py-1.5 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold transition cursor-pointer focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:outline-none shadow-2xs">
                             <option value="">+ Tambah Pelaksana (19 ASN)</option>
                             {% for peg in pegawai_list %}
                             <option value="{{ peg.id }}" data-nama="{{ peg.nama }}" data-nip="{{ peg.nip }}" data-pangkat="{{ peg.pangkat }}" data-jabatan="{{ peg.jabatan }}">
@@ -298,7 +304,7 @@
                         </select>
                     </div>
 
-                    <button type="button" onclick="tambahPeserta()" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+                    <button type="button" onclick="tambahPeserta()" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition border border-slate-200">
                         <i class="ph-bold ph-plus text-sm"></i>
                         <span>Baris Kosong</span>
                     </button>
@@ -311,11 +317,11 @@
                     <div class="peserta-row p-3.5 bg-slate-50/80 border border-slate-200 rounded-xl space-y-2.5 transition">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
                             <div class="flex items-center gap-2 flex-1">
-                                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold row-number">
+                                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-200 text-slate-800 text-[10px] font-mono font-bold row-number">
                                     {{ loop.index }}
                                 </span>
                                 <div class="flex-1 max-w-md">
-                                    <select onchange="pilihPegawaiRow(this)" class="row-select-pegawai w-full px-2.5 py-1 text-xs border border-blue-200 rounded-lg bg-white text-slate-700 font-medium focus:ring-2 focus:ring-blue-500">
+                                    <select onchange="pilihPegawaiRow(this)" class="row-select-pegawai w-full px-2.5 py-1 text-xs border border-slate-300 rounded-lg bg-white text-slate-700 font-medium focus:ring-1 focus:ring-slate-900">
                                         <option value="">-- Pilih dari Daftar Pegawai (Otomatis Isi NIP, Pangkat, Jabatan) --</option>
                                         {% for peg in pegawai_list %}
                                         <option value="{{ peg.id }}" data-nama="{{ peg.nama }}" data-nip="{{ peg.nip }}" data-pangkat="{{ peg.pangkat }}" data-jabatan="{{ peg.jabatan }}" {% if p.nama == peg.nama %}selected{% endif %}>
@@ -325,7 +331,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <button type="button" onclick="hapusRow(this)" class="inline-flex items-center gap-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 text-xs font-semibold px-2 py-1 rounded-lg transition" title="Hapus Pelaksana">
+                            <button type="button" onclick="hapusRow(this)" class="inline-flex items-center gap-1 text-rose-600 hover:text-rose-800 hover:bg-rose-50 text-xs font-semibold px-2 py-1 rounded-lg transition" title="Hapus Pelaksana">
                                 <i class="ph-bold ph-trash text-sm"></i>
                                 <span>Hapus</span>
                             </button>
@@ -333,19 +339,19 @@
                         <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
                             <div class="sm:col-span-4">
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Nama Lengkap & Gelar *</label>
-                                <input type="text" name="peserta_nama[]" required value="{{ p.nama }}" placeholder="Nama Pegawai" class="input-nama w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <input type="text" name="peserta_nama[]" required value="{{ p.nama }}" placeholder="Nama Pegawai" class="input-nama w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900">
                             </div>
                             <div class="sm:col-span-3">
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NIP</label>
-                                <input type="text" name="peserta_nip[]" value="{{ p.nip or '' }}" placeholder="19XXXXXXXX XXXXXX X XXX" class="input-nip w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <input type="text" name="peserta_nip[]" value="{{ p.nip or '' }}" placeholder="19XXXXXXXX XXXXXX X XXX" class="input-nip w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900 font-mono">
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Pangkat / Gol.</label>
-                                <input type="text" name="peserta_pangkat[]" value="{{ p.pangkat_golongan or '' }}" placeholder="Pembina (IV/a)" class="input-pangkat w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <input type="text" name="peserta_pangkat[]" value="{{ p.pangkat_golongan or '' }}" placeholder="Pembina (IV/a)" class="input-pangkat w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900">
                             </div>
                             <div class="sm:col-span-3">
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Jabatan</label>
-                                <input type="text" name="peserta_jabatan[]" value="{{ p.jabatan or '' }}" placeholder="Jabatan" class="input-jabatan w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <input type="text" name="peserta_jabatan[]" value="{{ p.jabatan or '' }}" placeholder="Jabatan" class="input-jabatan w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900">
                             </div>
                         </div>
                     </div>
@@ -355,11 +361,11 @@
                     <div class="peserta-row p-3.5 bg-slate-50/80 border border-slate-200 rounded-xl space-y-2.5 transition">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
                             <div class="flex items-center gap-2 flex-1">
-                                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold row-number">
+                                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-200 text-slate-800 text-[10px] font-mono font-bold row-number">
                                     1
                                 </span>
                                 <div class="flex-1 max-w-md">
-                                    <select onchange="pilihPegawaiRow(this)" class="row-select-pegawai w-full px-2.5 py-1 text-xs border border-blue-200 rounded-lg bg-white text-slate-700 font-medium focus:ring-2 focus:ring-blue-500">
+                                    <select onchange="pilihPegawaiRow(this)" class="row-select-pegawai w-full px-2.5 py-1 text-xs border border-slate-300 rounded-lg bg-white text-slate-700 font-medium focus:ring-1 focus:ring-slate-900">
                                         <option value="">-- Pilih dari Daftar Pegawai (Otomatis Isi NIP, Pangkat, Jabatan) --</option>
                                         {% for peg in pegawai_list %}
                                         <option value="{{ peg.id }}" data-nama="{{ peg.nama }}" data-nip="{{ peg.nip }}" data-pangkat="{{ peg.pangkat }}" data-jabatan="{{ peg.jabatan }}">
@@ -369,7 +375,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <button type="button" onclick="hapusRow(this)" class="inline-flex items-center gap-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 text-xs font-semibold px-2 py-1 rounded-lg transition" title="Hapus Pelaksana">
+                            <button type="button" onclick="hapusRow(this)" class="inline-flex items-center gap-1 text-rose-600 hover:text-rose-800 hover:bg-rose-50 text-xs font-semibold px-2 py-1 rounded-lg transition" title="Hapus Pelaksana">
                                 <i class="ph-bold ph-trash text-sm"></i>
                                 <span>Hapus</span>
                             </button>
@@ -377,19 +383,19 @@
                         <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
                             <div class="sm:col-span-4">
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Nama Lengkap & Gelar *</label>
-                                <input type="text" name="peserta_nama[]" required value="{{ default_pelaksana_nama }}" placeholder="Nama Pegawai" class="input-nama w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <input type="text" name="peserta_nama[]" required value="{{ default_pelaksana_nama }}" placeholder="Nama Pegawai" class="input-nama w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900">
                             </div>
                             <div class="sm:col-span-3">
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NIP</label>
-                                <input type="text" name="peserta_nip[]" value="{{ default_pelaksana_nip }}" placeholder="19XXXXXXXX XXXXXX X XXX" class="input-nip w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <input type="text" name="peserta_nip[]" value="{{ default_pelaksana_nip }}" placeholder="19XXXXXXXX XXXXXX X XXX" class="input-nip w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900 font-mono">
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Pangkat / Gol.</label>
-                                <input type="text" name="peserta_pangkat[]" value="{{ default_pelaksana_pangkat }}" placeholder="Pembina (IV/a)" class="input-pangkat w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <input type="text" name="peserta_pangkat[]" value="{{ default_pelaksana_pangkat }}" placeholder="Pembina (IV/a)" class="input-pangkat w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900">
                             </div>
                             <div class="sm:col-span-3">
                                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Jabatan</label>
-                                <input type="text" name="peserta_jabatan[]" value="{{ default_pelaksana_jabatan }}" placeholder="Jabatan" class="input-jabatan w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <input type="text" name="peserta_jabatan[]" value="{{ default_pelaksana_jabatan }}" placeholder="Jabatan" class="input-jabatan w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900">
                             </div>
                         </div>
                     </div>
@@ -398,19 +404,19 @@
         </div>
 
         <!-- 5. Rincian Biaya Perjalanan Dinas (Hitungan Per Orang) -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-3">
                 <div>
-                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
-                        <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">5</span>
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-md bg-slate-950 text-white flex items-center justify-center text-xs font-mono font-bold">5</span>
                         <span>Rincian Biaya Perjalanan Dinas (Hitungan Per Orang)</span>
                     </h2>
-                    <p class="text-[11px] text-slate-400 mt-0.5">
+                    <p class="text-[11px] text-slate-500 mt-0.5">
                         Dihitung per pelaksana dengan 5 template baku: <strong>1. Uang harian (OH)</strong>, <strong>2. Biaya Transportasi (PP)</strong>, <strong>3. Biaya Penginapan (Malam)</strong>, <strong>4. Uang representasi perjalanan dinas (OH)</strong>, dan <strong>5. Biaya taxi (Kali)</strong>.
                     </p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button type="button" onclick="sinkronkanBiayaDenganPeserta(false)" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-bold transition shadow-xs" title="Reset dan isi ulang 5 template baku untuk semua pelaksana">
+                    <button type="button" onclick="sinkronkanBiayaDenganPeserta(false)" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-semibold transition border border-slate-200" title="Reset dan isi ulang 5 template baku untuk semua pelaksana">
                         <i class="ph-bold ph-arrows-clockwise text-sm"></i>
                         <span>Reset 5 Template Per Pelaksana</span>
                     </button>
@@ -423,24 +429,24 @@
             </div>
 
             <!-- Grand Total Summary Box -->
-            <div class="mt-4 p-4 rounded-xl bg-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="mt-4 p-5 rounded-xl bg-slate-950 border border-slate-800 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
                 <div>
-                    <div class="text-[11px] uppercase tracking-wider text-slate-400">Total Perkiraan Biaya SPJ (Seluruh Pelaksana)</div>
-                    <div id="grandTotalDisplay" class="text-2xl font-black text-emerald-400">Rp 0</div>
+                    <div class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Total Perkiraan Biaya SPJ (Seluruh Pelaksana)</div>
+                    <div id="grandTotalDisplay" class="font-mono text-2xl font-black text-amber-400 tabular-nums mt-0.5">Rp 0</div>
                 </div>
                 <div class="text-right sm:max-w-md">
-                    <div class="text-[11px] uppercase tracking-wider text-slate-400">Terbilang</div>
-                    <div id="terbilangDisplay" class="text-xs font-semibold text-slate-200 italic">Nol Rupiah</div>
+                    <div class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Terbilang</div>
+                    <div id="terbilangDisplay" class="text-xs font-medium text-slate-300 italic mt-0.5">Nol Rupiah</div>
                 </div>
             </div>
         </div>
 
 
         <!-- 6. Status & Submit Action -->
-        <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div class="flex items-center justify-between sm:justify-start gap-3">
-                <label class="text-xs font-semibold text-slate-700">Status Dokumen:</label>
-                <select name="status" class="px-3 py-1.5 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white">
+                <label class="text-xs font-bold text-slate-700">Status Dokumen:</label>
+                <select name="status" class="px-3 py-1.5 text-xs border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 focus:outline-none bg-white font-medium">
                     <option value="Draft" {% if spj and spj.status == 'Draft' %}selected{% endif %}>Draft</option>
                     <option value="Disetujui" {% if spj and spj.status == 'Disetujui' %}selected{% endif %}>Disetujui</option>
                     <option value="Selesai" {% if spj and spj.status == 'Selesai' %}selected{% endif %}>Selesai</option>
@@ -448,11 +454,11 @@
             </div>
 
             <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
-                <a href="{{ url_for('spj_list') }}" class="flex-1 sm:flex-none text-center px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition">
+                <a href="{{ url_for('spj_list') }}" class="flex-1 sm:flex-none text-center px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-700 text-xs font-semibold hover:bg-slate-50 transition min-h-[44px] flex items-center justify-center">
                     Batal
                 </a>
-                <button type="submit" class="flex-2 sm:flex-none justify-center px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 active:bg-blue-800 shadow-md shadow-blue-500/20 transition flex items-center gap-2">
-                    <i class="ph-bold ph-floppy-disk text-base"></i>
+                <button type="submit" class="flex-2 sm:flex-none justify-center px-6 py-2.5 rounded-xl bg-slate-950 text-white text-xs font-bold hover:bg-slate-800 active:bg-slate-900 border border-slate-900 shadow-xs transition flex items-center gap-2 min-h-[44px]">
+                    <i class="ph-bold ph-floppy-disk text-base text-amber-300"></i>
                     <span>Simpan & Buat Dokumen</span>
                 </button>
             </div>
@@ -733,16 +739,16 @@ function tambahPeserta(data = null) {
     div.innerHTML = `
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
             <div class="flex items-center gap-2 flex-1">
-                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold row-number">
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-200 text-slate-800 text-[10px] font-mono font-bold row-number">
                     ${rowCount}
                 </span>
                 <div class="flex-1 max-w-md">
-                    <select onchange="pilihPegawaiRow(this)" class="row-select-pegawai w-full px-2.5 py-1 text-xs border border-blue-200 rounded-lg bg-white text-slate-700 font-medium focus:ring-2 focus:ring-blue-500">
+                    <select onchange="pilihPegawaiRow(this)" class="row-select-pegawai w-full px-2.5 py-1 text-xs border border-slate-300 rounded-lg bg-white text-slate-700 font-medium focus:ring-1 focus:ring-slate-900">
                         ${generatePegawaiOptions(data ? data.nama : '')}
                     </select>
                 </div>
             </div>
-            <button type="button" onclick="hapusRow(this)" class="inline-flex items-center gap-1 text-rose-500 hover:text-rose-700 hover:bg-rose-50 text-xs font-semibold px-2 py-1 rounded-lg transition" title="Hapus Pelaksana">
+            <button type="button" onclick="hapusRow(this)" class="inline-flex items-center gap-1 text-rose-600 hover:text-rose-800 hover:bg-rose-50 text-xs font-semibold px-2 py-1 rounded-lg transition" title="Hapus Pelaksana">
                 <i class="ph-bold ph-trash text-sm"></i>
                 <span>Hapus</span>
             </button>
@@ -750,19 +756,19 @@ function tambahPeserta(data = null) {
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
             <div class="sm:col-span-4">
                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Nama Lengkap & Gelar *</label>
-                <input type="text" name="peserta_nama[]" required value="${namaVal}" oninput="updatePesertaNamaSync()" placeholder="Nama Pegawai" class="input-nama w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <input type="text" name="peserta_nama[]" required value="${namaVal}" oninput="updatePesertaNamaSync()" placeholder="Nama Pegawai" class="input-nama w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900">
             </div>
             <div class="sm:col-span-3">
                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">NIP</label>
-                <input type="text" name="peserta_nip[]" value="${nipVal}" placeholder="19XXXXXXXX XXXXXX X XXX" class="input-nip w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <input type="text" name="peserta_nip[]" value="${nipVal}" placeholder="19XXXXXXXX XXXXXX X XXX" class="input-nip w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900 font-mono">
             </div>
             <div class="sm:col-span-2">
                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Pangkat / Gol.</label>
-                <input type="text" name="peserta_pangkat[]" value="${pangkatVal}" placeholder="Pembina (IV/a)" class="input-pangkat w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <input type="text" name="peserta_pangkat[]" value="${pangkatVal}" placeholder="Pembina (IV/a)" class="input-pangkat w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900">
             </div>
             <div class="sm:col-span-3">
                 <label class="block text-[10px] font-semibold text-slate-500 mb-0.5">Jabatan</label>
-                <input type="text" name="peserta_jabatan[]" value="${jabatanVal}" placeholder="Jabatan" class="input-jabatan w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <input type="text" name="peserta_jabatan[]" value="${jabatanVal}" placeholder="Jabatan" class="input-jabatan w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg focus:ring-1 focus:ring-slate-900">
             </div>
         </div>
     `;
@@ -957,19 +963,19 @@ function sinkronkanBiayaDenganPeserta(preserveValues = true) {
         card.innerHTML = `
             <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-2 border-b border-slate-200/80 gap-2">
                 <div class="flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">
+                    <span class="w-6 h-6 rounded-md bg-slate-950 text-amber-300 flex items-center justify-center text-xs font-bold shadow-2xs">
                         <i class="ph-bold ph-user"></i>
                     </span>
                     <div>
-                        <span class="text-xs font-bold text-slate-800 card-peserta-nama">${p.nama}</span>
+                        <span class="text-xs font-bold text-slate-900 card-peserta-nama">${p.nama}</span>
                         <span class="text-[10px] text-slate-400 ml-2">(Rincian Biaya Per Pelaksana)</span>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
                     <div class="text-xs font-semibold text-slate-600">
-                        Subtotal: <span class="font-bold text-emerald-600 card-subtotal">Rp 0</span>
+                        Subtotal: <span class="font-mono font-bold text-slate-950 card-subtotal tabular-nums">Rp 0</span>
                     </div>
-                    <button type="button" onclick="tambahBarisCustom(${idx})" class="text-[11px] text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1">
+                    <button type="button" onclick="tambahBarisCustom(${idx})" class="text-[11px] text-slate-700 hover:text-slate-950 font-semibold flex items-center gap-1 underline">
                         <i class="ph-bold ph-plus"></i> Tambah Biaya Lain
                     </button>
                     <button type="button" onclick="resetTemplatePeserta(${idx})" class="text-[11px] text-slate-500 hover:text-slate-800 font-medium">

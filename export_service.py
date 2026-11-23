@@ -37,7 +37,8 @@ from helpers import (
     terbilang_kata,
     format_tanggal,
     clean_uraian,
-    format_nomor_spasi
+    format_nomor_spasi,
+    format_rentang_tanggal
 )
 
 # ----------------- HELPER NORMALISASI DATA -----------------
@@ -1645,7 +1646,226 @@ def export_laporan_word(spj, laporan, peserta_list, s, root_path=''):
     buf.seek(0)
     return buf
 
-# ----------------- 3. BUNDLE ZIP EXPORTER -----------------
+# ----------------- 3. OPD PAYMENT EXCEL EXPORTER -----------------
+
+def export_opd_payment_excel(spj, peserta_list, biaya_list, s):
+    """
+    Ekspor Dokumen OPD Payment ke format Microsoft Excel (.xlsx)
+    Format, kolom, border, dan tata letak presisi mengikuti:
+    'OPD Payment Bengkulu Utara 9-10 Juni 2026.xlsx'
+    Kertas F4/Folio Landscape, 13 kolom, 3 kolom penandatanganan.
+    """
+    spj = to_dict(spj)
+    s = to_dict(s)
+    peserta_list = [to_dict(p) for p in (peserta_list or [])]
+    biaya_list = [to_dict(b) for b in (biaya_list or [])]
+
+    if not peserta_list:
+        peserta_list = [{
+            'nama': s.get('pejabat_kadis_nama', 'Kepala Dinas'),
+            'nip': s.get('pejabat_kadis_nip', ''),
+            'pangkat_golongan': s.get('pejabat_kadis_pangkat', ''),
+            'jabatan': s.get('pejabat_kadis_jabatan', 'Kepala Dinas'),
+            'nomor_rekening': '',
+            'nama_bank': 'BANK BENGKULU'
+        }]
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Sheet2"
+
+    # Page Setup F4/Folio Landscape
+    ws.page_setup.orientation = ws.ORIENTATION_LANDSCAPE
+    ws.page_setup.paperSize = 14  # Paper size 14 = Folio / F4
+    ws.page_setup.fitToPage = True
+    ws.page_setup.fitToWidth = 1
+    ws.page_setup.fitToHeight = 0
+
+    # Header Columns (Row 1)
+    headers = [
+        'NO', 'NO. REKENING TUJUAN', 'NAMA REKENING TUJUAN', 'KETERANGAN',
+        'ID_BILLING', 'BRUTO', 'NETTO', 'PPD', 'PPN', 'PPH 21', 'PPH 22', 'PPH23', 'PPH4'
+    ]
+
+    # Column Widths sesuai contoh OPD Payment sampai PPH4
+    col_widths = {
+        'A': 4.0,
+        'B': 26.0,
+        'C': 32.0,
+        'D': 44.0,
+        'E': 16.0,
+        'F': 18.0,
+        'G': 14.0,
+        'H': 9.0,
+        'I': 9.0,
+        'J': 11.14,
+        'K': 10.0,
+        'L': 10.0,
+        'M': 10.0
+    }
+
+    for col_letter, width in col_widths.items():
+        ws.column_dimensions[col_letter].width = width
+        ws.column_dimensions[col_letter].hidden = False
+
+    thin_border = Border(
+        left=Side(style='thin', color='000000'),
+        right=Side(style='thin', color='000000'),
+        top=Side(style='thin', color='000000'),
+        bottom=Side(style='thin', color='000000')
+    )
+
+    header_font = Font(name='Calibri', size=11, bold=True)
+    body_font = Font(name='Calibri', size=11, bold=False)
+    account_font = Font(name='Arial', size=10, bold=False)
+    ttd_font = Font(name='Arial', size=10, bold=False)
+    ttd_nama_font = Font(name='Arial', size=10, bold=True)
+
+    # Tulis Header Row 1
+    for c_idx, h_text in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=c_idx, value=h_text)
+        cell.font = header_font
+        cell.border = thin_border
+        if c_idx in (1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13):
+            cell.alignment = Alignment(horizontal='center', vertical='center')
+        else:
+            cell.alignment = Alignment(horizontal='left', vertical='center')
+
+    # Deskripsi Keterangan
+    tujuan_lengkap = spj.get('instansi_tujuan') or spj.get('tujuan') or 'Dinas'
+    tgl_rentang = format_rentang_tanggal(spj.get('tanggal_berangkat'), spj.get('tanggal_pulang'))
+    keterangan_teks = f"SPPD ke {tujuan_lengkap} {tgl_rentang}".strip()
+
+    # Tulis Data Rows
+    current_row = 1
+    for idx, p in enumerate(peserta_list, 1):
+        current_row += 1
+        p_nama = p.get('nama', '').strip()
+
+        # Hitung biaya peserta
+        pelaksana_biaya = [b for b in biaya_list if b.get('peserta_nama') == p_nama or not b.get('peserta_nama') or len(peserta_list) == 1]
+        total_sub = sum(float(b.get('total') or 0) for b in pelaksana_biaya)
+
+        # Nomor Rekening Bank
+        rek_val = str(p.get('nomor_rekening') or '').strip()
+
+        # Cell A: NO
+        c_a = ws.cell(row=current_row, column=1, value=idx)
+        c_a.font = body_font
+        c_a.border = thin_border
+        c_a.alignment = Alignment(horizontal='center', vertical='center')
+
+        # Cell B: NO. REKENING TUJUAN
+        c_b = ws.cell(row=current_row, column=2, value=rek_val)
+        c_b.font = account_font
+        c_b.border = thin_border
+        c_b.number_format = '@'
+        c_b.alignment = Alignment(horizontal='center', vertical='center')
+
+        # Cell C: NAMA REKENING TUJUAN
+        c_c = ws.cell(row=current_row, column=3, value=p_nama)
+        c_c.font = body_font
+        c_c.border = thin_border
+        c_c.alignment = Alignment(horizontal='left', vertical='center')
+
+        # Cell D: KETERANGAN
+        c_d = ws.cell(row=current_row, column=4, value=keterangan_teks)
+        c_d.font = body_font
+        c_d.border = thin_border
+        c_d.alignment = Alignment(horizontal='left', vertical='center')
+
+        # Cell E: ID_BILLING
+        c_e = ws.cell(row=current_row, column=5, value=None)
+        c_e.font = body_font
+        c_e.border = thin_border
+        c_e.alignment = Alignment(horizontal='center', vertical='center')
+
+        # Cell F: BRUTO
+        c_f = ws.cell(row=current_row, column=6, value=total_sub)
+        c_f.font = body_font
+        c_f.border = thin_border
+        c_f.number_format = '#,##0.00'
+        c_f.alignment = Alignment(horizontal='right', vertical='center')
+
+        # Cell G: NETTO (=F{row}-J{row})
+        c_g = ws.cell(row=current_row, column=7, value=f"=F{current_row}-J{current_row}")
+        c_g.font = body_font
+        c_g.border = thin_border
+        c_g.number_format = '#,##0.00'
+        c_g.alignment = Alignment(horizontal='right', vertical='center')
+
+        # Cell H s.d. M: PPD, PPN, PPH 21, PPH 22, PPH23, PPH4
+        for col_idx in range(8, 14):
+            c_pajak = ws.cell(row=current_row, column=col_idx, value=None)
+            c_pajak.font = body_font
+            c_pajak.border = thin_border
+            c_pajak.alignment = Alignment(horizontal='right', vertical='center')
+
+    # Tanda Tangan: 3 Kolom (Kepala Dinas, Pejabat Pemeriksa Keuangan, Bendahara Pengeluaran)
+    # Row Jeda TTD
+    r_ttd = current_row + 3
+
+    # Row 1 TTD: Jabatan
+    ws.merge_cells(f'B{r_ttd}:D{r_ttd}')
+    ws[f'B{r_ttd}'] = 'Kepala Dinas'
+    ws[f'B{r_ttd}'].font = ttd_font
+    ws[f'B{r_ttd}'].alignment = Alignment(horizontal='center', vertical='center')
+
+    ws[f'F{r_ttd}'] = 'Pejabat Pemeriksa Keuangan'
+    ws[f'F{r_ttd}'].font = ttd_font
+    ws[f'F{r_ttd}'].alignment = Alignment(horizontal='center', vertical='center')
+
+    ws.merge_cells(f'J{r_ttd}:N{r_ttd}')
+    ws[f'J{r_ttd}'] = 'Bendahara Pengeluaran'
+    ws[f'J{r_ttd}'].font = ttd_font
+    ws[f'J{r_ttd}'].alignment = Alignment(horizontal='center', vertical='center')
+
+    # Row 2 TTD: Nama Pejabat (Jeda 3 baris tanda tangan fisik)
+    r_nama = r_ttd + 4
+    kadis_nama = str(s.get('pejabat_kadis_nama') or '').upper()
+    ppk_nama = str(s.get('pejabat_pptk_nama') or s.get('pejabat_ppk_nama') or '').upper()
+    bendahara_nama = str(s.get('pejabat_bendahara_nama') or '').upper()
+
+    ws.merge_cells(f'B{r_nama}:D{r_nama}')
+    ws[f'B{r_nama}'] = kadis_nama
+    ws[f'B{r_nama}'].font = ttd_nama_font
+    ws[f'B{r_nama}'].alignment = Alignment(horizontal='center', vertical='center')
+
+    ws[f'F{r_nama}'] = ppk_nama
+    ws[f'F{r_nama}'].font = ttd_nama_font
+    ws[f'F{r_nama}'].alignment = Alignment(horizontal='center', vertical='center')
+
+    ws.merge_cells(f'J{r_nama}:N{r_nama}')
+    ws[f'J{r_nama}'] = bendahara_nama
+    ws[f'J{r_nama}'].font = ttd_nama_font
+    ws[f'J{r_nama}'].alignment = Alignment(horizontal='center', vertical='center')
+
+    # Row 3 TTD: NIP
+    r_nip = r_nama + 1
+    kadis_nip = s.get('pejabat_kadis_nip') or ''
+    ppk_nip = s.get('pejabat_pptk_nip') or s.get('pejabat_ppk_nip') or ''
+    bendahara_nip = s.get('pejabat_bendahara_nip') or ''
+
+    ws.merge_cells(f'B{r_nip}:D{r_nip}')
+    ws[f'B{r_nip}'] = f"NIP {kadis_nip}" if kadis_nip else ""
+    ws[f'B{r_nip}'].font = ttd_font
+    ws[f'B{r_nip}'].alignment = Alignment(horizontal='center', vertical='center')
+
+    ws[f'F{r_nip}'] = f"NIP {ppk_nip}" if ppk_nip else ""
+    ws[f'F{r_nip}'].font = ttd_font
+    ws[f'F{r_nip}'].alignment = Alignment(horizontal='center', vertical='center')
+
+    ws.merge_cells(f'J{r_nip}:N{r_nip}')
+    ws[f'J{r_nip}'] = f"NIP {bendahara_nip}" if bendahara_nip else ""
+    ws[f'J{r_nip}'].font = ttd_font
+    ws[f'J{r_nip}'].alignment = Alignment(horizontal='center', vertical='center')
+
+    buf = io.BytesIO()
+    wb.save(buf)
+    buf.seek(0)
+    return buf
+
+# ----------------- 4. BUNDLE ZIP EXPORTER -----------------
 
 def export_bundel_zip(spj, peserta_list, biaya_list, laporan, s, root_path=''):
     """
@@ -1693,6 +1913,13 @@ def export_bundel_zip(spj, peserta_list, biaya_list, laporan, s, root_path=''):
         # 6. Laporan Hasil (Word)
         laporan_doc = export_laporan_word(spj, laporan, peserta_list, s, root_path=root_path)
         zf.writestr(f"06_Laporan_Hasil_{clean_no}.docx", laporan_doc.getvalue())
+
+        # 7. OPD Payment (Excel)
+        try:
+            opd_xls = export_opd_payment_excel(spj, peserta_list, biaya_list, s)
+            zf.writestr(f"07_OPD_Payment_{clean_no}.xlsx", opd_xls.getvalue())
+        except Exception as e:
+            print("Gagal generate OPD Payment Excel:", e)
 
     zip_buf.seek(0)
     return zip_buf

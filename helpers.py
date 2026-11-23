@@ -185,6 +185,50 @@ def hitung_hari(tgl_mulai, tgl_selesai):
     except Exception:
         return 1
 
+def format_rentang_tanggal(tgl_berangkat, tgl_pulang):
+    """
+    Format rentang tanggal ringkas untuk dokumen/keterangan dinas.
+    Contoh:
+    - 2026-06-09 s/d 2026-06-10 -> '9-10 Juni 2026'
+    - 2026-06-09 s/d 2026-06-09 -> '9 Juni 2026'
+    - 2026-05-30 s/d 2026-06-02 -> '30 Mei - 2 Juni 2026'
+    """
+    if not tgl_berangkat and not tgl_pulang:
+        return ""
+    if not tgl_pulang:
+        return format_tanggal(tgl_berangkat)
+    if not tgl_berangkat:
+        return format_tanggal(tgl_pulang)
+
+    dt1 = None
+    dt2 = None
+    for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y"):
+        try:
+            if not dt1:
+                dt1 = datetime.datetime.strptime(str(tgl_berangkat).strip(), fmt)
+        except Exception:
+            pass
+        try:
+            if not dt2:
+                dt2 = datetime.datetime.strptime(str(tgl_pulang).strip(), fmt)
+        except Exception:
+            pass
+
+    if not dt1 or not dt2:
+        return f"{format_tanggal(tgl_berangkat)} s/d {format_tanggal(tgl_pulang)}"
+
+    b1 = BULAN_INDONESIA.get(dt1.month, '')
+    b2 = BULAN_INDONESIA.get(dt2.month, '')
+
+    if dt1.year == dt2.year and dt1.month == dt2.month:
+        if dt1.day == dt2.day:
+            return f"{dt1.day} {b1} {dt1.year}"
+        return f"{dt1.day}-{dt2.day} {b1} {dt1.year}"
+    elif dt1.year == dt2.year:
+        return f"{dt1.day} {b1} - {dt2.day} {b2} {dt1.year}"
+    else:
+        return f"{dt1.day} {b1} {dt1.year} - {dt2.day} {b2} {dt2.year}"
+
 import re
 
 def clean_uraian(keterangan, nama=None):

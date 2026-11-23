@@ -3,47 +3,47 @@
 {% block title %}Detail & Cetak Dokumen SPJ - {{ spj.nomor_spt }}{% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12">
 
     <!-- Back & Header -->
     <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <div class="flex items-center gap-2 text-xs text-blue-600 font-semibold uppercase tracking-wider mb-1">
-                <a href="{{ url_for('spj_list') }}" class="hover:underline flex items-center gap-1">
+            <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider mb-1">
+                <a href="{{ url_for('spj_list') }}" class="text-slate-500 hover:text-slate-900 flex items-center gap-1 transition">
                     <i class="ph ph-arrow-left"></i> Kembali ke Daftar SPJ
                 </a>
             </div>
             <div class="flex items-center gap-3">
-                <h1 class="text-2xl font-bold text-slate-900 tracking-tight">{{ spj.nomor_spt | format_nomor_spasi }}</h1>
+                <h1 class="text-2xl font-bold text-slate-950 tracking-tight font-mono">{{ spj.nomor_spt | format_nomor_spasi }}</h1>
                 {% if spj.jenis_spt == 'kadis' %}
-                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold bg-slate-900 text-amber-300 border border-slate-800">
                         <i class="ph-bold ph-crown text-xs"></i> SPT Kepala Dinas
                     </span>
                 {% else %}
-                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                         <i class="ph-bold ph-users text-xs"></i> SPT Staf
                     </span>
                 {% endif %}
             </div>
-            <p class="text-xs text-slate-500 mt-1">SPPD: <strong>{{ spj.nomor_sppd | format_nomor_spasi }}</strong> • Tanggal SPT: <strong>{{ format_tanggal(spj.tanggal_spt or spj.tanggal_berangkat) }}</strong> • Tujuan: <strong>{{ spj.tujuan }}</strong></p>
+            <p class="text-xs text-slate-500 mt-1">SPPD: <strong class="font-mono text-slate-800">{{ spj.nomor_sppd | format_nomor_spasi }}</strong> • Tanggal SPT: <strong>{{ format_tanggal(spj.tanggal_spt or spj.tanggal_berangkat) }}</strong> • Tujuan: <strong>{{ spj.tujuan }}</strong></p>
             {% if spj.jenis_spt == 'kadis' %}
-                <div class="mt-2 text-xs text-indigo-700 bg-indigo-50/80 border border-indigo-200/80 px-3 py-1.5 rounded-xl inline-flex items-center gap-1.5 shadow-xs">
-                    <i class="ph-bold ph-pen-nib text-indigo-600"></i>
+                <div class="mt-2 text-xs text-slate-800 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl inline-flex items-center gap-1.5 shadow-2xs">
+                    <i class="ph-bold ph-pen-nib text-slate-700"></i>
                     <span>Pejabat Penandatangan SPT: <strong>{{ spj.spt_penandatangan_nama or s.pejabat_ttd_kadis_nama }}</strong> ({% if spj.spt_penandatangan_an or s.pejabat_ttd_kadis_an %}{{ spj.spt_penandatangan_an or s.pejabat_ttd_kadis_an }} - {% endif %}{{ spj.spt_penandatangan_jabatan or s.pejabat_ttd_kadis_jabatan }})</span>
                 </div>
             {% endif %}
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-            <a href="{{ url_for('spj_edit', spj_id=spj.id) }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-bold transition shadow-sm">
+            <a href="{{ url_for('spj_edit', spj_id=spj.id) }}" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 text-xs font-bold transition shadow-2xs min-h-[44px]">
                 <i class="ph-bold ph-pencil-simple text-sm"></i>
                 <span>Edit SPJ</span>
             </a>
-            <a href="{{ url_for('export_zip_bundel', spj_id=spj.id) }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm" title="Unduh seluruh dokumen Word & Excel dalam 1 file ZIP">
-                <i class="ph-bold ph-file-zip text-base"></i>
+            <a href="{{ url_for('export_zip_bundel', spj_id=spj.id) }}" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition shadow-xs min-h-[44px]" title="Unduh seluruh 7 dokumen Word & Excel dalam 1 file ZIP">
+                <i class="ph-bold ph-file-zip text-base text-amber-300"></i>
                 <span>Unduh Bundel Word & Excel (.zip)</span>
             </a>
-            <a href="{{ url_for('cetak_semua', spj_id=spj.id) }}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 text-xs font-bold shadow-md shadow-blue-500/20 transition">
+            <a href="{{ url_for('cetak_semua', spj_id=spj.id) }}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold shadow-xs transition min-h-[44px]">
                 <i class="ph-bold ph-printer text-base"></i>
                 <span>Cetak 1 Bundel Lengkap</span>
             </a>
@@ -52,86 +52,90 @@
 
     <!-- Quick Info Cards (2x2 on Mobile, 4x1 on Desktop) -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-xs">
-            <div class="text-[10px] font-bold uppercase text-slate-400">Total Biaya SPJ</div>
-            <div class="text-base sm:text-lg font-black text-emerald-600 mt-0.5 truncate">{{ format_rupiah(total_biaya) }}</div>
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-2xs">
+            <div class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Total Biaya SPJ</div>
+            <div class="font-mono text-base sm:text-lg font-black text-slate-950 mt-0.5 truncate tabular-nums">{{ format_rupiah(total_biaya) }}</div>
             <div class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5">{{ biaya|length }} Item Pengeluaran</div>
         </div>
 
-        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-xs">
-            <div class="text-[10px] font-bold uppercase text-slate-400">Jadwal Perjadin</div>
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-2xs">
+            <div class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Jadwal Perjadin</div>
             <div class="text-xs sm:text-sm font-bold text-slate-800 mt-0.5">{{ spj.lama_hari }} Hari ({{ format_tanggal(spj.tanggal_berangkat) }})</div>
             <div class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5">s.d. {{ format_tanggal(spj.tanggal_pulang) }}</div>
         </div>
 
-        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-xs">
-            <div class="text-[10px] font-bold uppercase text-slate-400">Pelaksana</div>
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-2xs">
+            <div class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Pelaksana</div>
             <div class="text-xs sm:text-sm font-bold text-slate-800 mt-0.5">{{ peserta|length }} Orang Pegawai</div>
             <div class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">{{ peserta[0].nama if peserta else '-' }}</div>
         </div>
 
-        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-xs">
-            <div class="text-[10px] font-bold uppercase text-slate-400">Transportasi</div>
+        <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-2xs">
+            <div class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Transportasi</div>
             <div class="text-xs sm:text-sm font-bold text-slate-800 mt-0.5 truncate">{{ spj.angkutan }}</div>
-            <div class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">{{ spj.mata_anggaran }}</div>
+            <div class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate font-mono">{{ spj.mata_anggaran }}</div>
         </div>
     </div>
 
-    <!-- 5 Documents Navigation Bar -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6">
-        <div class="p-3.5 sm:p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <!-- 7 Documents Navigation Bar -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden mb-6">
+        <div class="p-3.5 sm:p-4 bg-slate-50/90 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-                <h3 class="text-xs sm:text-sm font-bold text-slate-800 flex items-center gap-2">
-                    <i class="ph-bold ph-files text-blue-600 text-base"></i>
-                    Pilih Dokumen untuk Dilihat & Dicetak
+                <h3 class="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <i class="ph-bold ph-files text-slate-700 text-base"></i>
+                    <span>Pratinjau & Cetak 7 Dokumen SPJ</span>
                 </h3>
-                <p class="text-[10px] sm:text-[11px] text-slate-500">Pilih dokumen di bawah untuk memuat tampilan cetak</p>
+                <p class="text-[10px] sm:text-[11px] text-slate-500">Pilih dokumen di bawah untuk memuat tampilan cetak presisi A4/F4</p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
-                <a id="btnExportWord" href="{{ url_for('export_word_spt', spj_id=spj.id) }}" class="px-3 py-1.5 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-bold flex items-center gap-1.5 transition shadow-xs" title="Unduh dokumen aktif dalam format Microsoft Word (.docx)">
-                    <i class="ph-bold ph-file-doc text-sm text-blue-600"></i>
+                <a id="btnExportWord" href="{{ url_for('export_word_spt', spj_id=spj.id) }}" class="px-3 py-1.5 rounded-lg border border-blue-200 bg-blue-50/70 text-blue-800 hover:bg-blue-100 text-xs font-bold flex items-center gap-1.5 transition shadow-2xs" title="Unduh dokumen aktif dalam format Microsoft Word (.docx)">
+                    <i class="ph-bold ph-file-doc text-sm text-blue-700"></i>
                     <span id="btnExportWordText">Word (.docx)</span>
                 </a>
-                <a id="btnExportExcel" href="{{ url_for('export_excel_spd', spj_id=spj.id) }}" style="display: none;" class="px-3 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-bold flex items-center gap-1.5 transition shadow-xs" title="Unduh dokumen aktif dalam format Microsoft Excel (.xlsx)">
-                    <i class="ph-bold ph-file-xls text-sm text-emerald-600"></i>
+                <a id="btnExportExcel" href="{{ url_for('export_excel_spd', spj_id=spj.id) }}" style="display: none;" class="px-3 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50/70 text-emerald-800 hover:bg-emerald-100 text-xs font-bold flex items-center gap-1.5 transition shadow-2xs" title="Unduh dokumen aktif dalam format Microsoft Excel (.xlsx)">
+                    <i class="ph-bold ph-file-xls text-sm text-emerald-700"></i>
                     <span id="btnExportExcelText">Excel (.xlsx)</span>
                 </a>
-                <a id="btnOpenNewTab" href="{{ url_for('cetak_spt', spj_id=spj.id) }}" target="_blank" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold flex items-center gap-1.5 transition shadow-xs" title="Buka pratinjau lembar ini di tab baru layar penuh">
+                <a id="btnOpenNewTab" href="{{ url_for('cetak_spt', spj_id=spj.id) }}" target="_blank" class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs" title="Buka pratinjau lembar ini di tab baru layar penuh">
                     <i class="ph-bold ph-arrow-square-out text-sm"></i>
                     <span>Layar Penuh</span>
                 </a>
-                <button onclick="printCurrentTab()" class="px-3.5 py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold shadow flex items-center gap-1.5 transition">
-                    <i class="ph-bold ph-printer"></i>
+                <button onclick="printCurrentTab()" class="px-3.5 py-1.5 rounded-lg bg-slate-950 text-white hover:bg-slate-800 text-xs font-bold shadow-xs flex items-center gap-1.5 transition">
+                    <i class="ph-bold ph-printer text-amber-300"></i>
                     <span>Cetak</span>
                 </button>
             </div>
         </div>
 
         <!-- Document Tab Buttons (Horizontally Scrollable on Mobile) -->
-        <div class="p-2 sm:p-3 bg-white border-b border-slate-100 flex overflow-x-auto no-scrollbar gap-2">
-            <button onclick="loadDoc('{{ url_for('cetak_spt', spj_id=spj.id) }}', this, 'spt')" class="doc-tab-btn active px-3 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white flex items-center gap-1.5 transition shadow-sm whitespace-nowrap flex-shrink-0">
+        <div class="p-2 sm:p-3 bg-white border-b border-slate-200 flex overflow-x-auto no-scrollbar gap-2">
+            <button onclick="loadDoc('{{ url_for('cetak_spt', spj_id=spj.id) }}', this, 'spt')" class="doc-tab-btn active px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-950 text-white flex items-center gap-1.5 transition shadow-2xs whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-file-text"></i>
                 <span>1. SPT ({% if spj.jenis_spt == 'kadis' %}Kadis{% else %}Staf{% endif %})</span>
             </button>
-            <button onclick="loadDoc('{{ url_for('cetak_spd', spj_id=spj.id) }}', this, 'spd')" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
+            <button onclick="loadDoc('{{ url_for('cetak_spd', spj_id=spj.id) }}', this, 'spd')" class="doc-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200/80 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-identification-badge"></i>
-                <span>2. SPD (Surat Perjalanan Dinas)</span>
+                <span>2. SPD (Perjalanan Dinas)</span>
             </button>
-            <button onclick="loadDoc('{{ url_for('cetak_pengeluaran_riil', spj_id=spj.id) }}', this, 'pengeluaran_riil')" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
+            <button onclick="loadDoc('{{ url_for('cetak_pengeluaran_riil', spj_id=spj.id) }}', this, 'pengeluaran_riil')" class="doc-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200/80 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-receipt"></i>
                 <span>3. Pengeluaran Riil</span>
             </button>
-            <button onclick="loadDoc('{{ url_for('cetak_kwitansi', spj_id=spj.id) }}', this, 'kwitansi')" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
+            <button onclick="loadDoc('{{ url_for('cetak_kwitansi', spj_id=spj.id) }}', this, 'kwitansi')" class="doc-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200/80 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-money"></i>
                 <span>4. Kwitansi</span>
             </button>
-            <button onclick="loadDoc('{{ url_for('cetak_rincian_biaya', spj_id=spj.id) }}', this, 'rincian_biaya')" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
+            <button onclick="loadDoc('{{ url_for('cetak_rincian_biaya', spj_id=spj.id) }}', this, 'rincian_biaya')" class="doc-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200/80 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-table"></i>
                 <span>5. Rincian Biaya</span>
             </button>
-            <button onclick="loadDoc('{{ url_for('cetak_laporan', spj_id=spj.id) }}', this, 'laporan')" class="doc-tab-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
+            <button onclick="loadDoc('{{ url_for('cetak_laporan', spj_id=spj.id) }}', this, 'laporan')" class="doc-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200/80 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
                 <i class="ph-bold ph-newspaper-clipping"></i>
                 <span>6. Laporan Perjadin</span>
+            </button>
+            <button onclick="loadDoc('{{ url_for('cetak_opd_payment', spj_id=spj.id) }}', this, 'opd_payment')" class="doc-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200/80 flex items-center gap-1.5 transition whitespace-nowrap flex-shrink-0">
+                <i class="ph-bold ph-credit-card"></i>
+                <span>7. OPD Payment</span>
             </button>
         </div>
 
@@ -142,17 +146,17 @@
     </div>
 
     <!-- Edit Laporan Form -->
-    <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4 mb-8">
+    <div class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4 mb-8">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-3">
             <div>
                 <h3 class="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <i class="ph-bold ph-note-pencil text-amber-600 text-base"></i>
-                    Kustomisasi Narasi Laporan Perjalanan Dinas Ini
+                    <i class="ph-bold ph-note-pencil text-slate-700 text-base"></i>
+                    <span>Kustomisasi Narasi Laporan Perjalanan Dinas Ini</span>
                 </h3>
-                <p class="text-[11px] text-slate-400 mt-0.5">Ubah bab kegiatan, hasil, dan kesimpulan khusus untuk kegiatan penugasan ini</p>
+                <p class="text-[11px] text-slate-500 mt-0.5">Ubah bab kegiatan, hasil, dan kesimpulan khusus untuk kegiatan penugasan ini</p>
             </div>
-            <button type="submit" form="laporanForm" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
-                <i class="ph-bold ph-floppy-disk"></i>
+            <button type="submit" form="laporanForm" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-2xs transition flex items-center justify-center gap-1.5">
+                <i class="ph-bold ph-floppy-disk text-amber-300"></i>
                 <span>Simpan Narasi Laporan</span>
             </button>
         </div>
@@ -160,15 +164,15 @@
         <form method="POST" action="{{ url_for('update_laporan', spj_id=spj.id) }}" id="laporanForm" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div>
                 <label class="block font-semibold text-slate-700 mb-1">Bab IV. Kegiatan yang Dilaksanakan</label>
-                <textarea name="kegiatan_dilaksanakan" rows="4" class="w-full p-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">{{ laporan.kegiatan_dilaksanakan if laporan and laporan.kegiatan_dilaksanakan else laporan_defaults.kegiatan }}</textarea>
+                <textarea name="kegiatan_dilaksanakan" rows="4" class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition">{{ laporan.kegiatan_dilaksanakan if laporan and laporan.kegiatan_dilaksanakan else laporan_defaults.kegiatan }}</textarea>
             </div>
             <div>
                 <label class="block font-semibold text-slate-700 mb-1">Bab V. Hasil yang Dicapai</label>
-                <textarea name="hasil_kegiatan" rows="4" class="w-full p-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">{{ laporan.hasil_kegiatan if laporan and laporan.hasil_kegiatan else laporan_defaults.hasil }}</textarea>
+                <textarea name="hasil_kegiatan" rows="4" class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition">{{ laporan.hasil_kegiatan if laporan and laporan.hasil_kegiatan else laporan_defaults.hasil }}</textarea>
             </div>
             <div class="md:col-span-2">
                 <label class="block font-semibold text-slate-700 mb-1">Bab VI. Kesimpulan dan Saran / Rekomendasi</label>
-                <textarea name="kesimpulan_saran" rows="3" class="w-full p-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500">{{ laporan.kesimpulan_saran if laporan and laporan.kesimpulan_saran else laporan_defaults.kesimpulan }}</textarea>
+                <textarea name="kesimpulan_saran" rows="3" class="w-full p-2.5 border border-slate-300 rounded-xl focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition">{{ laporan.kesimpulan_saran if laporan and laporan.kesimpulan_saran else laporan_defaults.kesimpulan }}</textarea>
             </div>
         </form>
     </div>
@@ -202,6 +206,11 @@ const EXPORT_ROUTES = {
     laporan: {
         word: "{{ url_for('export_word_laporan', spj_id=spj.id) }}",
         excel: null
+    },
+    opd_payment: {
+        word: null,
+        excel: "{{ url_for('export_excel_opd_payment', spj_id=spj.id) }}",
+        excelText: "OPD Payment (.xlsx)"
     }
 };
 
@@ -210,11 +219,11 @@ function loadDoc(url, btn, docType) {
     const btnNewTab = document.getElementById('btnOpenNewTab');
     if (btnNewTab) btnNewTab.href = url;
     document.querySelectorAll('.doc-tab-btn').forEach(b => {
-        b.classList.remove('bg-blue-600', 'text-white');
-        b.classList.add('bg-slate-100', 'text-slate-700');
+        b.classList.remove('bg-slate-950', 'text-white', 'shadow-2xs');
+        b.classList.add('bg-slate-100', 'text-slate-700', 'hover:bg-slate-200');
     });
-    btn.classList.remove('bg-slate-100', 'text-slate-700');
-    btn.classList.add('bg-blue-600', 'text-white');
+    btn.classList.remove('bg-slate-100', 'text-slate-700', 'hover:bg-slate-200');
+    btn.classList.add('bg-slate-950', 'text-white', 'shadow-2xs');
 
     // Update Export Buttons
     const route = EXPORT_ROUTES[docType] || EXPORT_ROUTES.spt;

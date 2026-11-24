@@ -498,7 +498,45 @@ def spj_detail(spj_id):
         total_biaya=total_biaya
     )
 
-# ----------------- UPDATE LAPORAN NARASI -----------------
+# ----------------- UPDATE LAPORAN NARASI & AI GENERATOR -----------------
+@app.route('/api/test-ai-connection', methods=['POST'])
+@login_required
+def api_test_ai_connection():
+    from ai_service import test_9router_connection
+    data = request.get_json() or {}
+    base_url = data.get('base_url') or 'http://localhost:20128/v1'
+    api_key = data.get('api_key') or ''
+    model = data.get('model') or 'gpt-4o-mini'
+
+    success, message, models = test_9router_connection(base_url, api_key, model)
+    return jsonify({
+        "success": success,
+        "message": message,
+        "models": models
+    })
+
+@app.route('/api/spj/<int:spj_id>/generate-laporan', methods=['POST'])
+@login_required
+def api_generate_laporan(spj_id):
+    from ai_service import generate_laporan_narasi
+    conn = get_db()
+    spj = conn.execute('SELECT * FROM spj WHERE id = ?', (spj_id,)).fetchone()
+    if not spj:
+        conn.close()
+        return jsonify({"success": False, "error": "SPJ tidak ditemukan"}), 404
+    
+    peserta = conn.execute('SELECT * FROM spj_peserta WHERE spj_id = ? ORDER BY urutan ASC', (spj_id,)).fetchall()
+    conn.close()
+
+    spj_dict = dict(spj)
+    spj_dict['peserta'] = [dict(p) for p in peserta]
+
+    req_data = request.get_json() or {}
+    catatan_user = req_data.get('catatan_lapangan', '')
+
+    result = generate_laporan_narasi(spj_dict, catatan_user=catatan_user)
+    return jsonify(result)
+
 @app.route('/spj/<int:spj_id>/laporan/update', methods=['POST'])
 @login_required
 def update_laporan(spj_id):
@@ -698,6 +736,19 @@ def blanko_sppd():
     else:
         flash('File blanko SPPD ("d:\\CAPIL\\BENDAHARA\\SPPD kosong.pdf") tidak ditemukan di sistem.', 'danger')
         return redirect(url_for('dashboard'))
+
+# ----------------- SURAT PERNYATAAN PERJALANAN DINAS -----------------
+@app.route('/cetak/pernyataan-perjalanan-dinas')
+@app.route('/cetak/pernyataan-perjadin')
+@login_required
+def cetak_pernyataan_perjadin():
+    rows = request.args.get('rows', default=5, type=int)
+    if rows < 1:
+        rows = 1
+    elif rows > 30:
+        rows = 30
+    s = get_settings()
+    return render_template('print/pernyataan_perjadin_print.html', s=s, rows=rows, force_kop='staf')
 
 # ----------------- EXPORT DOKUMEN WORD (.DOCX) & EXCEL (.XLSX) -----------------
 from export_service import (

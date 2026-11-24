@@ -40,6 +40,11 @@
             <i class="ph-bold ph-stamp text-base"></i>
             <span>Template Riil, Kwitansi, Rincian, Laporan</span>
         </button>
+        <button type="button" onclick="switchTab('ai')" id="tab-btn-ai" class="tab-btn px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
+            <i class="ph-bold ph-robot text-base text-blue-600"></i>
+            <span>Integrasi AI 9Router</span>
+            <span class="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-blue-100 text-blue-800">Aktif</span>
+        </button>
         <button type="button" onclick="switchTab('pegawai')" id="tab-btn-pegawai" class="tab-btn px-4 py-2.5 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
             <i class="ph-bold ph-users text-base"></i>
             <span>Master Pegawai</span>
@@ -673,6 +678,66 @@
 
         </div>
 
+        <!-- TAB 5: INTEGRASI AI 9ROUTER -->
+        <div id="tab-content-ai" class="tab-pane hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-3">
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                            <i class="ph-bold ph-robot text-blue-600 text-lg"></i>
+                            Konfigurasi 9Router AI Engine
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Router AI yang digunakan untuk menyusun otomatis Bab IV, Bab V, dan Bab VI Laporan Perjalanan Dinas sesuai kaidah Tata Naskah Dinas</p>
+                    </div>
+                    <button type="button" onclick="testAIConnection()" id="btnTestAI"
+                        class="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold transition flex items-center gap-2 self-start sm:self-auto">
+                        <i class="ph-bold ph-plugs-connected text-sm"></i>
+                        <span>Uji Koneksi 9Router</span>
+                    </button>
+                </div>
+
+                <div id="aiConnectionStatus" class="hidden p-3 rounded-xl text-xs border"></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">9Router Base URL / Endpoint *</label>
+                        <input type="text" name="ai_base_url" id="input_ai_base_url" value="{{ s.ai_base_url or 'http://localhost:20128/v1' }}" required
+                            placeholder="Contoh: http://localhost:20128/v1 atau http://127.0.0.1:20128/v1"
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 font-mono">
+                        <span class="text-[11px] text-slate-400 mt-1 block">Default service lokal 9Router berjalan di port 20128 (<code class="text-slate-600">http://localhost:20128/v1</code>).</span>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Model Yang Digunakan *</label>
+                        <input type="text" name="ai_model" id="input_ai_model" value="{{ s.ai_model or 'gpt-4o-mini' }}" required
+                            placeholder="Contoh: gpt-4o-mini, claude-3-5-sonnet"
+                            class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 font-mono">
+                        <span class="text-[11px] text-slate-400 mt-1 block">Model atau alias rute aktif di 9Router Anda.</span>
+                    </div>
+
+                    <div class="md:col-span-3">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">API Key 9Router *</label>
+                        <div class="relative">
+                            <input type="text" name="ai_api_key" id="input_ai_api_key" value="{{ s.ai_api_key or 'sk-6b3ac6ef8e3b70c9-mu1bpq-d421de12' }}" required
+                                placeholder="sk-..."
+                                class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 font-mono">
+                        </div>
+                        <span class="text-[11px] text-slate-400 mt-1 block">Key tersimpan aman di database lokal aplikasi e-SPJ.</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-2">
+                    <div class="font-bold text-slate-800 flex items-center gap-1.5">
+                        <i class="ph-bold ph-shield-check text-emerald-600"></i>
+                        <span>Standar Kebijakan Anti-Slop & Tata Naskah Dinas Aktif</span>
+                    </div>
+                    <p class="leading-relaxed text-[11px]">
+                        Sistem secara otomatis menerapkan instruksi filter ketat: melarang kata-kata klise AI (<em>delve, tapestry, seamless, foster, pivotal, dsb.</em>), melarang struktur biner dramatis, dan menjamin gaya bahasa naskah dinas formal birokratis Republik Indonesia.
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <!-- Sticky Footer Save -->
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
             <div class="text-xs text-slate-500">
@@ -1201,6 +1266,41 @@ function openDeletePegawaiModal(id, nama) {
 }
 function closeDeletePegawaiModal() {
     document.getElementById('modalDeletePegawai').classList.add('hidden');
+}
+
+// AI 9Router Connection Test
+async function testAIConnection() {
+    const btn = document.getElementById('btnTestAI');
+    const statusBox = document.getElementById('aiConnectionStatus');
+    const baseUrl = document.getElementById('input_ai_base_url').value;
+    const apiKey = document.getElementById('input_ai_api_key').value;
+    const model = document.getElementById('input_ai_model').value;
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ph-bold ph-spinner animate-spin text-sm"></i> <span>Menguji Koneksi...</span>';
+    statusBox.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-rose-50', 'text-rose-800', 'border-rose-200');
+
+    try {
+        const response = await fetch('/api/test-ai-connection', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ base_url: baseUrl, api_key: apiKey, model: model })
+        });
+        const res = await response.json();
+        if (res.success) {
+            statusBox.className = 'p-3 rounded-xl text-xs border bg-emerald-50 text-emerald-800 border-emerald-200 flex items-start gap-2';
+            statusBox.innerHTML = '<i class="ph-bold ph-check-circle text-base text-emerald-600 mt-0.5"></i><div><strong>' + res.message + '</strong>' + (res.models && res.models.length ? '<div class="mt-1 text-[11px] text-emerald-700">Model terdeteksi: ' + res.models.slice(0, 5).join(', ') + (res.models.length > 5 ? '... (total ' + res.models.length + ')' : '') + '</div>' : '') + '</div>';
+        } else {
+            statusBox.className = 'p-3 rounded-xl text-xs border bg-rose-50 text-rose-800 border-rose-200 flex items-start gap-2';
+            statusBox.innerHTML = '<i class="ph-bold ph-warning-circle text-base text-rose-600 mt-0.5"></i><div><strong>Koneksi Gagal</strong><div class="mt-0.5 text-[11px]">' + res.message + '</div></div>';
+        }
+    } catch (e) {
+        statusBox.className = 'p-3 rounded-xl text-xs border bg-rose-50 text-rose-800 border-rose-200 flex items-start gap-2';
+        statusBox.innerHTML = '<i class="ph-bold ph-warning-circle text-base text-rose-600 mt-0.5"></i><div><strong>Kesalahan Permintaan</strong><div class="mt-0.5 text-[11px]">' + e.message + '</div></div>';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ph-bold ph-plugs-connected text-sm"></i> <span>Uji Koneksi 9Router</span>';
+    }
 }
 
 // Auto open tab on page load (support ?tab=pegawai or server active_tab)

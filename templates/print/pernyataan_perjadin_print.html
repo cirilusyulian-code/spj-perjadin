@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surat Pernyataan Perjalanan Dinas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}?v={{ APP_VERSION }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: #fff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .printable-sheet {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+        }
+        .tabel-pernyataan th, .tabel-pernyataan td {
+            border: 1px solid #000 !important;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 py-6 min-h-screen">
+
+    <!-- Print Control Bar (Non-Printable) -->
+    <div class="no-print max-w-4xl mx-3 sm:mx-auto mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-xl shadow-sm border border-slate-200">
+        <div class="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-700">
+            <a href="{{ url_for('dashboard') }}" class="text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                <i class="ph ph-arrow-left"></i> Kembali ke Dashboard
+            </a>
+            <span class="text-slate-300">•</span>
+            <span class="text-slate-800 font-bold">Surat Pernyataan Perjalanan Dinas</span>
+            <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[11px] font-mono font-bold border border-slate-200">Kertas F4 / Folio</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+            <!-- Pilihan Jumlah Baris Sebelum Print -->
+            <div class="flex items-center gap-1.5">
+                <label for="selectRows" class="text-xs font-bold text-slate-700 flex items-center gap-1">
+                    <i class="ph-bold ph-rows text-slate-500"></i>
+                    <span>Jumlah Baris:</span>
+                </label>
+                <select id="selectRows" onchange="renderTableRows(this.value)"
+                    class="px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-bold text-slate-800 bg-white focus:ring-1 focus:ring-slate-900 focus:outline-none cursor-pointer">
+                    {% for r in range(1, 16) %}
+                    <option value="{{ r }}" {% if r == rows %}selected{% endif %}>{{ r }} Baris{% if r == 5 %} (Standar){% endif %}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Tombol Cetak Dokumen -->
+            <button onclick="window.print()"
+                class="px-4 py-2 bg-slate-950 hover:bg-slate-800 text-white rounded-lg text-xs font-bold shadow-xs flex items-center justify-center gap-1.5 transition">
+                <i class="ph-bold ph-printer text-base text-amber-300"></i>
+                <span>Cetak / Simpan PDF</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Printable Paper Sheet (F4 / Folio: 215mm x 330mm) -->
+    <div class="printable-sheet naskah-dinas" style="max-width: 215mm; margin: 0 auto; background: #fff; padding: 1.5cm 2cm 2cm 2.5cm; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-family: Arial, Helvetica, sans-serif !important; color: #000;">
+        
+        <!-- Kop Surat Standar Dinas -->
+        {% set force_kop = 'staf' %}
+        {% include 'print/_kop_surat.html' %}
+
+        <!-- Judul Dokumen -->
+        <div class="judul-dokumen" style="text-align: center; font-weight: bold; font-size: 12.5pt; text-transform: uppercase; margin-top: 14px; margin-bottom: 16px; letter-spacing: 0.5px; text-decoration: none !important;">
+            SURAT PERNYATAAN PERJALANAN DINAS
+        </div>
+
+        <!-- Paragraf Pembuka -->
+        <div style="font-size: 11pt; line-height: 1.5; margin-bottom: 4px;">
+            Saya yang bertanda tangan di bawah ini:
+        </div>
+
+        <!-- Identitas Pihak Pertama (Nama, NIP, Jabatan, Instansi) -->
+        <table style="width: 100%; border-collapse: collapse; margin-left: 12px; margin-bottom: 10px; font-size: 11pt; line-height: 1.6;">
+            <tr>
+                <td style="width: 20px; vertical-align: middle;">&bull;</td>
+                <td style="width: 80px; vertical-align: middle;">Nama</td>
+                <td style="width: 20px; vertical-align: middle;">:</td>
+                <td style="vertical-align: middle;"></td>
+            </tr>
+            <tr>
+                <td style="vertical-align: middle;">&bull;</td>
+                <td style="vertical-align: middle;">NIP</td>
+                <td style="vertical-align: middle;">:</td>
+                <td style="vertical-align: middle;"></td>
+            </tr>
+            <tr>
+                <td style="vertical-align: middle;">&bull;</td>
+                <td style="vertical-align: middle;">Jabatan</td>
+                <td style="vertical-align: middle;">:</td>
+                <td style="vertical-align: middle;"></td>
+            </tr>
+            <tr>
+                <td style="vertical-align: middle;">&bull;</td>
+                <td style="vertical-align: middle;">Instansi</td>
+                <td style="vertical-align: middle;">:</td>
+                <td style="vertical-align: middle;"></td>
+            </tr>
+        </table>
+
+        <!-- Paragraf Pengantar Tabel -->
+        <div style="font-size: 11pt; line-height: 1.5; margin-bottom: 6px;">
+            Dengan ini menyatakan dengan sesungguhnya bahwa nama-nama pegawai di bawah ini:
+        </div>
+
+        <!-- Tabel Daftar Pegawai -->
+        <table class="tabel-pernyataan" style="width: 100%; border-collapse: collapse; margin-bottom: 14px;">
+            <thead>
+                <tr>
+                    <th style="width: 45px; text-align: center; border: 1px solid #000; padding: 6px; font-size: 11pt; font-weight: bold; background-color: #fff;">No</th>
+                    <th style="border: 1px solid #000; padding: 6px 10px; font-size: 11pt; font-weight: bold; text-align: left; background-color: #fff;">Nama Lengkap</th>
+                    <th style="width: 220px; border: 1px solid #000; padding: 6px 10px; font-size: 11pt; font-weight: bold; text-align: left; background-color: #fff;">NIP</th>
+                    <th style="width: 220px; border: 1px solid #000; padding: 6px 10px; font-size: 11pt; font-weight: bold; text-align: left; background-color: #fff;">Jabatan</th>
+                </tr>
+            </thead>
+            <tbody id="tabelPegawaiBody">
+                {% for i in range(1, rows + 1) %}
+                <tr>
+                    <td style="text-align: center; border: 1px solid #000; height: 32px; font-size: 11pt;">{{ i }}.</td>
+                    <td style="border: 1px solid #000; height: 32px; padding: 0 8px; font-size: 11pt;"></td>
+                    <td style="border: 1px solid #000; height: 32px; padding: 0 8px; font-size: 11pt;"></td>
+                    <td style="border: 1px solid #000; height: 32px; padding: 0 8px; font-size: 11pt;"></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Paragraf Rincian Pelaksanaan (Kosongkan Sesuai Instruksi User) -->
+        <div style="font-size: 11pt; line-height: 1.5; margin-bottom: 4px; font-weight: bold;">
+            Benar-benar telah melaksanakan perjalanan dinas dengan rincian pelaksanaan sebagai berikut:
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin-left: 12px; margin-bottom: 14px; font-size: 11pt; line-height: 1.8;">
+            <tr>
+                <td style="width: 20px; vertical-align: top;">&bull;</td>
+                <td style="width: 180px; vertical-align: top; font-weight: bold;">Tujuan / Lokasi</td>
+                <td style="width: 20px; vertical-align: top;">:</td>
+                <td style="vertical-align: top;"></td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;">&bull;</td>
+                <td style="vertical-align: top; font-weight: bold;">Tanggal Pelaksanaan</td>
+                <td style="vertical-align: top;">:</td>
+                <td style="vertical-align: top;"></td>
+            </tr>
+            <tr>
+                <td style="vertical-align: top;">&bull;</td>
+                <td style="vertical-align: top; font-weight: bold;">Keperluan / Agenda</td>
+                <td style="vertical-align: top;">:</td>
+                <td style="vertical-align: top;"></td>
+            </tr>
+        </table>
+
+        <!-- Paragraf Penutup -->
+        <div style="font-size: 11pt; line-height: 1.5; text-align: justify; margin-bottom: 24px;">
+            Demikian surat pernyataan ini dibuat dengan sebenarnya untuk dapat dipergunakan sebagai kelengkapan administrasi dan pertanggungjawaban perjalanan dinas sebagaimana mestinya.
+        </div>
+
+        <!-- Kolom Tanda Tangan (Sebelah Kanan Bawah) -->
+        <div style="display: flex; justify-content: flex-end; margin-top: 16px; page-break-inside: avoid !important;">
+            <div style="width: 270px; text-align: left; font-size: 11pt;">
+                <div>Yang Membuat Pernyataan,</div>
+                <div style="height: 70px;"></div>
+                <div style="border-bottom: 1px dotted #000; width: 100%; height: 1px; margin-bottom: 4px;"></div>
+                <div>NIP. ....................................................</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function renderTableRows(numRows) {
+            numRows = parseInt(numRows, 10) || 5;
+            if (numRows < 1) numRows = 1;
+            if (numRows > 30) numRows = 30;
+
+            const selectEl = document.getElementById('selectRows');
+            if (selectEl && selectEl.value !== String(numRows)) {
+                selectEl.value = numRows;
+            }
+
+            const tbody = document.getElementById('tabelPegawaiBody');
+            if (!tbody) return;
+
+            let html = '';
+            for (let i = 1; i <= numRows; i++) {
+                html += `
+                <tr>
+                    <td style="text-align: center; border: 1px solid #000; height: 32px; font-size: 11pt;">${i}.</td>
+                    <td style="border: 1px solid #000; height: 32px; padding: 0 8px; font-size: 11pt;"></td>
+                    <td style="border: 1px solid #000; height: 32px; padding: 0 8px; font-size: 11pt;"></td>
+                    <td style="border: 1px solid #000; height: 32px; padding: 0 8px; font-size: 11pt;"></td>
+                </tr>`;
+            }
+            tbody.innerHTML = html;
+
+            try {
+                const url = new URL(window.location);
+                url.searchParams.set('rows', numRows);
+                window.history.replaceState({}, '', url);
+            } catch (e) {}
+        }
+    </script>
+</body>
+
+</html>

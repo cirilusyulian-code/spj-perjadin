@@ -289,6 +289,10 @@ def init_db():
         'template_pengeluaran_riil': 'Dengan ini menyatakan dengan sesungguhnya bahwa biaya perjalanan dinas di bawah ini yang tidak dapat diperoleh bukti-bukti pengeluarannya meliputi biaya transportasi lokal/taksi dan pengeluaran darat riil, benar-benar dikeluarkan untuk keperluan pelaksanaan tugas dan apabila di kemudian hari terdapat kelebihan atas pembayaran tersebut kami bersedia menyetorkan kelebihan tersebut ke Kas Daerah.',
         'template_kwitansi': 'Sudah terima dari Bendahara Pengeluaran Dinas Komunikasi dan Informatika sejumlah uang untuk pembayaran biaya pelaksanaan perjalanan dinas sesuai Surat Perintah Tugas dan Surat Perintah Perjalanan Dinas.',
         'template_rincian_biaya': 'Rincian Perhitungan Biaya Perjalanan Dinas berdasarkan Standar Biaya Masukan (SBM) yang berlaku.',
+        'ai_provider': '9router',
+        'ai_base_url': 'http://43.157.211.23:20128/v1',
+        'ai_api_key': 'sk-6b3ac6ef8e3b70c9-8rhqas-c25f1e04',
+        'ai_model': 'agent',
         'template_laporan': json.dumps({
             "pendahuluan": "Perjalanan dinas ini dilaksanakan dalam rangka memenuhi undangan dan tindak lanjut program koordinasi implementasi SPBE di tingkat nasional.",
             "kegiatan": "1. Menghadiri rapat pleno pembukaan dan pengarahan teknis.\n2. Diskusi panel dan konsultasi meja kerja tata kelola arsitektur data.\n3. Perumusan rekomendasi percepatan integrasi layanan publik digital.",
